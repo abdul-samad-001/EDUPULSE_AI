@@ -4,7 +4,8 @@ const express = require("express");
 const cors = require("cors");
 
 const connectDB = require("./src/config/db");
-
+const authRoutes = require("./src/routes/authRoutes");
+const testRoutes = require("./src/routes/testRoutes");
 // Connect Database
 connectDB();
 
@@ -13,6 +14,8 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use("/api/auth", authRoutes);
+app.use("/api/test", testRoutes);
 
 // Health Check Route
 app.get("/", (req, res) => {
