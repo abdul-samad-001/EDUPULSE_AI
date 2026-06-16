@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { loginUser } from "../services/authService";
 import AuthSlider from "../components/AuthSlider";
-
 import team1 from "../assets/team1.png";
 import team2 from "../assets/team2.png";
 import team3 from "../assets/team3.png";
@@ -12,6 +12,7 @@ function Login() {
   const images = [team1, team2, team3, team4];
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -43,12 +44,7 @@ function Login() {
         password: formData.password,
       });
 
-      localStorage.setItem("token", data.token);
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify(data.user)
-      );
+      login(data.user, data.token);
 
       alert("Login Successful");
 
@@ -56,7 +52,7 @@ function Login() {
     } catch (error) {
       alert(
         error.response?.data?.message ||
-        "Login Failed"
+          "Login Failed"
       );
     } finally {
       setLoading(false);
@@ -88,7 +84,6 @@ function Login() {
               onSubmit={handleSubmit}
               className="space-y-4"
             >
-
               <input
                 type="email"
                 name="email"
@@ -110,11 +105,10 @@ function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black py-3 rounded-xl font-semibold hover:bg-gray-200 transition"
+                className="w-full bg-white text-black py-3 rounded-xl font-semibold hover:bg-gray-200 transition disabled:opacity-50"
               >
                 {loading ? "Logging In..." : "Login"}
               </button>
-
             </form>
 
             <p className="text-center text-zinc-400 mt-8">

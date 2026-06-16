@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { signupUser } from "../services/authService";
 import AuthSlider from "../components/AuthSlider";
+
 
 import team1 from "../assets/team1.png";
 import team2 from "../assets/team2.png";
@@ -12,6 +14,7 @@ function Signup() {
   const images = [team1, team2, team3, team4];
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -61,11 +64,7 @@ function Signup() {
         password: formData.password,
       });
 
-      localStorage.setItem("token", data.token);
-      localStorage.setItem(
-        "user",
-        JSON.stringify(data.user)
-      );
+      login(data.user, data.token);
 
       alert("Signup Successful");
 
@@ -84,12 +83,12 @@ function Signup() {
     <div className="min-h-screen bg-black flex items-center justify-center p-6">
       <div className="w-full max-w-6xl h-[700px] rounded-3xl overflow-hidden bg-zinc-950 shadow-2xl grid lg:grid-cols-2">
 
-        {/* LEFT */}
+        {/* LEFT SIDE */}
         <div className="hidden lg:block">
           <AuthSlider images={images} />
         </div>
 
-        {/* RIGHT */}
+        {/* RIGHT SIDE */}
         <div className="flex items-center justify-center p-10">
           <div className="w-full max-w-md">
 
@@ -111,7 +110,7 @@ function Signup() {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Full Name"
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white outline-none"
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white outline-none focus:border-white transition"
               />
 
               <input
@@ -120,7 +119,7 @@ function Signup() {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Email"
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white outline-none"
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white outline-none focus:border-white transition"
               />
 
               <input
@@ -129,7 +128,7 @@ function Signup() {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Password"
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white outline-none"
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white outline-none focus:border-white transition"
               />
 
               <input
@@ -138,13 +137,13 @@ function Signup() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder="Confirm Password"
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white outline-none"
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white outline-none focus:border-white transition"
               />
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black py-3 rounded-xl font-semibold hover:bg-gray-200 transition"
+                className="w-full bg-white text-black py-3 rounded-xl font-semibold hover:bg-gray-200 transition disabled:opacity-50"
               >
                 {loading
                   ? "Creating Account..."
@@ -171,4 +170,3 @@ function Signup() {
 }
 
 export default Signup;
-
