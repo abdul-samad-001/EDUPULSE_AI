@@ -27,6 +27,16 @@ const userSchema = new mongoose.Schema(
       enum: ["student", "admin"],
       default: "student",
     },
+
+    // Day 19 Streak System Additions (PRD Phase 3)
+    streak: {
+      type: Number,
+      default: 0,
+    },
+
+    lastActive: {
+      type: Date,
+    },
   },
   {
     timestamps: true,

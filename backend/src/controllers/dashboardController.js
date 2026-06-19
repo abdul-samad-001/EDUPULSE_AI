@@ -1,10 +1,18 @@
 const Skill = require("../models/Skill");
+const User = require("../models/User"); // Imported to retrieve the streak score
 
 const getDashboardStats = async (req, res) => {
   try {
+    console.log("req.user:", req.user);
+    console.log("req.user._id:", req.user._id);
     const skills = await Skill.find({
       user: req.user._id,
     });
+    console.log("Skills Found:", skills.length);
+    console.log("Skills:", skills);
+    // Fetch the logged-in user to grab the current live streak
+    const user = await User.findById(req.user._id);
+    const streak = user ? user.streak : 0;
 
     const totalSkills = skills.length;
 
@@ -31,6 +39,7 @@ const getDashboardStats = async (req, res) => {
       completedSkills,
       inProgressSkills,
       overallProgress,
+      streak, // Returned directly down to the client layout
     });
   } catch (error) {
     res.status(500).json({
@@ -38,6 +47,7 @@ const getDashboardStats = async (req, res) => {
     });
   }
 };
+
 const getRecentSkills = async (req, res) => {
   try {
     const skills = await Skill.find({
@@ -56,6 +66,7 @@ const getRecentSkills = async (req, res) => {
     });
   }
 };
+
 const getCategoryStats = async (req, res) => {
   try {
     const skills = await Skill.find({
@@ -79,6 +90,7 @@ const getCategoryStats = async (req, res) => {
     });
   }
 };
+
 module.exports = {
   getDashboardStats,
   getRecentSkills,

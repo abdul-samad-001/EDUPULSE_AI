@@ -2,22 +2,21 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
+const connectDB = require("./src/config/db"); // Adjusted path matching root directory configs
 
-const skillRoutes = require(
-  "./src/routes/skillRoutes"
-);
-
-
-const connectDB = require("./src/config/db");
+// 1. Core Route Imports (Matched perfectly to your actual file names)
 const authRoutes = require("./src/routes/authRoutes");
 const testRoutes = require("./src/routes/testRoutes");
 const taskRoutes = require("./src/routes/taskRoutes");
+const skillRoutes = require("./src/routes/skillRoutes");
+const dashboardRoutes = require("./src/routes/dashboardRoutes");
+
 // Connect Database
 connectDB();
 
 const app = express();
 
-// Middleware
+// Middleware Configuration
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -25,10 +24,12 @@ app.use(
   })
 );
 app.use(express.json());
+
+// 2. Base Endpoint Route Registrations [cite: 28, 43, 47]
 app.use("/api/auth", authRoutes);
 app.use("/api/test", testRoutes);
-app.use("/api/tasks",taskRoutes);
-const dashboardRoutes = require("./src/routes/dashboardRoutes");
+app.use("/api/tasks", taskRoutes);
+app.use("/api/skills", skillRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
 // Health Check Route
@@ -38,9 +39,9 @@ app.get("/", (req, res) => {
     message: "EduPulse AI Backend Running",
   });
 });
-app.use("/api/skills", skillRoutes);
-const PORT = process.env.PORT || 5000;
 
+// Server Initialization
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
