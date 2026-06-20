@@ -1,3 +1,4 @@
+const { generateRoadmapTasks } = require("../services/geminiService");
 const Task = require("../models/Task");
 const Skill = require("../models/Skill");
 const User = require("../models/User"); // Imported to handle user updates
@@ -89,10 +90,8 @@ const updateTask = async (req, res) => {
     // ==========================================
     if (completed === true && req.user && req.user.id) {
       const user = await User.findById(req.user.id);
-      
       if (user) {
         const now = new Date();
-        
         if (!user.lastActive) {
           // First task ever completed by this user
           user.streak = 1;
@@ -100,7 +99,6 @@ const updateTask = async (req, res) => {
           // Normalize dates to midnights for pure calendar-day tracking
           const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
           const lastActiveMidnight = new Date(user.lastActive.getFullYear(), user.lastActive.getMonth(), user.lastActive.getDate());
-          
           const timeDifference = todayMidnight - lastActiveMidnight;
           const calendarDaysDelta = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
 
@@ -130,9 +128,62 @@ const updateTask = async (req, res) => {
     });
   }
 };
+const generateAIRoadmap = async (req, res) => {
+  try {
+    const skill = await Skill.findById(req.params.skillId);
+
+    if (!skill) {
+      return res.status(404).json({
+        message: "Skill not found",
+      });
+    }
+
+    // Ownership check — same pattern as deleteSkill in skillController.js
+    if (skill.user.toString() !== req.user._id.toString()) {
+      return res.status(401).json({
+        message: "Not authorized",
+      });
+    }
+
+    const aiTasks = await generateRoadmapTasks(skill.skillName, skill.category);
+
+    // Clear old AI-generated tasks before inserting the fresh batch
+    await Task.deleteMany({ skill: skill._id });
+
+    const taskDocuments = aiTasks.map((task, index) => ({
+      skill: skill._id,
+      taskName: task.taskName,
+      difficulty: task.difficulty,
+      order: index,
+      completed: false,
+    }));
+
+    const createdTasks = await Task.insertMany(taskDocuments);
+
+    // Reset progress since the task list changed entirely —
+    // reuses the exact same recalculation shape as updateTask
+    await Skill.findByIdAndUpdate(skill._id, {
+      progress: 0,
+      completed: false,
+    });
+
+    res.status(201).json({
+      success: true,
+      count: createdTasks.length,
+      tasks: createdTasks,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message:
+        error.message ||
+        "Failed to generate AI roadmap. Gemini may be temporarily unavailable.",
+    });
+  }
+};
 
 module.exports = {
   getTasksBySkill,
   createTask,
   updateTask,
+  generateAIRoadmap,
 };

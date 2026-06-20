@@ -41,7 +41,13 @@ const skillService = {
     // Changed from "/api/tasks/:id" to just "/tasks/:id"
     const res = await axiosInstance.put(`/tasks/${taskId}`, { completed });
     return res.data;
-  }
+  },
+
+  // NEW — AI Roadmap Generator. Same defensive unwrap pattern as getTasks.
+  generateRoadmap: async (skillId) => {
+    const res = await axiosInstance.post(`/tasks/${skillId}/generate`);
+    return res.data.tasks || res.data || [];
+  },
 };
 
 export default skillService;

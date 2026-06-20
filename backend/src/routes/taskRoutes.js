@@ -5,6 +5,7 @@ const {
   getTasksBySkill,
   createTask,
   updateTask,
+  generateAIRoadmap,
 } = require("../controllers/taskController");
 
 const {
@@ -25,5 +26,8 @@ router.put(
     "/:id",
     protect,
     updateTask);
-
+router.post(
+  "/:skillId/generate",
+  protect,
+  generateAIRoadmap);
 module.exports = router;
