@@ -2,21 +2,19 @@ const { generateRoadmapTasks } = require("../services/geminiService");
 const Task = require("../models/Task");
 const Skill = require("../models/Skill");
 const User = require("../models/User"); // Imported to handle user updates
-
+const { checkStreakDeadline, advanceDayIfComplete } = require("../utils/streakEngine");
 const getTasksBySkill = async (req, res) => {
   try {
     const skill = await Skill.findById(req.params.skillId);
-
     if (!skill) {
       return res.status(404).json({
         message: "Skill not found",
       });
+      await checkStreakDeadline(skill);
     }
-
     const tasks = await Task.find({
       skill: req.params.skillId,
     }).sort("order");
-
     res.status(200).json({
       success: true,
       count: tasks.length,
@@ -28,24 +26,20 @@ const getTasksBySkill = async (req, res) => {
     });
   }
 };
-
 const createTask = async (req, res) => {
   try {
-    const { taskName } = req.body;
-
+    const { taskName, assignedDay } = req.body;
     const skill = await Skill.findById(req.params.skillId);
-
     if (!skill) {
       return res.status(404).json({
         message: "Skill not found",
       });
     }
-
     const task = await Task.create({
       skill: req.params.skillId,
       taskName,
+      assignedDay: assignedDay || skill.currentDay || 1,
     });
-
     res.status(201).json({
       success: true,
       task,
@@ -84,7 +78,11 @@ const updateTask = async (req, res) => {
       progress,
       completed: progress === 100,
     });
-
+    const skillDoc = await Skill.findById(task.skill);
+    if (skillDoc) {
+      await advanceDayIfComplete(skillDoc);
+      await checkStreakDeadline(skillDoc);
+    }
     // ==========================================
     // DAY 19 STREAK SYSTEM HOOK
     // ==========================================
@@ -121,6 +119,7 @@ const updateTask = async (req, res) => {
     res.status(200).json({
       success: true,
       task,
+      skill: skillDoc || null,
     });
   } catch (error) {
     res.status(500).json({
@@ -154,6 +153,7 @@ const generateAIRoadmap = async (req, res) => {
       skill: skill._id,
       taskName: task.taskName,
       difficulty: task.difficulty,
+      assignedDay: task.assignedDay || 1,
       order: index,
       completed: false,
     }));
@@ -165,6 +165,9 @@ const generateAIRoadmap = async (req, res) => {
     await Skill.findByIdAndUpdate(skill._id, {
       progress: 0,
       completed: false,
+      currentDay: 1,
+      streakCount: 0,
+      lastCompletedAt: null,
     });
 
     res.status(201).json({

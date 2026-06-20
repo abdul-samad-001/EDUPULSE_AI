@@ -1,5 +1,5 @@
 const Skill = require("../models/Skill");
-
+const { checkStreakDeadline } = require("../utils/streakEngine");
 const addSkill = async (req, res) => {
   try {
     const { skillName, category } = req.body;
@@ -25,6 +25,7 @@ const getSkills = async (req, res) => {
     const skills = await Skill.find({
       user: req.user._id,
     });
+    await Promise.all(skills.map((skill) => checkStreakDeadline(skill)));
 
     res.status(200).json({
       success: true,

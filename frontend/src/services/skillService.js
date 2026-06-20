@@ -31,9 +31,9 @@ const skillService = {
     return res.data.tasks || res.data || [];
   },
 
-  createTask: async (skillId, taskName) => {
+  createTask: async (skillId, taskName, assignedDay = 1) => {
     // Changed from "/api/tasks/:id" to just "/tasks/${skillId}"
-    const res = await axiosInstance.post(`/tasks/${skillId}`, { taskName });
+    const res = await axiosInstance.post(`/tasks/${skillId}`, { taskName, assignedDay });
     return res.data.task || res.data;
   },
 

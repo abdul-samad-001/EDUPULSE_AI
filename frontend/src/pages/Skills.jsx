@@ -52,9 +52,9 @@ function Skills() {
   };
 
   // Live optimistic progress bubble event hook
-  const handleProgressPipelineUpdate = (id, computedProgressScore) => {
+  const handleProgressPipelineUpdate = (id, computedProgressScore, streakFields ={}) => {
     setSkills(prev => prev.map(s =>
-      s._id === id ? { ...s, progress: computedProgressScore, completed: computedProgressScore === 100 } : s
+      s._id === id ? { ...s, progress: computedProgressScore, completed: computedProgressScore === 100, ...streakFields,} : s
     ));
   };
 

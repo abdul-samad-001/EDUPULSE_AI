@@ -36,6 +36,10 @@ const taskSchema = new mongoose.Schema(
       enum: ["Easy", "Medium", "Hard"],
       default: "Easy",
     },
+    assignedDay: {
+      type: Number,
+      default: 1,
+    },
   },
   {
     timestamps: true,
