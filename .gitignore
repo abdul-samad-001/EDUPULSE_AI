@@ -2,4 +2,13 @@ node_modules/
 .env
 dist/
 .vscode/
-*/.venv
+# Python
+ml-service/venv/
+__pycache__/
+*.pyc
+
+# ML models (generated later)
+ml-service/models/*.pkl
+
+# Optional: generated dataset
+# ml-service/data/procrastination_dataset.csv
