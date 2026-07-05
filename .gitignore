@@ -12,3 +12,6 @@ ml-service/models/*.pkl
 
 # Optional: generated dataset
 # ml-service/data/procrastination_dataset.csv
+# Python cache
+*.pyo
+*.pyd
