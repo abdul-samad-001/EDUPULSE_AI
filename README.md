@@ -4,7 +4,7 @@ EduPulse AI is a full-stack, AI-powered platform designed to help students track
 
 This repository connects a **React Frontend**, a **Node.js/Express Backend** (with Google Gemini integration for roadmaps), and a **Python Flask Machine Learning Service** (using Scikit-learn for procrastination risk detection).
 
----
+--- 
  
 ## 🛠️ System Architecture
 
