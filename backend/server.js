@@ -10,7 +10,7 @@ const testRoutes = require("./src/routes/testRoutes");
 const taskRoutes = require("./src/routes/taskRoutes");
 const skillRoutes = require("./src/routes/skillRoutes");
 const dashboardRoutes = require("./src/routes/dashboardRoutes");
-
+const procrastinationRoutes = require("./src/routes/procrastinationRoutes");
 // Connect Database
 connectDB();
 
@@ -31,6 +31,7 @@ app.use("/api/test", testRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/skills", skillRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/procrastination", procrastinationRoutes);
 
 // Health Check Route
 app.get("/", (req, res) => {

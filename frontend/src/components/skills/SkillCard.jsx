@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import skillService from "../../services/skillService";
 import CategoryBadge from "./CategoryBadge";
 import SkillProgress from "./SkillProgress";
+import RiskBadge from "./RiskBadge";
 
 const DIFFICULTY_STYLES = {
   Easy: "bg-green-100 text-green-700",

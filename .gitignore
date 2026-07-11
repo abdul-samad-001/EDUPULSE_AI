@@ -1,17 +1,26 @@
+# Node
 node_modules/
-.env
 dist/
+
+# Environment
+.env
+
+# Editor
 .vscode/
-# Python
+
+# Python virtual environments
+.venv/
+venv/
 ml-service/venv/
+
+# Python cache
 __pycache__/
 *.pyc
-
-# ML models (generated later)
-ml-service/models/*.pkl
-
-# Optional: generated dataset
-# ml-service/data/procrastination_dataset.csv
-# Python cache
 *.pyo
 *.pyd
+
+# ML models
+ml-service/models/*.pkl
+
+# Generated dataset (optional)
+# ml-service/data/procrastination_dataset.csv
