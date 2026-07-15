@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "EduPulse AI Focus Tracker",
+  "version": "1.0.0",
+  "description": "Tracks domain-level browsing activity for EduPulse AI focus and procrastination insights.",
+
+  "permissions": [
+    "tabs",
+    "storage",
+    "alarms",
+    "idle"
+  ],
+
+  "host_permissions": [
+    "http://localhost:5000/*"
+  ],
+
+  "background": {
+    "service_worker": "background/service-worker.js",
+    "type": "module"
+  },
+
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "EduPulse AI Focus Tracker"
+  }
+}

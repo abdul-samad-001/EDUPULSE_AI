@@ -1,18 +1,59 @@
 const Skill = require("../models/Skill");
-const User = require("../models/User"); // Imported to retrieve the streak score
+const User = require("../models/User");
 
 const getDashboardStats = async (req, res) => {
   try {
-    console.log("req.user:", req.user);
-    console.log("req.user._id:", req.user._id);
     const skills = await Skill.find({
       user: req.user._id,
     });
-    console.log("Skills Found:", skills.length);
-    console.log("Skills:", skills);
-    // Fetch the logged-in user to grab the current live streak
+
     const user = await User.findById(req.user._id);
-    const streak = user ? user.streak : 0;
+
+    let streak = 0;
+
+    // ==========================================================
+    // USER STREAK EXPIRY CHECK
+    // ==========================================================
+
+    if (user) {
+      streak = user.streak || 0;
+
+      if (user.lastActive && streak > 0) {
+        const now = new Date();
+
+        const todayMidnight = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate()
+        );
+
+        const lastActiveMidnight = new Date(
+          user.lastActive.getFullYear(),
+          user.lastActive.getMonth(),
+          user.lastActive.getDate()
+        );
+
+        const timeDifference =
+          todayMidnight - lastActiveMidnight;
+
+        const calendarDaysDelta = Math.floor(
+          timeDifference / (1000 * 60 * 60 * 24)
+        );
+
+        // More than one calendar day missed
+        if (calendarDaysDelta > 1) {
+          user.streak = 0;
+
+          await user.save();
+
+          streak = 0;
+        }
+      }
+    }
+
+    // ==========================================================
+    // DASHBOARD STATISTICS
+    // ==========================================================
 
     const totalSkills = skills.length;
 
@@ -27,7 +68,8 @@ const getDashboardStats = async (req, res) => {
       totalSkills > 0
         ? Math.round(
             skills.reduce(
-              (sum, skill) => sum + skill.progress,
+              (sum, skill) =>
+                sum + skill.progress,
               0
             ) / totalSkills
           )
@@ -39,9 +81,14 @@ const getDashboardStats = async (req, res) => {
       completedSkills,
       inProgressSkills,
       overallProgress,
-      streak, // Returned directly down to the client layout
+      streak,
     });
   } catch (error) {
+    console.error(
+      "Dashboard stats error:",
+      error
+    );
+
     res.status(500).json({
       message: error.message,
     });

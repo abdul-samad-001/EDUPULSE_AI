@@ -5,16 +5,23 @@ const User = require("../models/User"); // Imported to handle user updates
 const { checkStreakDeadline, advanceDayIfComplete } = require("../utils/streakEngine");
 const getTasksBySkill = async (req, res) => {
   try {
-    const skill = await Skill.findById(req.params.skillId);
+    const skill = await Skill.findById(
+      req.params.skillId
+    );
+
     if (!skill) {
       return res.status(404).json({
         message: "Skill not found",
       });
-      await checkStreakDeadline(skill);
     }
+
+    // Evaluate per-skill streak deadline
+    await checkStreakDeadline(skill);
+
     const tasks = await Task.find({
       skill: req.params.skillId,
     }).sort("order");
+
     res.status(200).json({
       success: true,
       count: tasks.length,

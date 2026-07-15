@@ -1,0 +1,119 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>EduPulse AI</title>
+
+    <style>
+        body {
+            width: 320px;
+            min-height: 220px;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            font-family:
+                Arial,
+                sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        h1 {
+            margin: 0 0 4px;
+            font-size: 22px;
+        }
+
+        .subtitle {
+            margin: 0 0 20px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .status-card {
+            padding: 16px;
+            border-radius: 12px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+        }
+
+        .status {
+            font-weight: 700;
+            color: #15803d;
+        }
+
+        .stats {
+            margin-top: 16px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .label {
+            color: #64748b;
+        }
+
+        .value {
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>EduPulse AI</h1>
+
+    <p class="subtitle">
+        Focus & distraction telemetry
+    </p>
+
+    <div class="status-card">
+        <div class="status">
+            ● Tracking active
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <span class="label">
+                    Sessions stored
+                </span>
+
+                <span class="value" id="sessionCount">
+                    0
+                </span>
+            </div>
+
+            <div class="stat">
+                <span class="label">
+                    Distraction time
+                </span>
+
+                <span class="value" id="distractionTime">
+                    0 min
+                </span>
+            </div>
+
+            <div class="stat">
+                <span class="label">
+                    Distraction visits
+                </span>
+
+                <span class="value" id="distractionVisits">
+                    0
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>
