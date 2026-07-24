@@ -1,84 +1,158 @@
 const FocusSession = require("../models/FocusSession");
 
-// POST /api/distraction/log -> Accept tab logging batch from extension
-const logTabBatch = async (req, res) => {
+/**
+ * POST /api/focus/start
+ * Start a new focus session
+ */
+const startFocusSession = async (req, res) => {
   try {
-    const { sessions } = req.body; // Expecting an array of tab logs
+    const { skill, plannedDurationMinutes, notes } = req.body;
 
-    if (!sessions || !Array.isArray(sessions)) {
-      return res.status(400).json({ message: "Invalid session batch format." });
+    if (!skill || !plannedDurationMinutes) {
+      return res.status(400).json({
+        success: false,
+        message: "Skill and planned duration are required.",
+      });
     }
 
-    // Map and inject the authenticated user ID into every incoming session log record
-    const preparedSessions = sessions.map((session) => ({
-      ...session,
+    // Prevent multiple active sessions
+    const activeSession = await FocusSession.findOne({
       user: req.user._id,
-    }));
+      status: "active",
+    });
 
-    // Bulk insert the batch to protect performance (PRD Checklist Guideline)
-    await FocusSession.insertMany(preparedSessions);
+    if (activeSession) {
+      return res.status(400).json({
+        success: false,
+        message: "A focus session is already active.",
+      });
+    }
+
+    const session = await FocusSession.create({
+      user: req.user._id,
+      skill,
+      plannedDurationMinutes,
+      notes,
+    });
 
     res.status(201).json({
       success: true,
-      message: `${sessions.length} browser sessions synced successfully.`,
+      message: "Focus session started.",
+      data: session,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Start Focus Session Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to start focus session.",
+      error: error.message,
+    });
   }
 };
-
-// GET /api/distraction/report -> Aggregate today's metrics for the dashboard
-const getDailyReport = async (req, res) => {
+/**
+ * POST /api/focus/stop
+ * Stop the currently active focus session
+ */
+const stopFocusSession = async (req, res) => {
   try {
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
-
-    // Fetch all logs recorded today for the active user
-    const todaysSessions = await FocusSession.find({
+    const session = await FocusSession.findOne({
       user: req.user._id,
-      sessionDate: { $gte: startOfToday },
+      status: "active",
     });
 
-    let totalBrowsingTime = 0;
-    let distractionTime = 0;
-    const domainMap = {};
+    if (!session) {
+      return res.status(404).json({
+        success: false,
+        message: "No active focus session found.",
+      });
+    }
 
-    todaysSessions.forEach((session) => {
-      totalBrowsingTime += session.timeSpent;
-      if (session.isDistraction) {
-        distractionTime += session.timeSpent;
-      }
+    const endedAt = new Date();
 
-      // Track top distracting domains
-      if (session.isDistraction) {
-        domainMap[session.domain] = (domainMap[session.domain] || 0) + session.timeSpent;
-      }
-    });
+    const actualDurationMinutes = Math.round(
+      (endedAt - session.startedAt) / (1000 * 60)
+    );
 
-    // PRD Distraction Score Formula: (distractionTime / totalBrowsingTime) * 100
-    const distractionScore = totalBrowsingTime > 0 
-      ? Math.round((distractionTime / totalBrowsingTime) * 100) 
-      : 0;
+    session.endedAt = endedAt;
+    session.actualDurationMinutes = actualDurationMinutes;
+    session.status = "completed";
 
-    // Format top 5 distractors for the Recharts dashboard visualization layout
-    const topDistractors = Object.entries(domainMap)
-      .map(([domain, time]) => ({ domain, timeSpentMinutes: Math.round(time / 60) }))
-      .sort((a, b) => b.timeSpentMinutes - a.timeSpentMinutes)
-      .slice(0, 5);
+    await session.save();
 
     res.status(200).json({
       success: true,
-      distractionScore,
-      totalBrowsingTimeMinutes: Math.round(totalBrowsingTime / 60),
-      distractionTimeMinutes: Math.round(distractionTime / 60),
-      topDistractors,
+      message: "Focus session completed.",
+      data: session,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Stop Focus Session Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to stop focus session.",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * GET /api/focus/active
+ * Get the user's active focus session
+ */
+const getActiveSession = async (req, res) => {
+  try {
+    const session = await FocusSession.findOne({
+      user: req.user._id,
+      status: "active",
+    }).populate("skill", "skillName");
+
+    res.status(200).json({
+      success: true,
+      data: session,
+    });
+  } catch (error) {
+    console.error("Get Active Session Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch active session.",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * GET /api/focus/history
+ * Get all completed focus sessions
+ */
+const getSessionHistory = async (req, res) => {
+  try {
+    const sessions = await FocusSession.find({
+      user: req.user._id,
+    })
+      .populate("skill", "skillName")
+      .sort({ startedAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: sessions.length,
+      data: sessions,
+    });
+  } catch (error) {
+    console.error("Get Session History Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch session history.",
+      error: error.message,
+    });
   }
 };
 
 module.exports = {
-  logTabBatch,
-  getDailyReport,
+  startFocusSession,
+  stopFocusSession,
+  getActiveSession,
+  getSessionHistory,
 };

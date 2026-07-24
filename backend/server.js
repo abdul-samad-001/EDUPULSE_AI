@@ -11,6 +11,8 @@ const taskRoutes = require("./src/routes/taskRoutes");
 const skillRoutes = require("./src/routes/skillRoutes");
 const dashboardRoutes = require("./src/routes/dashboardRoutes");
 const procrastinationRoutes = require("./src/routes/procrastinationRoutes");
+const telemetryRoutes = require("./src/routes/telemetryRoutes");
+const focusSessionRoutes = require("./src/routes/focusSessionRoutes");
 // Connect Database
 connectDB();
 
@@ -32,7 +34,8 @@ app.use("/api/tasks", taskRoutes);
 app.use("/api/skills", skillRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/procrastination", procrastinationRoutes);
-
+app.use("/api/telemetry", telemetryRoutes);
+app.use("/api/focus", focusSessionRoutes);
 // Health Check Route
 app.get("/", (req, res) => {
   res.json({
