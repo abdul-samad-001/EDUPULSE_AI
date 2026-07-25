@@ -10,7 +10,10 @@ const BATCH_ALARM_NAME = "edupulseTelemetryBatch";
 const BATCH_INTERVAL_MINUTES = 5;
 
 const IDLE_THRESHOLD_SECONDS = 60;
+const API_BASE_URL = "http://localhost:5000/api";
 
+const TELEMETRY_ENDPOINT =
+  `${API_BASE_URL}/telemetry/sessions`;
 
 let activeSession = null;
 
@@ -107,7 +110,68 @@ const saveTelemetrySession = async (session) => {
   );
 };
 
+const uploadTelemetry = async () => {
+  console.log("===== uploadTelemetry CALLED =====");
 
+  try {
+    // Get stored telemetry
+    const telemetryResult = await chrome.storage.local.get(
+      TELEMETRY_STORAGE_KEY
+    );
+
+    const telemetry =
+      telemetryResult[TELEMETRY_STORAGE_KEY] || [];
+
+    if (telemetry.length === 0) {
+      console.log("No telemetry to upload.");
+      return;
+    }
+
+    // Get JWT token
+    const tokenResult = await chrome.storage.local.get("edupulseToken");
+    const token = tokenResult.edupulseToken;
+
+    if (!token) {
+      console.error("No JWT token found in extension storage.");
+      return;
+    }
+
+    console.log("Uploading", telemetry.length, "sessions...");
+
+    const response = await fetch(TELEMETRY_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        sessions: telemetry,
+      }),
+    });
+
+    const responseText = await response.text();
+
+    console.log("Status:", response.status);
+    console.log("Response:", responseText);
+
+    if (!response.ok) {
+      throw new Error(
+        `Upload failed (${response.status}): ${responseText}`
+      );
+    }
+
+    console.log("Telemetry uploaded successfully.");
+
+    // Clear uploaded telemetry
+    await chrome.storage.local.set({
+      [TELEMETRY_STORAGE_KEY]: [],
+    });
+
+    console.log("Local telemetry cleared.");
+  } catch (error) {
+    console.error("Telemetry upload error:", error);
+  }
+};
 // ==========================================================
 // SESSION TRACKING
 // ==========================================================
@@ -298,39 +362,63 @@ chrome.idle.onStateChanged.addListener(
     await startActiveTabSession();
   }
 );
+// =====================================================
+// External Message Listener
+// Runs immediately when the service worker starts
+// =====================================================
 
+chrome.runtime.onMessageExternal.addListener(
+  (message, sender, sendResponse) => {
+    console.log("External message received:", message);
 
-// ==========================================================
-// FIVE-MINUTE BATCH CHECKPOINT
-// ==========================================================
+    if (message.type === "SAVE_AUTH_TOKEN") {
+      chrome.storage.local.set(
+        {
+          edupulseToken: message.token,
+        },
+        () => {
+          console.log("JWT saved successfully!");
 
-chrome.alarms.onAlarm.addListener(
-  async (alarm) => {
-    if (
-      alarm.name !== BATCH_ALARM_NAME
-    ) {
-      return;
-    }
-
-    console.log(
-      "EduPulse 5-minute telemetry checkpoint"
-    );
-
-    await endActiveSession();
-
-    const result =
-      await chrome.storage.local.get(
-        TELEMETRY_STORAGE_KEY
+          sendResponse({
+            success: true,
+          });
+        }
       );
 
-    const telemetry =
-      result[TELEMETRY_STORAGE_KEY] || [];
-
-    console.log(
-      "Current telemetry batch:",
-      telemetry
-    );
-
-    await startActiveTabSession();
+      return true;
+    }
   }
 );
+
+// =====================================================
+// Alarm Listener
+// =====================================================
+
+chrome.alarms.onAlarm.addListener(async (alarm) => {
+  console.log("Alarm Fired:", alarm.name);
+
+  if (alarm.name !== BATCH_ALARM_NAME) {
+    return;
+  }
+
+  console.log("EduPulse 5-minute telemetry checkpoint");
+
+  await endActiveSession();
+
+  const result = await chrome.storage.local.get(
+    TELEMETRY_STORAGE_KEY
+  );
+
+  const telemetry =
+    result[TELEMETRY_STORAGE_KEY] || [];
+
+  console.log(
+    "Current telemetry batch:",
+    telemetry
+  );
+
+  await uploadTelemetry();
+
+  await startActiveTabSession();
+});
+

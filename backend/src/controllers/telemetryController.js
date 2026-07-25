@@ -58,14 +58,17 @@ const getTodayTelemetry = async (req, res) => {
       data: summary,
     });
   } catch (error) {
-    console.error("Telemetry Summary Error:", error);
+  console.error("========== TELEMETRY ERROR ==========");
+  console.error(error);
+  console.error("Message:", error.message);
+  console.error("Request body:", JSON.stringify(req.body, null, 2));
+  console.error("=====================================");
 
-    return res.status(500).json({
-      success: false,
-      message: "Failed to fetch today's telemetry.",
-      error: error.message,
-    });
-  }
+  return res.status(500).json({
+    success: false,
+    message: error.message,
+  });
+}
 };
 
 module.exports = {

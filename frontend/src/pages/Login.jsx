@@ -39,16 +39,44 @@ function Login() {
     try {
       setLoading(true);
 
+      console.log("=== LOGIN START ===");
       const data = await loginUser({
         email: formData.email,
         password: formData.password,
       });
-
       login(data.user, data.token);
+      console.log("Sending JWT to extension...");
 
-      alert("Login Successful");
+if (
+  window.chrome &&
+  window.chrome.runtime &&
+  typeof window.chrome.runtime.sendMessage === "function"
+) {
+  chrome.runtime.sendMessage(
+    "jhbaidenokggbecmnkimcfkdeojodcic",
+    {
+      type: "SAVE_AUTH_TOKEN",
+      token: data.token,
+    },
+    (response) => {
+      if (chrome.runtime.lastError) {
+        console.error(
+          "Extension messaging error:",
+          chrome.runtime.lastError
+        );
+        return;
+      }
 
-      navigate("/dashboard");
+      console.log("Extension response:", response);
+    }
+  );
+} else {
+  console.warn(
+    "Chrome runtime API is not available on this page."
+  );
+}
+alert("Login Successful");
+navigate("/dashboard");
     } catch (error) {
       alert(
         error.response?.data?.message ||
