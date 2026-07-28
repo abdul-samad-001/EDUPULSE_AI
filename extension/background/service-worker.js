@@ -111,10 +111,7 @@ const saveTelemetrySession = async (session) => {
 };
 
 const uploadTelemetry = async () => {
-  console.log("===== uploadTelemetry CALLED =====");
-
   try {
-    // Get stored telemetry
     const telemetryResult = await chrome.storage.local.get(
       TELEMETRY_STORAGE_KEY
     );
@@ -123,20 +120,16 @@ const uploadTelemetry = async () => {
       telemetryResult[TELEMETRY_STORAGE_KEY] || [];
 
     if (telemetry.length === 0) {
-      console.log("No telemetry to upload.");
       return;
     }
 
-    // Get JWT token
-    const tokenResult = await chrome.storage.local.get("edupulseToken");
-    const token = tokenResult.edupulseToken;
+    const { edupulseToken: token } =
+      await chrome.storage.local.get("edupulseToken");
 
     if (!token) {
-      console.error("No JWT token found in extension storage.");
+      console.error("No JWT token found.");
       return;
     }
-
-    console.log("Uploading", telemetry.length, "sessions...");
 
     const response = await fetch(TELEMETRY_ENDPOINT, {
       method: "POST",
@@ -149,25 +142,24 @@ const uploadTelemetry = async () => {
       }),
     });
 
-    const responseText = await response.text();
+    let responseData = null;
 
-    console.log("Status:", response.status);
-    console.log("Response:", responseText);
+    try {
+      responseData = await response.json();
+    } catch {
+      // Ignore if response body is empty
+    }
 
     if (!response.ok) {
       throw new Error(
-        `Upload failed (${response.status}): ${responseText}`
+        responseData?.message ||
+          `Upload failed (${response.status})`
       );
     }
 
-    console.log("Telemetry uploaded successfully.");
-
-    // Clear uploaded telemetry
     await chrome.storage.local.set({
       [TELEMETRY_STORAGE_KEY]: [],
     });
-
-    console.log("Local telemetry cleared.");
   } catch (error) {
     console.error("Telemetry upload error:", error);
   }
@@ -367,28 +359,29 @@ chrome.idle.onStateChanged.addListener(
 // Runs immediately when the service worker starts
 // =====================================================
 
-chrome.runtime.onMessageExternal.addListener(
-  (message, sender, sendResponse) => {
-    console.log("External message received:", message);
+const handleSaveAuthToken = (message, sender, sendResponse) => {
+  console.log("Message received in background:", message);
 
-    if (message.type === "SAVE_AUTH_TOKEN") {
-      chrome.storage.local.set(
-        {
-          edupulseToken: message.token,
-        },
-        () => {
-          console.log("JWT saved successfully!");
+  if (message.type === "SAVE_AUTH_TOKEN") {
+    chrome.storage.local.set(
+      {
+        edupulseToken: message.token,
+      },
+      () => {
+        console.log("JWT saved successfully!");
 
-          sendResponse({
-            success: true,
-          });
-        }
-      );
+        sendResponse({
+          success: true,
+        });
+      }
+    );
 
-      return true;
-    }
+    return true;
   }
-);
+};
+
+chrome.runtime.onMessage.addListener(handleSaveAuthToken);
+chrome.runtime.onMessageExternal.addListener(handleSaveAuthToken);
 
 // =====================================================
 // Alarm Listener
@@ -421,4 +414,3 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 
   await startActiveTabSession();
 });
-

@@ -66,6 +66,14 @@ function Signup() {
 
       login(data.user, data.token);
 
+      window.postMessage(
+        {
+          type: "EDUPULSE_AUTH_TOKEN",
+          token: data.token,
+        },
+        "*"
+      );
+
       alert("Signup Successful");
 
       navigate("/dashboard");

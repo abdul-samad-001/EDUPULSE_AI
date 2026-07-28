@@ -45,38 +45,45 @@ function Login() {
         password: formData.password,
       });
       login(data.user, data.token);
-      console.log("Sending JWT to extension...");
+      // Send token to Chrome Extension via window.postMessage (handled by content script)
+      window.postMessage(
+        {
+          type: "EDUPULSE_AUTH_TOKEN",
+          token: data.token,
+        },
+        "*"
+      );
 
-if (
-  window.chrome &&
-  window.chrome.runtime &&
-  typeof window.chrome.runtime.sendMessage === "function"
-) {
-  chrome.runtime.sendMessage(
-    "jhbaidenokggbecmnkimcfkdeojodcic",
-    {
-      type: "SAVE_AUTH_TOKEN",
-      token: data.token,
-    },
-    (response) => {
-      if (chrome.runtime.lastError) {
-        console.error(
-          "Extension messaging error:",
-          chrome.runtime.lastError
-        );
-        return;
+      // Optional direct message if extension API is available
+      if (
+        window.chrome &&
+        window.chrome.runtime &&
+        typeof window.chrome.runtime.sendMessage === "function"
+      ) {
+        try {
+          window.chrome.runtime.sendMessage(
+            {
+              type: "SAVE_AUTH_TOKEN",
+              token: data.token,
+            },
+            (response) => {
+              if (window.chrome?.runtime?.lastError) {
+                console.warn(
+                  "Extension messaging notice:",
+                  window.chrome.runtime.lastError.message
+                );
+              } else {
+                console.log("Extension response:", response);
+              }
+            }
+          );
+        } catch (err) {
+          console.warn("Chrome runtime sendMessage not available or blocked:", err);
+        }
       }
 
-      console.log("Extension response:", response);
-    }
-  );
-} else {
-  console.warn(
-    "Chrome runtime API is not available on this page."
-  );
-}
-alert("Login Successful");
-navigate("/dashboard");
+      alert("Login Successful");
+      navigate("/dashboard");
     } catch (error) {
       alert(
         error.response?.data?.message ||
