@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import dashboardService from "../services/dashboardService";
-
+import { getTelemetryStats } from "../services/telemetryService";
 import StatCard from "../components/dashboard/StatCard";
 import OverallProgress from "../components/dashboard/OverallProgress";
 import CategoryChart from "../components/dashboard/CategoryChart";
@@ -13,6 +13,7 @@ function Dashboard() {
   const user = JSON.parse(localStorage.getItem("user"));
 
   const [stats, setStats] = useState(null);
+  const [telemetryStats, setTelemetryStats] = useState(null);
   const [recentSkills, setRecentSkills] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,10 +32,11 @@ function Dashboard() {
         setLoading(true);
         setError(null);
 
-        const [statsData, recentData, chartData] = await Promise.all([
+        const [statsData, recentData, chartData, telemetryData] = await Promise.all([
           dashboardService.getDashboardStats(),
           dashboardService.getRecentSkills(),
           dashboardService.getCategoryStats(),
+          getTelemetryStats(),
         ]);
 
         console.log("Dashboard Stats:", statsData);
@@ -44,6 +46,7 @@ function Dashboard() {
         setStats(statsData);
         setRecentSkills(recentData.skills || []);
         setCategoryData(chartData || []);
+        setTelemetryStats(telemetryData.stats);
       } catch (err) {
         console.error("Dashboard Integration Error:", err);
 
@@ -143,6 +146,33 @@ function Dashboard() {
           <StatCard
             title="Current Streak"
             value={`🔥 ${stats?.streak ?? 0} Days`}
+          />
+
+        </div>
+        {/* Telemetry Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+          <StatCard
+          title="Focus Sessions"
+          value={telemetryStats?.totalSessions ?? 0}
+          />
+          <StatCard
+          title="Tracked Time"
+          value={`${Math.floor((telemetryStats?.totalTrackedTime ?? 0) / 60)} min`}
+          />
+
+          <StatCard
+          title="Productive Time"
+          value={`${Math.floor((telemetryStats?.productiveTime ?? 0) / 60)} min`}
+          />
+
+          <StatCard
+          title="Distraction Time"
+          value={`${Math.floor((telemetryStats?.distractionTime ?? 0) / 60)} min`}
+          />
+
+          <StatCard
+          title="Productivity"
+          value={`${telemetryStats?.productivePercentage ?? 0}%`}
           />
 
         </div>

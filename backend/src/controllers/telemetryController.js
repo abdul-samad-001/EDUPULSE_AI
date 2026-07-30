@@ -1,4 +1,7 @@
-const {aggregateTodayTelemetry,
+const {
+  aggregateTodayTelemetry,
+  getUserSessions,
+  getTelemetryStats,
 } = require("../services/telemetryService");
 const TabSession = require("../models/TabSession");
 
@@ -58,20 +61,67 @@ const getTodayTelemetry = async (req, res) => {
       data: summary,
     });
   } catch (error) {
-  console.error("========== TELEMETRY ERROR ==========");
-  console.error(error);
-  console.error("Message:", error.message);
-  console.error("Request body:", JSON.stringify(req.body, null, 2));
-  console.error("=====================================");
+    console.error("========== TELEMETRY ERROR ==========");
+    console.error(error);
+    console.error("Message:", error.message);
+    console.error("Request body:", JSON.stringify(req.body, null, 2));
+    console.error("=====================================");
 
-  return res.status(500).json({
-    success: false,
-    message: error.message,
-  });
-}
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+/**
+ * GET /api/telemetry/stats
+ * Returns aggregated telemetry statistics.
+ */
+const getStats = async (req, res) => {
+  try {
+    const stats = await getTelemetryStats(req.user._id);
+
+    return res.status(200).json({
+      success: true,
+      stats,
+    });
+  } catch (error) {
+    console.error("Telemetry Stats Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch telemetry statistics.",
+    });
+  }
+};
+
+/**
+ * GET /api/telemetry/my-sessions
+ * Returns all telemetry sessions for the authenticated user.
+ */
+const getMySessions = async (req, res) => {
+  try {
+    const sessions = await getUserSessions(req.user._id);
+
+    return res.status(200).json({
+      success: true,
+      count: sessions.length,
+      data: sessions,
+    });
+  } catch (error) {
+    console.error("Get My Sessions Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch telemetry sessions.",
+    });
+  }
 };
 
 module.exports = {
   uploadSessions,
   getTodayTelemetry,
+  getMySessions,
+  getStats,
 };
