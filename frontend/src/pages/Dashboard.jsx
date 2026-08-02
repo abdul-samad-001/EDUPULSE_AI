@@ -1,19 +1,21 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import dashboardService from "../services/dashboardService";
-import { getTelemetryStats } from "../services/telemetryService";
+import { getTelemetryStats, getTopWebsites } from "../services/telemetryService";
 import StatCard from "../components/dashboard/StatCard";
 import OverallProgress from "../components/dashboard/OverallProgress";
 import CategoryChart from "../components/dashboard/CategoryChart";
 import RecentSkills from "../components/dashboard/RecentSkills";
 import FocusSessionCard from "../components/dashboard/FocusSessionCard";
 import ProductivityPieChart from "../components/dashboard/ProductivityPieChart";
+import TopWebsites from "../components/dashboard/TopWebsites";
 function Dashboard() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
 
   const [stats, setStats] = useState(null);
   const [telemetryStats, setTelemetryStats] = useState(null);
+  const [topWebsites, setTopWebsites] = useState([]);
   const [recentSkills, setRecentSkills] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,13 +34,19 @@ function Dashboard() {
         setLoading(true);
         setError(null);
 
-        const [statsData, recentData, chartData, telemetryData] = await Promise.all([
+        const [
+          statsData,
+          recentData,
+          chartData,
+          telemetryData,
+          websitesData,
+        ] = await Promise.all([
           dashboardService.getDashboardStats(),
           dashboardService.getRecentSkills(),
           dashboardService.getCategoryStats(),
           getTelemetryStats(),
+          getTopWebsites(),
         ]);
-
         console.log("Dashboard Stats:", statsData);
         console.log("Recent Skills:", recentData);
         console.log("Category Data:", chartData);
@@ -47,6 +55,7 @@ function Dashboard() {
         setRecentSkills(recentData.skills || []);
         setCategoryData(chartData || []);
         setTelemetryStats(telemetryData.stats);
+        setTopWebsites(websitesData.data);
       } catch (err) {
         console.error("Dashboard Integration Error:", err);
 
@@ -200,7 +209,9 @@ function Dashboard() {
 
           {/* Right Side */}
           <div className="space-y-8">
-
+            <TopWebsites
+              websites={topWebsites}
+            />
             <RecentSkills
               skills={recentSkills}
             />

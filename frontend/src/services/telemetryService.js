@@ -4,3 +4,7 @@ export const getTelemetryStats = async () => {
   const response = await api.get("/telemetry/stats");
   return response.data;
 };
+export const getTopWebsites = async () => {
+  const response = await api.get("/telemetry/top-websites");
+  return response.data;
+};
