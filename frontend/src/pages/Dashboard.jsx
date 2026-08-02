@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import dashboardService from "../services/dashboardService";
-import { getTelemetryStats, getTopWebsites, getWeeklyTrend, getHourlyProductivity, getStudyVsDistract, getAIInsights } from "../services/telemetryService";
+import { getTelemetryStats, getTopWebsites, getWeeklyTrend, getHourlyProductivity, getStudyVsDistract, getAIInsights, getProcrastinationScore } from "../services/telemetryService";
 import StatCard from "../components/dashboard/StatCard";
 import OverallProgress from "../components/dashboard/OverallProgress";
 import CategoryChart from "../components/dashboard/analytics/CategoryChart";
@@ -13,6 +13,7 @@ import WeeklyTrendChart from "../components/dashboard/analytics/WeeklyTrendChart
 import HourlyProductivityChart from "../components/dashboard/analytics/HourlyProductivityChart";
 import StudyVsDistractChart from "../components/dashboard/analytics/StudyVsDistractChart";
 import AIInsights from "../components/dashboard/analytics/AIInsights";
+import ProcrastinationCard from "../components/dashboard/analytics/ProcrastinationCard";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ function Dashboard() {
   const [hourlyProductivity, setHourlyProductivity] = useState([]);
   const [studyVsDistract, setStudyVsDistract] = useState({productiveMinutes: 0,distractingMinutes: 0,});
   const [aiInsights, setAIInsights] = useState([]);
+  const [procrastinationData, setProcrastinationData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -53,6 +55,7 @@ function Dashboard() {
           hourlyData,
           studyVsDistractData,
           aiInsightsData,
+          procrastinationResponse,
         ] = await Promise.all([
           dashboardService.getDashboardStats(),
           dashboardService.getRecentSkills(),
@@ -63,6 +66,7 @@ function Dashboard() {
           getHourlyProductivity(),
           getStudyVsDistract(),
           getAIInsights(),
+          getProcrastinationScore(),
         ]);
         console.log("Dashboard Stats:", statsData);
         console.log("Recent Skills:", recentData);
@@ -77,6 +81,7 @@ function Dashboard() {
         setHourlyProductivity(hourlyData.data);
         setStudyVsDistract(studyVsDistractData.data);
         setAIInsights(aiInsightsData.data);
+        setProcrastinationData(procrastinationResponse.data);
       } catch (err) {
         console.error("Dashboard Integration Error:", err);
 
@@ -236,6 +241,9 @@ function Dashboard() {
             />
             <AIInsights
               insights={aiInsights}
+            />
+            <ProcrastinationCard
+            data={procrastinationData}
             />
 
           </div>

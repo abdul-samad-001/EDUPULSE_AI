@@ -30,3 +30,10 @@ export const getAIInsights = async () => {
 
   return response.data;
 };
+export const getProcrastinationScore = async () => {
+  const response = await api.get(
+    "/telemetry/procrastination"
+  );
+
+  return response.data;
+};
