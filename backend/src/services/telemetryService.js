@@ -362,6 +362,43 @@ const getAIInsights = async (userId) => {
 
   return insights;
 };
+const getProcrastinationScore = async (userId) => {
+  const stats = await getTelemetryStats(userId);
+
+  const tracked = stats.totalTrackedTime || 0;
+  const distraction = stats.distractionTime || 0;
+  const productive = stats.productiveTime || 0;
+
+  let score = 0;
+
+  if (tracked > 0) {
+    score = Math.round((distraction / tracked) * 100);
+  }
+
+  let level = "Low";
+  let message = "Excellent focus! Keep it up.";
+
+  if (score > 20) {
+    level = "Medium";
+    message =
+      "You're spending noticeable time on distracting websites.";
+  }
+
+  if (score > 50) {
+    level = "High";
+    message =
+      "High procrastination detected. Consider starting a focus session.";
+  }
+
+  return {
+    score,
+    level,
+    productiveMinutes: Math.round(productive),
+    distractingMinutes: Math.round(distraction),
+    distractionPercentage: score,
+    message,
+  };
+};
 
 module.exports = {
   aggregateTodayTelemetry,
@@ -372,4 +409,5 @@ module.exports = {
   getHourlyProductivity,
   getStudyVsDistract,
   getAIInsights,
+  getProcrastinationScore,
 };

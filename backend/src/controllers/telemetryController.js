@@ -7,6 +7,7 @@ const {
   getHourlyProductivity,
   getStudyVsDistract,
   getAIInsights,
+  getProcrastinationScore,
 } = require("../services/telemetryService");
 const TabSession = require("../models/TabSession");
 
@@ -208,6 +209,23 @@ const getAIProductivityInsights = async (req, res) => {
   });
 }
 };
+const getProcrastinationAnalytics = async (req, res) => {
+  try {
+    const data = await getProcrastinationScore(req.user._id);
+
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    console.error("Procrastination Analytics Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch procrastination analytics.",
+    });
+  }
+};
 
 
 module.exports = {
@@ -220,4 +238,5 @@ module.exports = {
   getHourlyHeatmap,
   getStudyVsDistractStats,
   getAIProductivityInsights,
+  getProcrastinationAnalytics,
 };
