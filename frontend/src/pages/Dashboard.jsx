@@ -7,7 +7,7 @@ import OverallProgress from "../components/dashboard/OverallProgress";
 import CategoryChart from "../components/dashboard/CategoryChart";
 import RecentSkills from "../components/dashboard/RecentSkills";
 import FocusSessionCard from "../components/dashboard/FocusSessionCard";
-
+import ProductivityPieChart from "../components/dashboard/ProductivityPieChart";
 function Dashboard() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
@@ -188,7 +188,10 @@ function Dashboard() {
             <OverallProgress
               value={stats?.overallProgress ?? 0}
             />
-
+            <ProductivityPieChart
+              telemetryStats={telemetryStats}
+            />
+ 
             <CategoryChart
               data={categoryData}
             />

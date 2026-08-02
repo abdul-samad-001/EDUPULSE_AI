@@ -2,6 +2,7 @@ const {
   aggregateTodayTelemetry,
   getUserSessions,
   getTelemetryStats,
+  getTopVisitedWebsites,
 } = require("../services/telemetryService");
 const TabSession = require("../models/TabSession");
 
@@ -118,10 +119,28 @@ const getMySessions = async (req, res) => {
     });
   }
 };
+const getTopWebsites = async (req, res) => {
+  try {
+    const websites = await getTopVisitedWebsites(req.user._id);
+
+    return res.status(200).json({
+      success: true,
+      data: websites,
+    });
+  } catch (error) {
+    console.error("Top Websites Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch top websites.",
+    });
+  }
+};
 
 module.exports = {
   uploadSessions,
   getTodayTelemetry,
   getMySessions,
   getStats,
+  getTopWebsites,
 };

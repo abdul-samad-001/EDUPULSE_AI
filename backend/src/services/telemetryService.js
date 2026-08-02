@@ -133,9 +133,46 @@ const getTelemetryStats = async (userId) => {
     productivePercentage,
   };
 };
+const getTopVisitedWebsites = async (userId) => {
+  return await TabSession.aggregate([
+    {
+      $match: {
+        user: userId,
+      },
+    },
+    {
+      $group: {
+        _id: "$domain",
+        totalDuration: {
+          $sum: "$durationSeconds",
+        },
+        sessions: {
+          $sum: 1,
+        },
+      },
+    },
+    {
+      $sort: {
+        totalDuration: -1,
+      },
+    },
+    {
+      $limit: 5,
+    },
+    {
+      $project: {
+        _id: 0,
+        domain: "$_id",
+        totalDuration: 1,
+        sessions: 1,
+      },
+    },
+  ]);
+};
 
 module.exports = {
   aggregateTodayTelemetry,
   getUserSessions,
   getTelemetryStats,
+  getTopVisitedWebsites,
 };
