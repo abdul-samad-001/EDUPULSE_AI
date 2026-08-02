@@ -169,10 +169,57 @@ const getTopVisitedWebsites = async (userId) => {
     },
   ]);
 };
+const getWeeklyTrend = async (userId) => {
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+  sevenDaysAgo.setHours(0, 0, 0, 0);
+
+  return await TabSession.aggregate([
+    {
+      $match: {
+        user: userId,
+        category: "productive",
+        startedAt: {
+          $gte: sevenDaysAgo,
+        },
+      },
+    },
+    {
+      $group: {
+        _id: {
+          $dateToString: {
+            format: "%Y-%m-%d",
+            date: "$startedAt",
+          },
+        },
+        productiveMinutes: {
+          $sum: {
+            $divide: ["$durationSeconds", 60],
+          },
+        },
+      },
+    },
+    {
+      $sort: {
+        _id: 1,
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        date: "$_id",
+        productiveMinutes: {
+          $round: ["$productiveMinutes", 0],
+        },
+      },
+    },
+  ]);
+};
 
 module.exports = {
   aggregateTodayTelemetry,
   getUserSessions,
   getTelemetryStats,
   getTopVisitedWebsites,
+  getWeeklyTrend,
 };

@@ -3,6 +3,7 @@ const {
   getUserSessions,
   getTelemetryStats,
   getTopVisitedWebsites,
+  getWeeklyTrend,
 } = require("../services/telemetryService");
 const TabSession = require("../models/TabSession");
 
@@ -136,6 +137,23 @@ const getTopWebsites = async (req, res) => {
     });
   }
 };
+const getWeeklyProductivityTrend = async (req, res) => {
+  try {
+    const trend = await getWeeklyTrend(req.user._id);
+
+    return res.status(200).json({
+      success: true,
+      data: trend,
+    });
+  } catch (error) {
+    console.error("Weekly Trend Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch weekly trend.",
+    });
+  }
+};
 
 module.exports = {
   uploadSessions,
@@ -143,4 +161,5 @@ module.exports = {
   getMySessions,
   getStats,
   getTopWebsites,
+  getWeeklyProductivityTrend,
 };
