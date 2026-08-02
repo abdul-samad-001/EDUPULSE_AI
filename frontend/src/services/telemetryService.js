@@ -8,3 +8,7 @@ export const getTopWebsites = async () => {
   const response = await api.get("/telemetry/top-websites");
   return response.data;
 };
+export const getWeeklyTrend = async () => {
+  const response = await api.get("/telemetry/weekly-trend");
+  return response.data;
+};
