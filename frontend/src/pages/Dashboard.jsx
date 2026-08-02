@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import dashboardService from "../services/dashboardService";
-import { getTelemetryStats, getTopWebsites, getWeeklyTrend, getHourlyProductivity, getStudyVsDistract} from "../services/telemetryService";
+import { getTelemetryStats, getTopWebsites, getWeeklyTrend, getHourlyProductivity, getStudyVsDistract, getAIInsights } from "../services/telemetryService";
 import StatCard from "../components/dashboard/StatCard";
 import OverallProgress from "../components/dashboard/OverallProgress";
 import CategoryChart from "../components/dashboard/analytics/CategoryChart";
@@ -12,6 +12,7 @@ import TopWebsites from "../components/dashboard/analytics/TopWebsites";
 import WeeklyTrendChart from "../components/dashboard/analytics/WeeklyTrendChart";
 import HourlyProductivityChart from "../components/dashboard/analytics/HourlyProductivityChart";
 import StudyVsDistractChart from "../components/dashboard/analytics/StudyVsDistractChart";
+import AIInsights from "../components/dashboard/analytics/AIInsights";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ function Dashboard() {
   const [categoryData, setCategoryData] = useState([]);
   const [hourlyProductivity, setHourlyProductivity] = useState([]);
   const [studyVsDistract, setStudyVsDistract] = useState({productiveMinutes: 0,distractingMinutes: 0,});
+  const [aiInsights, setAIInsights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -50,6 +52,7 @@ function Dashboard() {
           weeklyTrendData,
           hourlyData,
           studyVsDistractData,
+          aiInsightsData,
         ] = await Promise.all([
           dashboardService.getDashboardStats(),
           dashboardService.getRecentSkills(),
@@ -59,6 +62,7 @@ function Dashboard() {
           getWeeklyTrend(),
           getHourlyProductivity(),
           getStudyVsDistract(),
+          getAIInsights(),
         ]);
         console.log("Dashboard Stats:", statsData);
         console.log("Recent Skills:", recentData);
@@ -72,6 +76,7 @@ function Dashboard() {
         setWeeklyTrend(weeklyTrendData.data);
         setHourlyProductivity(hourlyData.data);
         setStudyVsDistract(studyVsDistractData.data);
+        setAIInsights(aiInsightsData.data);
       } catch (err) {
         console.error("Dashboard Integration Error:", err);
 
@@ -228,6 +233,9 @@ function Dashboard() {
             />
             <StudyVsDistractChart
               data={studyVsDistract}
+            />
+            <AIInsights
+              insights={aiInsights}
             />
 
           </div>

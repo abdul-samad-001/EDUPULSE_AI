@@ -23,3 +23,10 @@ export const getStudyVsDistract = async () => {
 
   return response.data;
 };
+export const getAIInsights = async () => {
+  const response = await api.get(
+    "/telemetry/ai-insights"
+  );
+
+  return response.data;
+};
