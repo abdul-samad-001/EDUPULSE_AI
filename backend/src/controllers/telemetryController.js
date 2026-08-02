@@ -5,6 +5,7 @@ const {
   getTopVisitedWebsites,
   getWeeklyTrend,
   getHourlyProductivity,
+  getStudyVsDistract,
 } = require("../services/telemetryService");
 const TabSession = require("../models/TabSession");
 
@@ -172,6 +173,23 @@ const getHourlyHeatmap = async (req, res) => {
     });
   }
 };
+const getStudyVsDistractStats = async (req, res) => {
+  try {
+    const data = await getStudyVsDistract(req.user._id);
+
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    console.error("Study vs Distract Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch study vs distract analytics.",
+    });
+  }
+};
 
 module.exports = {
   uploadSessions,
@@ -181,4 +199,5 @@ module.exports = {
   getTopWebsites,
   getWeeklyProductivityTrend,
   getHourlyHeatmap,
+  getStudyVsDistractStats,
 };

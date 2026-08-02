@@ -268,7 +268,46 @@ const getHourlyProductivity = async (userId) => {
 
   return fullDay;
 };
+const getStudyVsDistract = async (userId) => {
+  const result = await TabSession.aggregate([
+    {
+      $match: {
+        user: userId,
+        category: {
+          $in: ["productive", "distraction"],
+        },
+      },
+    },
+    {
+      $group: {
+        _id: "$category",
+        totalMinutes: {
+          $sum: {
+            $divide: ["$durationSeconds", 60],
+          },
+        },
+      },
+    },
+  ]);
 
+  let productiveMinutes = 0;
+  let distractingMinutes = 0;
+
+  result.forEach((item) => {
+    if (item._id === "productive") {
+      productiveMinutes = Math.round(item.totalMinutes);
+    }
+
+    if (item._id === "distraction") {
+      distractingMinutes = Math.round(item.totalMinutes);
+    }
+  });
+
+  return {
+    productiveMinutes,
+    distractingMinutes,
+  };
+};
 module.exports = {
   aggregateTodayTelemetry,
   getUserSessions,
@@ -276,4 +315,5 @@ module.exports = {
   getTopVisitedWebsites,
   getWeeklyTrend,
   getHourlyProductivity,
+  getStudyVsDistract,
 };
