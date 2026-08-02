@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import dashboardService from "../services/dashboardService";
-import { getTelemetryStats, getTopWebsites, getWeeklyTrend } from "../services/telemetryService";
+import { getTelemetryStats, getTopWebsites, getWeeklyTrend} from "../services/telemetryService";
 import StatCard from "../components/dashboard/StatCard";
 import OverallProgress from "../components/dashboard/OverallProgress";
-import CategoryChart from "../components/dashboard/CategoryChart";
+import CategoryChart from "../components/dashboard/analytics/CategoryChart";
 import RecentSkills from "../components/dashboard/RecentSkills";
 import FocusSessionCard from "../components/dashboard/FocusSessionCard";
-import ProductivityPieChart from "../components/dashboard/ProductivityPieChart";
-import TopWebsites from "../components/dashboard/TopWebsites";
-import WeeklyTrendChart from "../components/dashboard/WeeklyTrendChart";
+import ProductivityPieChart from "../components/dashboard/analytics/ProductivityPieChart";
+import TopWebsites from "../components/dashboard/analytics/TopWebsites";
+import WeeklyTrendChart from "../components/dashboard/analytics/WeeklyTrendChart";
 
 function Dashboard() {
   const navigate = useNavigate();

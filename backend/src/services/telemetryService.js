@@ -215,6 +215,59 @@ const getWeeklyTrend = async (userId) => {
     },
   ]);
 };
+const getHourlyProductivity = async (userId) => {
+  const hourlyData = await TabSession.aggregate([
+    {
+      $match: {
+        user: userId,
+        category: "productive",
+      },
+    },
+    {
+      $group: {
+        _id: {
+          $hour: "$startedAt",
+        },
+        productiveMinutes: {
+          $sum: {
+            $divide: ["$durationSeconds", 60],
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        hour: "$_id",
+        productiveMinutes: {
+          $round: ["$productiveMinutes", 0],
+        },
+      },
+    },
+    {
+      $sort: {
+        hour: 1,
+      },
+    },
+  ]);
+
+  const fullDay = [];
+
+  for (let hour = 0; hour < 24; hour++) {
+    const existing = hourlyData.find(
+      (item) => item.hour === hour
+    );
+
+    fullDay.push({
+      hour,
+      productiveMinutes: existing
+        ? existing.productiveMinutes
+        : 0,
+    });
+  }
+
+  return fullDay;
+};
 
 module.exports = {
   aggregateTodayTelemetry,
@@ -222,4 +275,5 @@ module.exports = {
   getTelemetryStats,
   getTopVisitedWebsites,
   getWeeklyTrend,
+  getHourlyProductivity,
 };

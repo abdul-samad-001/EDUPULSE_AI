@@ -4,6 +4,7 @@ const {
   getTelemetryStats,
   getTopVisitedWebsites,
   getWeeklyTrend,
+  getHourlyProductivity,
 } = require("../services/telemetryService");
 const TabSession = require("../models/TabSession");
 
@@ -154,6 +155,23 @@ const getWeeklyProductivityTrend = async (req, res) => {
     });
   }
 };
+const getHourlyHeatmap = async (req, res) => {
+  try {
+    const data = await getHourlyProductivity(req.user._id);
+
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    console.error("Hourly Heatmap Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch hourly productivity.",
+    });
+  }
+};
 
 module.exports = {
   uploadSessions,
@@ -162,4 +180,5 @@ module.exports = {
   getStats,
   getTopWebsites,
   getWeeklyProductivityTrend,
+  getHourlyHeatmap,
 };
