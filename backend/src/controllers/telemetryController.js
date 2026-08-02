@@ -6,6 +6,7 @@ const {
   getWeeklyTrend,
   getHourlyProductivity,
   getStudyVsDistract,
+  getAIInsights,
 } = require("../services/telemetryService");
 const TabSession = require("../models/TabSession");
 
@@ -190,6 +191,24 @@ const getStudyVsDistractStats = async (req, res) => {
     });
   }
 };
+const getAIProductivityInsights = async (req, res) => {
+  try {
+    const insights = await getAIInsights(req.user._id);
+
+    return res.status(200).json({
+      success: true,
+      data: insights,
+    });
+  } catch (error) {
+  console.error("AI Insights Error:", error);
+
+  return res.status(500).json({
+    success: false,
+    message: "Failed to generate AI insights.",
+  });
+}
+};
+
 
 module.exports = {
   uploadSessions,
@@ -200,4 +219,5 @@ module.exports = {
   getWeeklyProductivityTrend,
   getHourlyHeatmap,
   getStudyVsDistractStats,
+  getAIProductivityInsights,
 };

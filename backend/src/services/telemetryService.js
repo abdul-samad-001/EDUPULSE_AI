@@ -308,6 +308,61 @@ const getStudyVsDistract = async (userId) => {
     distractingMinutes,
   };
 };
+const getAIInsights = async (userId) => {
+  const stats = await getTelemetryStats(userId);
+  const hourly = await getHourlyProductivity(userId);
+
+  const insights = [];
+
+  // Best productive hour
+  const bestHour = hourly.reduce(
+    (best, current) =>
+      current.productiveMinutes > best.productiveMinutes
+        ? current
+        : best,
+    hourly[0]
+  );
+
+  if (bestHour.productiveMinutes > 0) {
+    insights.push({
+      type: "success",
+      title: "Best Productivity Hour",
+      message: `You are most productive at ${bestHour.hour}:00.`,
+    });
+  }
+
+  // High distraction
+  if (stats.distractionTime > 30) {
+    insights.push({
+      type: "warning",
+      title: "High Distraction",
+      message: `You spent ${Math.round(
+        stats.distractionTime
+      )} minutes on distracting websites.`,
+    });
+  }
+
+  // Productivity score
+  if (stats.productivePercentage >= 70) {
+    insights.push({
+      type: "success",
+      title: "Excellent Productivity",
+      message: `Your productivity score is ${Math.round(
+        stats.productivePercentage
+      )}%.`,
+    });
+  } else {
+    insights.push({
+      type: "info",
+      title: "Recommendation",
+      message:
+        "Try scheduling more focus sessions to improve your productivity.",
+    });
+  }
+
+  return insights;
+};
+
 module.exports = {
   aggregateTodayTelemetry,
   getUserSessions,
@@ -316,4 +371,5 @@ module.exports = {
   getWeeklyTrend,
   getHourlyProductivity,
   getStudyVsDistract,
+  getAIInsights,
 };
