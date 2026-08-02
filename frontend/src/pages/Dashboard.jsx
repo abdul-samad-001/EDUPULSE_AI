@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import dashboardService from "../services/dashboardService";
-import { getTelemetryStats, getTopWebsites, getWeeklyTrend, getHourlyProductivity} from "../services/telemetryService";
+import { getTelemetryStats, getTopWebsites, getWeeklyTrend, getHourlyProductivity, getStudyVsDistract} from "../services/telemetryService";
 import StatCard from "../components/dashboard/StatCard";
 import OverallProgress from "../components/dashboard/OverallProgress";
 import CategoryChart from "../components/dashboard/analytics/CategoryChart";
@@ -11,6 +11,7 @@ import ProductivityPieChart from "../components/dashboard/analytics/Productivity
 import TopWebsites from "../components/dashboard/analytics/TopWebsites";
 import WeeklyTrendChart from "../components/dashboard/analytics/WeeklyTrendChart";
 import HourlyProductivityChart from "../components/dashboard/analytics/HourlyProductivityChart";
+import StudyVsDistractChart from "../components/dashboard/analytics/StudyVsDistractChart";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ function Dashboard() {
   const [recentSkills, setRecentSkills] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
   const [hourlyProductivity, setHourlyProductivity] = useState([]);
+  const [studyVsDistract, setStudyVsDistract] = useState({productiveMinutes: 0,distractingMinutes: 0,});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -47,6 +49,7 @@ function Dashboard() {
           websitesData,
           weeklyTrendData,
           hourlyData,
+          studyVsDistractData,
         ] = await Promise.all([
           dashboardService.getDashboardStats(),
           dashboardService.getRecentSkills(),
@@ -55,6 +58,7 @@ function Dashboard() {
           getTopWebsites(),
           getWeeklyTrend(),
           getHourlyProductivity(),
+          getStudyVsDistract(),
         ]);
         console.log("Dashboard Stats:", statsData);
         console.log("Recent Skills:", recentData);
@@ -67,6 +71,7 @@ function Dashboard() {
         setTopWebsites(websitesData.data);
         setWeeklyTrend(weeklyTrendData.data);
         setHourlyProductivity(hourlyData.data);
+        setStudyVsDistract(studyVsDistractData.data);
       } catch (err) {
         console.error("Dashboard Integration Error:", err);
 
@@ -220,6 +225,9 @@ function Dashboard() {
             />
             <HourlyProductivityChart
               data={hourlyProductivity}
+            />
+            <StudyVsDistractChart
+              data={studyVsDistract}
             />
 
           </div>

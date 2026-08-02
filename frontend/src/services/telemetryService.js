@@ -16,3 +16,10 @@ export const getHourlyProductivity = async () => {
   const response = await api.get("/telemetry/hourly-productivity");
   return response.data;
 };
+export const getStudyVsDistract = async () => {
+  const response = await api.get(
+    "/telemetry/study-vs-distract"
+  );
+
+  return response.data;
+};
