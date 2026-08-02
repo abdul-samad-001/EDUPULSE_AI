@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import dashboardService from "../services/dashboardService";
-import { getTelemetryStats, getTopWebsites, getWeeklyTrend} from "../services/telemetryService";
+import { getTelemetryStats, getTopWebsites, getWeeklyTrend, getHourlyProductivity} from "../services/telemetryService";
 import StatCard from "../components/dashboard/StatCard";
 import OverallProgress from "../components/dashboard/OverallProgress";
 import CategoryChart from "../components/dashboard/analytics/CategoryChart";
@@ -10,6 +10,7 @@ import FocusSessionCard from "../components/dashboard/FocusSessionCard";
 import ProductivityPieChart from "../components/dashboard/analytics/ProductivityPieChart";
 import TopWebsites from "../components/dashboard/analytics/TopWebsites";
 import WeeklyTrendChart from "../components/dashboard/analytics/WeeklyTrendChart";
+import HourlyProductivityChart from "../components/dashboard/analytics/HourlyProductivityChart";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ function Dashboard() {
   const [weeklyTrend, setWeeklyTrend] = useState([]);
   const [recentSkills, setRecentSkills] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
+  const [hourlyProductivity, setHourlyProductivity] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -44,13 +46,15 @@ function Dashboard() {
           telemetryData,
           websitesData,
           weeklyTrendData,
+          hourlyData,
         ] = await Promise.all([
           dashboardService.getDashboardStats(),
           dashboardService.getRecentSkills(),
           dashboardService.getCategoryStats(),
           getTelemetryStats(),
           getTopWebsites(),
-          getWeeklyTrend()
+          getWeeklyTrend(),
+          getHourlyProductivity(),
         ]);
         console.log("Dashboard Stats:", statsData);
         console.log("Recent Skills:", recentData);
@@ -62,6 +66,7 @@ function Dashboard() {
         setTelemetryStats(telemetryData.stats);
         setTopWebsites(websitesData.data);
         setWeeklyTrend(weeklyTrendData.data);
+        setHourlyProductivity(hourlyData.data);
       } catch (err) {
         console.error("Dashboard Integration Error:", err);
 
@@ -212,6 +217,9 @@ function Dashboard() {
             />
             <WeeklyTrendChart
               data={weeklyTrend}
+            />
+            <HourlyProductivityChart
+              data={hourlyProductivity}
             />
 
           </div>

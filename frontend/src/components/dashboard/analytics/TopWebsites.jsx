@@ -1,13 +1,4 @@
-function formatDuration(seconds) {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-
-  if (hours > 0) {
-    return `${hours}h ${minutes}m`;
-  }
-
-  return `${minutes}m`;
-}
+import { formatSeconds } from "../../../utils/timeFormatter";
 
 function TopWebsites({ websites }) {
   return (
@@ -25,19 +16,16 @@ function TopWebsites({ websites }) {
           {websites.map((site, index) => (
             <div key={site.domain}>
               <div className="flex justify-between mb-1">
-
                 <span className="font-medium">
                   {index + 1}. {site.domain}
                 </span>
 
                 <span className="text-slate-600">
-                  {formatDuration(site.totalDuration)}
+                  {formatSeconds(site.totalDuration)}
                 </span>
-
               </div>
 
               <div className="w-full bg-slate-200 rounded-full h-2">
-
                 <div
                   className="bg-blue-600 h-2 rounded-full"
                   style={{
@@ -48,9 +36,7 @@ function TopWebsites({ websites }) {
                     }%`,
                   }}
                 />
-
               </div>
-
             </div>
           ))}
         </div>

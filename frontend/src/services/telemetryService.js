@@ -12,3 +12,7 @@ export const getWeeklyTrend = async () => {
   const response = await api.get("/telemetry/weekly-trend");
   return response.data;
 };
+export const getHourlyProductivity = async () => {
+  const response = await api.get("/telemetry/hourly-productivity");
+  return response.data;
+};
