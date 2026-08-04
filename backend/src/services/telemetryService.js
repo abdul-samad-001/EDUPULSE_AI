@@ -1,6 +1,7 @@
+const mongoose = require("mongoose");
 const TabSession = require("../models/TabSession");
 const DistractionLog = require("../models/DistractionLog");
-
+const { getStartDate } = require("../utils/dateFilter");
 /**
  * Aggregate today's telemetry for a user
  */
@@ -82,8 +83,17 @@ const getUserSessions = async (userId) => {
 /**
  * Get telemetry statistics for a user
  */
-const getTelemetryStats = async (userId) => {
-  const sessions = await TabSession.find({ user: userId }).lean();
+const getTelemetryStats = async (userId, range = "all") => {
+  const startDate = getStartDate(range);
+  const match = {
+    user: new mongoose.Types.ObjectId(userId),
+  };
+  if (startDate) {
+    match.startedAt = {
+      $gte: startDate,
+    };
+  }
+  const sessions = await TabSession.find(match).lean();
 
   let productiveTime = 0;
   let distractionTime = 0;
@@ -133,12 +143,25 @@ const getTelemetryStats = async (userId) => {
     productivePercentage,
   };
 };
-const getTopVisitedWebsites = async (userId) => {
+const getTopVisitedWebsites = async (
+  userId,
+  range = "all"
+) => {
+  const startDate = getStartDate(range);
+
+  const match = {
+    user: new mongoose.Types.ObjectId(userId),
+  };
+
+  if (startDate) {
+    match.startedAt = {
+      $gte: startDate,
+    };
+  }
+
   return await TabSession.aggregate([
     {
-      $match: {
-        user: userId,
-      },
+      $match: match,
     },
     {
       $group: {
@@ -163,7 +186,14 @@ const getTopVisitedWebsites = async (userId) => {
       $project: {
         _id: 0,
         domain: "$_id",
-        totalDuration: 1,
+        totalDuration: {
+          $round: [
+            {
+              $divide: ["$totalDuration", 60],
+            },
+            0,
+          ],
+        },
         sessions: 1,
       },
     },
@@ -309,7 +339,7 @@ const getStudyVsDistract = async (userId) => {
   };
 };
 const getAIInsights = async (userId) => {
-  const stats = await getTelemetryStats(userId);
+  const stats = await getTelemetryStats(userId, "all");
   const hourly = await getHourlyProductivity(userId);
 
   const insights = [];
@@ -363,7 +393,7 @@ const getAIInsights = async (userId) => {
   return insights;
 };
 const getProcrastinationScore = async (userId) => {
-  const stats = await getTelemetryStats(userId);
+  const stats = await getTelemetryStats(userId, "all");
 
   const tracked = stats.totalTrackedTime || 0;
   const distraction = stats.distractionTime || 0;
