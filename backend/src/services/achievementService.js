@@ -131,6 +131,9 @@ async function updateAchievementProgress(
   ) {
     achievement.unlocked = true;
     achievement.unlockedAt = new Date();
+    const {addXP, XP_REWARDS,} = require("./xpService");
+
+    await addXP(userId,XP_REWARDS.UNLOCK_ACHIEVEMENT);
   }
 
   await achievement.save();
@@ -155,6 +158,9 @@ async function incrementAchievement(userId, key, amount = 1) {
     achievement.progress = achievement.target;
     achievement.unlocked = true;
     achievement.unlockedAt = new Date();
+    const {addXP, XP_REWARDS,} = require("./xpService");
+
+    await addXP(userId,XP_REWARDS.UNLOCK_ACHIEVEMENT);
   }
 
   await achievement.save();
@@ -185,6 +191,9 @@ async function setAchievementProgress(
   ) {
     achievement.unlocked = true;
     achievement.unlockedAt = new Date();
+    const {addXP, XP_REWARDS,} = require("./xpService");
+
+    await addXP(userId,XP_REWARDS.UNLOCK_ACHIEVEMENT);
   }
 
   await achievement.save();

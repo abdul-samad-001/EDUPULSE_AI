@@ -4,7 +4,7 @@ const Skill = require("../models/Skill");
 const User = require("../models/User"); // Imported to handle user updates
 const { checkStreakDeadline, advanceDayIfComplete } = require("../utils/streakEngine");
 const { setAchievementProgress } = require("../services/achievementService");
-
+const {addXP,XP_REWARDS,} = require("../services/xpService");
 const getTasksBySkill = async (req, res) => {
   try {
     const skill = await Skill.findById(
@@ -74,7 +74,10 @@ const updateTask = async (req, res) => {
 
     task.completed = completed;
     await task.save();
-
+    // Award XP only when a task is completed
+    if (completed === true) {
+      await addXP(req.user._id,XP_REWARDS.COMPLETE_TASK);
+    }
     // Recalculate progress for the linked skill
     const tasks = await Task.find({
       skill: task.skill,
@@ -130,7 +133,7 @@ const updateTask = async (req, res) => {
         }).select("_id");
         const skillIds = userSkills.map((skill) => skill._id);
 
-        const completedTasks = await Task.countDocuments({
+        const totalCompletedTasks = await Task.countDocuments({
           skill: { $in: skillIds },
           completed: true,
         });
@@ -138,7 +141,7 @@ const updateTask = async (req, res) => {
         await setAchievementProgress(
           req.user._id,
           "task_master",
-          completedTasks
+          totalCompletedTasks
         );
       }
     }
