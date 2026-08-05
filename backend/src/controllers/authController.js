@@ -1,7 +1,7 @@
 const generateToken = require("../utils/generateToken");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
-
+const {initializeAchievements} = require("../services/achievementService");
 // Register User
 const registerUser = async (req, res) => {
   try {
@@ -33,6 +33,9 @@ const registerUser = async (req, res) => {
       password: hashedPassword,
     });
 
+    await initializeAchievements(user._id);
+
+console.log("Achievements initialized for:", user.email);
     res.status(201).json({
       success: true,
       message: "User registered successfully",
@@ -103,6 +106,41 @@ const getMe = async (req, res) => {
     });
   }
 };
+
+const updateMe = async (req, res) => {
+  try {
+    const { name, email } = req.body;
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (name) user.name = name;
+    if (email) user.email = email;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 const getStats = async (req, res) => {
   try {
     res.status(200).json({
@@ -120,5 +158,6 @@ module.exports = {
   registerUser,
   loginUser,
   getMe,
+  updateMe,
   getStats,
 };

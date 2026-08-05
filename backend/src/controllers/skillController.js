@@ -1,5 +1,8 @@
 const Skill = require("../models/Skill");
+
 const { checkStreakDeadline } = require("../utils/streakEngine");
+const {incrementAchievement,setAchievementProgress,} = require("../services/achievementService");
+
 const addSkill = async (req, res) => {
   try {
     const { skillName, category } = req.body;
@@ -9,6 +12,26 @@ const addSkill = async (req, res) => {
       skillName,
       category,
     });
+
+    // Achievement Integration
+    const totalSkills = await Skill.countDocuments({
+      user: req.user._id,
+    });
+
+    // Unlock "Getting Started"
+    if (totalSkills === 1) {
+      await incrementAchievement(
+        req.user._id,
+        "first_skill"
+      );
+    }
+
+    // Update "PolyMath"
+    await setAchievementProgress(
+      req.user._id,
+      "polymath",
+      totalSkills
+    );
 
     res.status(201).json({
       success: true,

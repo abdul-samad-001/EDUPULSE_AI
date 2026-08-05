@@ -1,5 +1,8 @@
 const FocusSession = require("../models/FocusSession");
-
+const {
+  incrementAchievement,
+  setAchievementProgress,
+} = require("../services/achievementService");
 /**
  * POST /api/focus/start
  * Start a new focus session
@@ -79,6 +82,18 @@ const stopFocusSession = async (req, res) => {
     session.status = "completed";
 
     await session.save();
+    await incrementAchievement(req.user._id,"first_focus");
+
+    const totalSessions = await FocusSession.countDocuments({
+      user: req.user._id,
+      status: "completed",
+    });
+
+    await setAchievementProgress(
+      req.user._id,
+      "focus_legend",
+      totalSessions
+    );
 
     res.status(200).json({
       success: true,

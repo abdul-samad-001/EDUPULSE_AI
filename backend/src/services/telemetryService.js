@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 const TabSession = require("../models/TabSession");
 const DistractionLog = require("../models/DistractionLog");
+const {
+  setAchievementProgress,
+} = require("./achievementService");
 const { getStartDate } = require("../utils/dateFilter");
 /**
  * Aggregate today's telemetry for a user
@@ -132,6 +135,26 @@ const getTelemetryStats = async (userId, range = "all") => {
       : Number(
           ((productiveTime / totalTrackedTime) * 100).toFixed(2)
         );
+        /* ================================
+        Achievement Integration
+        ================================ */
+
+        // Productivity Hero
+        await setAchievementProgress(
+          userId,
+          "productivity_hero",
+          Math.round(productivePercentage)
+        );
+
+        // Study Beast
+        const studyHours = Math.round(productiveTime / 3600);
+
+        await setAchievementProgress(
+          userId,
+          "study_beast",
+          studyHours
+        );
+        /* ================================ */
 
   return {
     totalSessions,

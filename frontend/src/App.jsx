@@ -8,8 +8,9 @@ import Reports from "./pages/Reports";
 import Skills from "./pages/Skills";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
-
+import Achievements from "./pages/Achievements";
 import AppLayout from "./components/layout/AppLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -26,60 +27,91 @@ function App() {
       <Route
         path="/dashboard"
         element={
-          <AppLayout>
-            <Dashboard />
-          </AppLayout>
+          <ProtectedRoute>
+            <AppLayout>
+              <Dashboard />
+            </AppLayout>
+          </ProtectedRoute>
         }
       />
 
       <Route
         path="/analytics"
         element={
-          <AppLayout>
-            <Analytics />
-          </AppLayout>
+          <ProtectedRoute>
+            <AppLayout>
+              <Analytics />
+            </AppLayout>
+          </ProtectedRoute>
         }
       />
 
       <Route
         path="/reports"
         element={
-          <AppLayout>
-            <Reports />
-          </AppLayout>
+          <ProtectedRoute>
+            <AppLayout>
+              <Reports />
+            </AppLayout>
+          </ProtectedRoute>
         }
       />
 
       <Route
         path="/skills"
         element={
-          <AppLayout>
-            <Skills />
-          </AppLayout>
+          <ProtectedRoute>
+            <AppLayout>
+              <Skills />
+            </AppLayout>
+          </ProtectedRoute>
         }
       />
 
       <Route
         path="/profile"
         element={
-          <AppLayout>
-            <Profile />
-          </AppLayout>
+          <ProtectedRoute>
+            <AppLayout>
+              <Profile />
+            </AppLayout>
+          </ProtectedRoute>
         }
       />
 
       <Route
         path="/settings"
         element={
-          <AppLayout>
-            <Settings />
-          </AppLayout>
+          <ProtectedRoute>
+            <AppLayout>
+              <Settings />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/achievements"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <Achievements />
+            </AppLayout>
+          </ProtectedRoute>
         }
       />
 
       <Route
         path="*"
-        element={<Navigate to="/dashboard" replace />}
+        element={
+          <Navigate
+            to={
+              localStorage.getItem("token")
+                ? "/dashboard"
+                : "/login"
+            }
+            replace
+          />
+        }
       />
 
     </Routes>

@@ -7,6 +7,7 @@ import {
   User,
   Settings,
   LogOut,
+  Trophy,
 } from "lucide-react";
 
 function Sidebar() {
@@ -33,6 +34,11 @@ function Sidebar() {
       name: "Reports",
       icon: FileText,
       path: "/reports",
+    },
+    {
+      name: "Achievements",
+      icon: Trophy,
+      path: "/achievements",
     },
     {
       name: "Skills",

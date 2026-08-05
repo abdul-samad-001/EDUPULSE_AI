@@ -3,6 +3,8 @@ const Task = require("../models/Task");
 const Skill = require("../models/Skill");
 const User = require("../models/User"); // Imported to handle user updates
 const { checkStreakDeadline, advanceDayIfComplete } = require("../utils/streakEngine");
+const { setAchievementProgress } = require("../services/achievementService");
+
 const getTasksBySkill = async (req, res) => {
   try {
     const skill = await Skill.findById(
@@ -119,6 +121,25 @@ const updateTask = async (req, res) => {
 
         user.lastActive = now; // Update timestamp
         await user.save();
+        // ================================
+        // Achievement Integration
+        // ================================
+
+        const userSkills = await Skill.find({
+          user: req.user._id,
+        }).select("_id");
+        const skillIds = userSkills.map((skill) => skill._id);
+
+        const completedTasks = await Task.countDocuments({
+          skill: { $in: skillIds },
+          completed: true,
+        });
+
+        await setAchievementProgress(
+          req.user._id,
+          "task_master",
+          completedTasks
+        );
       }
     }
     // ==========================================

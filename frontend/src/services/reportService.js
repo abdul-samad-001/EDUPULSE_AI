@@ -25,9 +25,37 @@ export const getAIReport = async () => {
   return data.data;
 };
 
-export const downloadPDF = () => {
-  window.open(
-    "http://localhost:5000/api/reports/download",
-    "_blank"
-  );
+export const downloadPDF = async () => {
+  try {
+    const response = await api.get(
+      "/reports/download",
+      {
+        responseType: "blob",
+      }
+    );
+
+    const blob = new Blob([response.data], {
+      type: "application/pdf",
+    });
+
+    const url =
+      window.URL.createObjectURL(blob);
+
+    const link =
+      document.createElement("a");
+
+    link.href = url;
+    link.download = "EduPulse_Report.pdf";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("PDF Download Error:", error);
+    alert("Failed to download PDF.");
+  }
 };
