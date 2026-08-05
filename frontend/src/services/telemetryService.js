@@ -37,3 +37,32 @@ export const getProcrastinationScore = async () => {
 
   return response.data;
 };
+export const getAnalyticsDashboard = async () => {
+  const [
+    stats,
+    topWebsites,
+    weeklyTrend,
+    hourly,
+    studyVsDistract,
+    aiInsights,
+    procrastination,
+  ] = await Promise.all([
+    getTelemetryStats(),
+    getTopWebsites(),
+    getWeeklyTrend(),
+    getHourlyProductivity(),
+    getStudyVsDistract(),
+    getAIInsights(),
+    getProcrastinationScore(),
+  ]);
+
+  return {
+    stats: stats.stats,
+    topWebsites: topWebsites.data,
+    weeklyTrend: weeklyTrend.data,
+    hourly: hourly.data,
+    studyVsDistract: studyVsDistract.data,
+    aiInsights: aiInsights.data,
+    procrastination: procrastination.data,
+  };
+};

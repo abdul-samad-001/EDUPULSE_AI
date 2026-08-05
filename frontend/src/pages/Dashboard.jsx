@@ -1,19 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import dashboardService from "../services/dashboardService";
-import { getTelemetryStats, getTopWebsites, getWeeklyTrend, getHourlyProductivity, getStudyVsDistract, getAIInsights, getProcrastinationScore } from "../services/telemetryService";
+import { getTelemetryStats } from "../services/telemetryService";
 import StatCard from "../components/dashboard/StatCard";
 import OverallProgress from "../components/dashboard/OverallProgress";
-import CategoryChart from "../components/dashboard/analytics/CategoryChart";
 import RecentSkills from "../components/dashboard/RecentSkills";
 import FocusSessionCard from "../components/dashboard/FocusSessionCard";
-import ProductivityPieChart from "../components/dashboard/analytics/ProductivityPieChart";
-import TopWebsites from "../components/dashboard/analytics/TopWebsites";
-import WeeklyTrendChart from "../components/dashboard/analytics/WeeklyTrendChart";
-import HourlyProductivityChart from "../components/dashboard/analytics/HourlyProductivityChart";
-import StudyVsDistractChart from "../components/dashboard/analytics/StudyVsDistractChart";
-import AIInsights from "../components/dashboard/analytics/AIInsights";
-import ProcrastinationCard from "../components/dashboard/analytics/ProcrastinationCard";
+import QuickAnalyticsCard from "../components/dashboard/QuickAnalyticsCard";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -21,14 +14,8 @@ function Dashboard() {
 
   const [stats, setStats] = useState(null);
   const [telemetryStats, setTelemetryStats] = useState(null);
-  const [topWebsites, setTopWebsites] = useState([]);
-  const [weeklyTrend, setWeeklyTrend] = useState([]);
   const [recentSkills, setRecentSkills] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
-  const [hourlyProductivity, setHourlyProductivity] = useState([]);
-  const [studyVsDistract, setStudyVsDistract] = useState({productiveMinutes: 0,distractingMinutes: 0,});
-  const [aiInsights, setAIInsights] = useState([]);
-  const [procrastinationData, setProcrastinationData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -50,23 +37,11 @@ function Dashboard() {
           recentData,
           chartData,
           telemetryData,
-          websitesData,
-          weeklyTrendData,
-          hourlyData,
-          studyVsDistractData,
-          aiInsightsData,
-          procrastinationResponse,
         ] = await Promise.all([
           dashboardService.getDashboardStats(),
           dashboardService.getRecentSkills(),
           dashboardService.getCategoryStats(),
           getTelemetryStats(),
-          getTopWebsites(),
-          getWeeklyTrend(),
-          getHourlyProductivity(),
-          getStudyVsDistract(),
-          getAIInsights(),
-          getProcrastinationScore(),
         ]);
         console.log("Dashboard Stats:", statsData);
         console.log("Recent Skills:", recentData);
@@ -76,12 +51,6 @@ function Dashboard() {
         setRecentSkills(recentData.skills || []);
         setCategoryData(chartData || []);
         setTelemetryStats(telemetryData.stats);
-        setTopWebsites(websitesData.data);
-        setWeeklyTrend(weeklyTrendData.data);
-        setHourlyProductivity(hourlyData.data);
-        setStudyVsDistract(studyVsDistractData.data);
-        setAIInsights(aiInsightsData.data);
-        setProcrastinationData(procrastinationResponse.data);
       } catch (err) {
         console.error("Dashboard Integration Error:", err);
 
@@ -103,12 +72,6 @@ function Dashboard() {
     console.log("Category State:", categoryData);
   }, [stats, recentSkills, categoryData]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/login");
-  };
-
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center bg-slate-50">
@@ -128,8 +91,7 @@ function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6 md:p-10">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="max-w-7xl mx-auto space-y-8">
 
         {/* Header */}
         <div className="flex justify-between items-center flex-wrap gap-4">
@@ -149,13 +111,6 @@ function Dashboard() {
               className="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 text-sm font-semibold shadow"
             >
               Manage Skills
-            </button>
-
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-semibold shadow"
-            >
-              Logout
             </button>
           </div>
         </div>
@@ -223,46 +178,21 @@ function Dashboard() {
             <OverallProgress
               value={stats?.overallProgress ?? 0}
             />
-            <ProductivityPieChart
-              telemetryStats={telemetryStats}
-            />
- 
-            <CategoryChart
-              data={categoryData}
-            />
-            <WeeklyTrendChart
-              data={weeklyTrend}
-            />
-            <HourlyProductivityChart
-              data={hourlyProductivity}
-            />
-            <StudyVsDistractChart
-              data={studyVsDistract}
-            />
-            <AIInsights
-              insights={aiInsights}
-            />
-            <ProcrastinationCard
-            data={procrastinationData}
-            />
-
+            <QuickAnalyticsCard/>
           </div>
 
           {/* Right Side */}
           <div className="space-y-8">
-            <TopWebsites
-              websites={topWebsites}
-            />
             <RecentSkills
               skills={recentSkills}
             />
+
 
           </div>
 
         </div>
 
       </div>
-    </div>
   );
 }
 
