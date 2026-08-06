@@ -14,7 +14,8 @@ import LeaderboardWidget from "../components/dashboard/LeaderboardWidget";
 import xpService from "../services/xpService";
 import dailyChallengeService from "../services/dailyChallengeService";
 import leaderboardService from "../services/leaderboardService";
-
+import focusSessionService from "../services/focusSessionService";
+import { Heatmap } from "../components/heatmap";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ function Dashboard() {
   const [telemetryStats, setTelemetryStats] = useState(null);
   const [recentSkills, setRecentSkills] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
+  const [focusHistory, setFocusHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -53,6 +55,7 @@ function Dashboard() {
           xpData,
           challengeData,
           leaderboardData,
+          historyRes,
         ] = await Promise.all([
           dashboardService.getDashboardStats(),
           dashboardService.getRecentSkills(),
@@ -61,6 +64,7 @@ function Dashboard() {
           xpService.getXP(),
           dailyChallengeService.getDailyChallenge(),
           leaderboardService.getLeaderboard(),
+          focusSessionService.getHistory(),
         ]);
         console.log("Dashboard Stats:", statsData);
         console.log("Recent Skills:", recentData);
@@ -73,6 +77,7 @@ function Dashboard() {
         setXP(xpData);
         setChallenge(challengeData);
         setLeaderBoard(leaderboardData);
+        setFocusHistory(historyRes.data || []);
       } catch (err) {
         console.error("Dashboard Integration Error:", err);
 
@@ -201,6 +206,9 @@ function Dashboard() {
               value={stats?.overallProgress ?? 0}
             />
             <QuickAnalyticsCard/>
+          </div>
+          <div className="mt-8">
+            <Heatmap sessions={focusHistory} />
           </div>
 
           {/* Right Side */}

@@ -1,6 +1,5 @@
 import Sidebar from "./Sidebar";
 import TopNavbar from "./TopNavbar";
-
 function AppLayout({ children }) {
   return (
     <div className="flex min-h-screen bg-slate-100">

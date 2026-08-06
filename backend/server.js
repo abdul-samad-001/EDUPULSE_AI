@@ -18,6 +18,7 @@ const achievementRoutes = require("./src/routes/achievementRoutes");
 const xpRoutes = require("./src/routes/xpRoutes");
 const leaderboardRoutes = require("./src/routes/leaderboardRoutes");
 const dailyChallengeRoutes = require("./src/routes/dailyChallengeRoutes");
+const notificationRoutes = require("./src/routes/notificationRoutes");
 
 // Connect Database
 connectDB();
@@ -47,7 +48,7 @@ app.use("/api/achievements", achievementRoutes);
 app.use("/api/xp", xpRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/daily-challenge", dailyChallengeRoutes);
-
+app.use("/api/notifications", notificationRoutes);
 // Health Check Route
 app.get("/", (req, res) => {
   res.json({

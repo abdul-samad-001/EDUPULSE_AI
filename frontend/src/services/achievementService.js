@@ -1,6 +1,12 @@
-import api from "./axiosInstance";
+import axiosInstance from "./axiosInstance";
 
 export const getAchievements = async () => {
-  const { data } = await api.get("/achievements");
-  return data.data;
+  const res = await axiosInstance.get("/achievements");
+  return res.data.data || [];
 };
+
+const achievementService = {
+  getAchievements,
+};
+
+export default achievementService;

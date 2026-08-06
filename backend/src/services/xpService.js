@@ -1,5 +1,5 @@
 const UserXP = require("../models/UserXP");
-
+const { createNotification } = require("./notificationService");
 const XP_REWARDS = {
   CREATE_SKILL: 20,
   COMPLETE_TASK: 10,
@@ -42,6 +42,8 @@ const addXP = async (userId, amount) => {
     xp = await initializeXP(userId);
   }
 
+  const previousLevel = xp.level;
+
   xp.totalXP += amount;
 
   const result = calculateLevel(xp.totalXP);
@@ -56,6 +58,15 @@ const addXP = async (userId, amount) => {
     xp.totalXP - previousLevelXP;
 
   await xp.save();
+
+  if (xp.level > previousLevel) {
+    await createNotification({
+      user: userId,
+      title: "⭐ Level Up",
+      message: `Congratulations! You reached Level ${xp.level}.`,
+      type: "xp",
+    });
+  }
 
   return xp;
 };

@@ -8,7 +8,8 @@ import {
   Settings,
   LogOut,
   Trophy,
-  Timer
+  Timer,
+  Flag
 
 } from "lucide-react";
 
@@ -46,6 +47,11 @@ function Sidebar() {
       name: "Reports",
       icon: FileText,
       path: "/reports",
+    },
+    {
+      name: "Milestones",
+      icon: Flag,
+      path: "/milestones",
     },
     {
       name: "Achievements",

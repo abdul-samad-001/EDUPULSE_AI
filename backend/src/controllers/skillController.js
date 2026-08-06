@@ -1,7 +1,7 @@
 const Skill = require("../models/Skill");
 
 const { checkStreakDeadline } = require("../utils/streakEngine");
-
+const { createNotification } = require("../services/notificationService");
 const {incrementAchievement,setAchievementProgress,} = require("../services/achievementService");
 const {addXP,XP_REWARDS} = require("../services/xpService");
 const {updateChallengeProgress} = require("../services/dailyChallengeService");
@@ -17,7 +17,12 @@ const addSkill = async (req, res) => {
       skillName,
       category,
     });
-
+    await createNotification({
+    user: req.user._id,
+    title: "📚 New Skill Added",
+    message: `${skill.skillName} has been added successfully.`,
+    type: "skill",
+    });
     // ===========================
     // Achievement Integration
     // ===========================

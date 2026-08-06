@@ -13,6 +13,8 @@ import AppLayout from "./components/layout/AppLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Leaderboard from "./pages/Leaderboard";
 import Focus from "./pages/Focus";
+import Milestones from "./pages/Milestone";
+
 function App() {
   return (
     <Routes>
@@ -121,7 +123,16 @@ function App() {
           </ProtectedRoute>
         }
       />
-
+      <Route
+        path="/milestones"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <Milestones />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="*"
         element={

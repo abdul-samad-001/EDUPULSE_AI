@@ -2,7 +2,7 @@ const FocusSession = require("../models/FocusSession");
 const {incrementAchievement, setAchievementProgress,} = require("../services/achievementService");
 const {addXP,XP_REWARDS,} = require("../services/xpService");
 const { updateChallengeProgress } = require("../services/dailyChallengeService");
-
+const { createNotification } = require("../services/notificationService");
 
 /**
  * POST /api/focus/start
@@ -86,6 +86,12 @@ const stopFocusSession = async (req, res) => {
     await addXP(req.user._id,XP_REWARDS.COMPLETE_FOCUS);
     await incrementAchievement(req.user._id,"first_focus");
     await updateChallengeProgress(req.user._id,"focus",actualDurationMinutes);
+    await createNotification({
+    user: req.user._id,
+    title: "⏳ Focus Session Completed",
+    message: `You completed a ${session.actualDurationMinutes} minute focus session.`,
+    type: "focus",
+    });
     const totalSessions = await FocusSession.countDocuments({
       user: req.user._id,
       status: "completed",

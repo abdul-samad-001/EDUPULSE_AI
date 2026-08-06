@@ -1,6 +1,7 @@
 const DailyChallenge = require("../models/DailyChallenge");
 const challengeTemplates = require("../constants/dailyChallenges");
 const { addXP } = require("./xpService");
+const { createNotification } = require("./notificationService");
 
 const getToday = () => {
   return new Date().toISOString().split("T")[0];
@@ -90,7 +91,12 @@ const completeChallenge = async (userId) => {
     challenge.progress = challenge.target;
 
     await addXP(userId, challenge.rewardXP);
-
+    await createNotification({
+  user: userId,
+  title: "🎯 Challenge Completed",
+  message: challenge.title,
+  type: "challenge",
+});
     await challenge.save();
   }
 

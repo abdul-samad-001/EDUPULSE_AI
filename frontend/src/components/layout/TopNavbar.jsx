@@ -1,12 +1,14 @@
-import { Bell, Search } from "lucide-react";
+import { Search } from "lucide-react";
+import { NotificationBell } from "../notifications";
 
 function TopNavbar() {
   const user =
     JSON.parse(localStorage.getItem("user")) || {};
 
   return (
-    <header className="bg-white border-b shadow-sm px-6 py-4 flex justify-between items-center">
+    <header className="flex justify-between items-center bg-white border-b px-6 py-3">
 
+      {/* Search */}
       <div className="flex items-center gap-3">
 
         <Search
@@ -22,12 +24,10 @@ function TopNavbar() {
 
       </div>
 
+      {/* Right Side */}
       <div className="flex items-center gap-5">
 
-        <Bell
-          size={22}
-          className="text-gray-600 cursor-pointer"
-        />
+        <NotificationBell />
 
         <div className="text-right">
 
