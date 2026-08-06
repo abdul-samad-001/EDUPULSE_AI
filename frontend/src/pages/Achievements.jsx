@@ -9,18 +9,29 @@ function Achievements() {
   const [achievements, setAchievements] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const loadAchievements = async () => {
-    try {
-      const data = await getAchievements();
-      setAchievements(data || []);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
   useEffect(() => {
+    let isMounted = true;
+
+    const loadAchievements = async () => {
+      try {
+        const data = await getAchievements();
+        if (isMounted) {
+          setAchievements(data || []);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
     loadAchievements();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   if (loading) {

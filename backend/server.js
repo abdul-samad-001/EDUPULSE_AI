@@ -16,6 +16,8 @@ const focusSessionRoutes = require("./src/routes/focusSessionRoutes");
 const reportRoutes = require("./src/routes/reportRoutes");
 const achievementRoutes = require("./src/routes/achievementRoutes");
 const xpRoutes = require("./src/routes/xpRoutes");
+const leaderboardRoutes = require("./src/routes/leaderboardRoutes");
+const dailyChallengeRoutes = require("./src/routes/dailyChallengeRoutes");
 
 // Connect Database
 connectDB();
@@ -43,7 +45,8 @@ app.use("/api/focus", focusSessionRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/achievements", achievementRoutes);
 app.use("/api/xp", xpRoutes);
-
+app.use("/api/leaderboard", leaderboardRoutes);
+app.use("/api/daily-challenge", dailyChallengeRoutes);
 
 // Health Check Route
 app.get("/", (req, res) => {

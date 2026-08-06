@@ -7,6 +7,14 @@ import OverallProgress from "../components/dashboard/OverallProgress";
 import RecentSkills from "../components/dashboard/RecentSkills";
 import FocusSessionCard from "../components/dashboard/FocusSessionCard";
 import QuickAnalyticsCard from "../components/dashboard/QuickAnalyticsCard";
+import XPCard from "../components/dashboard/XPCard";
+import DailyChallengeCard from "../components/dashboard/DailyChallengeCard";
+import LeaderboardWidget from "../components/dashboard/LeaderboardWidget";
+
+import xpService from "../services/xpService";
+import dailyChallengeService from "../services/dailyChallengeService";
+import leaderboardService from "../services/leaderboardService";
+
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -18,6 +26,11 @@ function Dashboard() {
   const [categoryData, setCategoryData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // New State
+  const [xp, setXP] = useState(null);
+  const [challenge, setChallenge] = useState(null);
+  const [leaderboard, setLeaderBoard] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -37,11 +50,17 @@ function Dashboard() {
           recentData,
           chartData,
           telemetryData,
+          xpData,
+          challengeData,
+          leaderboardData,
         ] = await Promise.all([
           dashboardService.getDashboardStats(),
           dashboardService.getRecentSkills(),
           dashboardService.getCategoryStats(),
           getTelemetryStats(),
+          xpService.getXP(),
+          dailyChallengeService.getDailyChallenge(),
+          leaderboardService.getLeaderboard(),
         ]);
         console.log("Dashboard Stats:", statsData);
         console.log("Recent Skills:", recentData);
@@ -51,6 +70,9 @@ function Dashboard() {
         setRecentSkills(recentData.skills || []);
         setCategoryData(chartData || []);
         setTelemetryStats(telemetryData.stats);
+        setXP(xpData);
+        setChallenge(challengeData);
+        setLeaderBoard(leaderboardData);
       } catch (err) {
         console.error("Dashboard Integration Error:", err);
 
@@ -164,7 +186,7 @@ function Dashboard() {
           title="Productivity"
           value={`${telemetryStats?.productivePercentage ?? 0}%`}
           />
-
+          <XPCard xp={xp} />
         </div>
 
         {/* Main Content */}
@@ -174,7 +196,7 @@ function Dashboard() {
           <div className="lg:col-span-2 space-y-8">
 
             <FocusSessionCard />
-
+            <DailyChallengeCard challenge={challenge} />
             <OverallProgress
               value={stats?.overallProgress ?? 0}
             />
@@ -186,6 +208,7 @@ function Dashboard() {
             <RecentSkills
               skills={recentSkills}
             />
+            <LeaderboardWidget users={leaderboard} />
 
 
           </div>

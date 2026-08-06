@@ -5,6 +5,8 @@ const User = require("../models/User"); // Imported to handle user updates
 const { checkStreakDeadline, advanceDayIfComplete } = require("../utils/streakEngine");
 const { setAchievementProgress } = require("../services/achievementService");
 const {addXP,XP_REWARDS,} = require("../services/xpService");
+const {updateChallengeProgress} = require("../services/dailyChallengeService");
+
 const getTasksBySkill = async (req, res) => {
   try {
     const skill = await Skill.findById(
@@ -137,12 +139,8 @@ const updateTask = async (req, res) => {
           skill: { $in: skillIds },
           completed: true,
         });
-
-        await setAchievementProgress(
-          req.user._id,
-          "task_master",
-          totalCompletedTasks
-        );
+        await updateChallengeProgress(req.user._id,"task",totalCompletedTasks);
+        await setAchievementProgress(req.user._id,"task_master",totalCompletedTasks);
       }
     }
     // ==========================================

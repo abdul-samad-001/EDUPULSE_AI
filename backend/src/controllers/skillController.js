@@ -2,16 +2,9 @@ const Skill = require("../models/Skill");
 
 const { checkStreakDeadline } = require("../utils/streakEngine");
 
-const {
-  incrementAchievement,
-  setAchievementProgress,
-} = require("../services/achievementService");
-
-const {
-  addXP,
-  XP_REWARDS,
-} = require("../services/xpService");
-
+const {incrementAchievement,setAchievementProgress,} = require("../services/achievementService");
+const {addXP,XP_REWARDS} = require("../services/xpService");
+const {updateChallengeProgress} = require("../services/dailyChallengeService");
 /**
  * Add Skill
  */
@@ -56,6 +49,7 @@ const addSkill = async (req, res) => {
       req.user._id,
       XP_REWARDS.CREATE_SKILL
     );
+    await updateChallengeProgress(req.user._id,"skill",1);
 
     res.status(201).json({
       success: true,
