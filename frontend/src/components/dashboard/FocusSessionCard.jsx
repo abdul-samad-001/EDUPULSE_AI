@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import skillService from "../../services/skillService";
 import focusSessionService from "../../services/focusSessionService";
-import { Card, Button, Badge } from "../ui";
-import { Target, Play, Square } from "lucide-react";
+import { Card, Button, Badge, Progress } from "../ui";
+import { Target, Play, Square, Clock } from "lucide-react";
 
 function FocusSessionCard() {
   const [skills, setSkills] = useState([]);
@@ -140,11 +140,17 @@ function FocusSessionCard() {
     return () => clearInterval(interval);
   }, [activeSession, stopActiveSession]);
 
+  // Calculate progress percentage for current session
+  const totalPlannedSecs = (activeSession?.plannedDurationMinutes || 25) * 60;
+  const elapsedSecs = Math.max(0, totalPlannedSecs - remainingSeconds);
+  const sessionProgressPct = totalPlannedSecs > 0 ? Math.min(100, Math.round((elapsedSecs / totalPlannedSecs) * 100)) : 0;
+
   return (
     <Card
       title="🎯 Focus Session"
-      subtitle="Track your focus blocks with deep work timer"
-      className="w-full"
+      subtitle="Deep work timer and active session manager"
+      className="w-full h-full flex flex-col justify-between"
+      id="focus-session-card"
     >
       {message && (
         <div className="mb-3 rounded-xl bg-dark-border/80 border border-dark-border p-2.5 text-xs text-primary font-medium">
@@ -153,24 +159,34 @@ function FocusSessionCard() {
       )}
 
       {activeSession ? (
-        <div className="space-y-3">
-          <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 text-center">
+        <div className="space-y-4 my-auto">
+          <div className="rounded-2xl border border-primary/40 bg-linear-to-b from-primary/10 via-dark-bg to-dark-bg p-5 text-center shadow-lg relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-3 opacity-10">
+              <Clock className="w-24 h-24 text-primary" />
+            </div>
+
             <Badge variant="primary" icon={Target} className="mb-2" size="sm">
               Active Focus Mode
             </Badge>
 
-            <div className="space-y-0.5 mb-2">
-              <p className="text-xs font-semibold text-dark-text">
-                {activeSession.skill?.skillName}
-              </p>
-              <p className="text-[11px] text-dark-muted">
-                Planned Duration: {activeSession.plannedDurationMinutes} mins
+            <div className="space-y-0.5 mb-3">
+              <h4 className="text-base font-bold text-dark-text">
+                {activeSession.skill?.skillName || "Target Skill"}
+              </h4>
+              <p className="text-xs text-dark-muted font-medium">
+                Planned Block: {activeSession.plannedDurationMinutes} mins
               </p>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-primary tracking-tight my-1 font-mono">
-              {formatTime(remainingSeconds)}
-            </h1>
+            <div className="relative inline-flex items-center justify-center my-2">
+              <h1 className="text-4xl sm:text-5xl font-extrabold text-primary tracking-tight font-mono drop-shadow-[0_0_15px_rgba(124,231,208,0.3)]">
+                {formatTime(remainingSeconds)}
+              </h1>
+            </div>
+
+            <div className="w-full max-w-xs mx-auto mt-3">
+              <Progress value={sessionProgressPct} max={100} size="md" color="primary" showLabel label="Session Elapsed" />
+            </div>
           </div>
 
           <Button
@@ -185,34 +201,51 @@ function FocusSessionCard() {
           </Button>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3.5 my-auto">
           <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-dark-muted mb-1">
-              Select Skill
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-dark-muted mb-1.5">
+              Select Target Skill
             </label>
 
             <select
               value={selectedSkill}
               onChange={(e) => setSelectedSkill(e.target.value)}
               disabled={loadingSkills}
-              className="w-full rounded-xl bg-dark-bg border border-dark-border text-dark-text text-xs sm:text-sm p-2.5 focus:outline-none focus:border-primary/50"
+              className="w-full rounded-xl bg-dark-bg border border-dark-border text-dark-text text-xs sm:text-sm p-3 focus:outline-none focus:border-primary/50 transition-colors"
             >
               <option value="">
-                {loadingSkills ? "Loading skills..." : "Choose a skill"}
+                {loadingSkills ? "Loading skills..." : "Choose a skill..."}
               </option>
 
               {skills.map((skill) => (
                 <option key={skill._id} value={skill._id}>
-                  {skill.skillName}
+                  {skill.skillName} ({skill.category || "General"})
                 </option>
               ))}
             </select>
           </div>
 
           <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-dark-muted mb-1">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-dark-muted mb-1.5">
               Planned Duration (minutes)
             </label>
+
+            <div className="grid grid-cols-4 gap-2 mb-2">
+              {[15, 25, 45, 60].map((mins) => (
+                <button
+                  key={mins}
+                  type="button"
+                  onClick={() => setDuration(mins)}
+                  className={`py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                    Number(duration) === mins
+                      ? "bg-primary/20 border-primary text-primary"
+                      : "bg-dark-bg border-dark-border text-dark-muted hover:text-dark-text"
+                  }`}
+                >
+                  {mins}m
+                </button>
+              ))}
+            </div>
 
             <input
               type="number"
@@ -231,8 +264,8 @@ function FocusSessionCard() {
             loading={loading}
             disabled={loadingSkills}
             icon={Play}
-            size="md"
-            className="mt-1"
+            size="lg"
+            className="mt-2 shadow-lg shadow-primary/20"
           >
             {loading ? "Starting Session..." : "Start Focus Session"}
           </Button>

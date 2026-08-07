@@ -1,39 +1,44 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import dashboardService from "../services/dashboardService";
 import { getTelemetryStats } from "../services/telemetryService";
-import StatCard from "../components/dashboard/StatCard";
-import OverallProgress from "../components/dashboard/OverallProgress";
-import RecentSkills from "../components/dashboard/RecentSkills";
-import FocusSessionCard from "../components/dashboard/FocusSessionCard";
-import QuickAnalyticsCard from "../components/dashboard/QuickAnalyticsCard";
-import XPCard from "../components/dashboard/XPCard";
-import DailyChallengeCard from "../components/dashboard/DailyChallengeCard";
-import LeaderboardWidget from "../components/dashboard/LeaderboardWidget";
-
 import xpService from "../services/xpService";
 import dailyChallengeService from "../services/dailyChallengeService";
-import leaderboardService from "../services/leaderboardService";
 import focusSessionService from "../services/focusSessionService";
+import notificationService from "../services/notificationService";
+import achievementService from "../services/achievementService";
+
+import HeroSection from "../components/dashboard/HeroSection";
+import QuickActions from "../components/dashboard/QuickActions";
+import FocusSessionCard from "../components/dashboard/FocusSessionCard";
+import DailyChallengeCard from "../components/dashboard/DailyChallengeCard";
+import XPCard from "../components/dashboard/XPCard";
+import AICoachPreviewCard from "../components/dashboard/AICoachPreviewCard";
+import RecentNotificationsWidget from "../components/dashboard/RecentNotificationsWidget";
+import RecentSkills from "../components/dashboard/RecentSkills";
+import RecentAchievementsWidget from "../components/dashboard/RecentAchievementsWidget";
+
 import { Heatmap } from "../components/heatmap";
-import { SectionHeader, Button, LoadingSpinner, Card } from "../components/ui";
-import { LayoutDashboard, BookOpen, Clock, Zap, Target, Flame, Activity } from "lucide-react";
+import { StatCard, LoadingSpinner, Card, Button } from "../components/ui";
+import { Clock, CheckCircle2, Zap, Award } from "lucide-react";
 
 function Dashboard() {
   const navigate = useNavigate();
+  const focusSectionRef = useRef(null);
+
   const user = JSON.parse(localStorage.getItem("user"));
 
   const [stats, setStats] = useState(null);
   const [telemetryStats, setTelemetryStats] = useState(null);
   const [recentSkills, setRecentSkills] = useState([]);
   const [focusHistory, setFocusHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // New State
   const [xp, setXP] = useState(null);
   const [challenge, setChallenge] = useState(null);
-  const [leaderboard, setLeaderBoard] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [achievements, setAchievements] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -54,27 +59,30 @@ function Dashboard() {
           telemetryData,
           xpData,
           challengeData,
-          leaderboardData,
           historyRes,
+          notificationsData,
+          achievementsData,
         ] = await Promise.all([
-          dashboardService.getDashboardStats(),
-          dashboardService.getRecentSkills(),
-          getTelemetryStats(),
-          xpService.getXP(),
-          dailyChallengeService.getDailyChallenge(),
-          leaderboardService.getLeaderboard(),
-          focusSessionService.getHistory(),
+          dashboardService.getDashboardStats().catch(() => null),
+          dashboardService.getRecentSkills().catch(() => ({ skills: [] })),
+          getTelemetryStats().catch(() => ({ stats: null })),
+          xpService.getXP().catch(() => null),
+          dailyChallengeService.getDailyChallenge().catch(() => null),
+          focusSessionService.getHistory().catch(() => ({ data: [] })),
+          notificationService.getNotifications().catch(() => []),
+          achievementService.getAchievements().catch(() => []),
         ]);
 
         setStats(statsData);
-        setRecentSkills(recentData.skills || []);
-        setTelemetryStats(telemetryData.stats);
+        setRecentSkills(recentData?.skills || []);
+        setTelemetryStats(telemetryData?.stats || null);
         setXP(xpData);
         setChallenge(challengeData);
-        setLeaderBoard(leaderboardData);
-        setFocusHistory(historyRes.data || []);
+        setFocusHistory(historyRes?.data || []);
+        setNotifications(notificationsData || []);
+        setAchievements(achievementsData || []);
       } catch (err) {
-        console.error("Dashboard Integration Error:", err);
+        console.error("Dashboard Load Error:", err);
         setError(
           err.response?.data?.message ||
             "Failed to load dashboard data."
@@ -87,10 +95,16 @@ function Dashboard() {
     fetchDashboardData();
   }, [navigate]);
 
+  const handleScrollToFocus = () => {
+    if (focusSectionRef.current) {
+      focusSectionRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex h-[70vh] items-center justify-center">
-        <LoadingSpinner size="lg" label="Loading EduPulse Dashboard..." />
+        <LoadingSpinner size="lg" label="Loading EduPulse AI Dashboard..." />
       </div>
     );
   }
@@ -109,96 +123,81 @@ function Dashboard() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-5">
-      {/* Header */}
-      <SectionHeader
-        title={`Welcome back, ${user?.name || "Learner"} 🚀`}
-        subtitle="Here is your personal learning overview and productivity breakdown."
-        icon={LayoutDashboard}
-        action={
-          <Button
-            variant="primary"
-            size="sm"
-            icon={BookOpen}
-            onClick={() => navigate("/skills")}
-          >
-            Manage Skills
-          </Button>
-        }
+    <div className="space-y-6 sm:space-y-8 max-w-7xl mx-auto pb-10">
+      {/* 1. HERO SECTION */}
+      <HeroSection
+        user={user}
+        xp={xp}
+        streak={stats?.streak ?? 0}
+        onStartFocus={handleScrollToFocus}
       />
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <StatCard
-          title="Total Skills"
-          value={stats?.totalSkills ?? 0}
-          icon={BookOpen}
-        />
-        <StatCard
-          title="Completed"
-          value={stats?.completedSkills ?? 0}
-          icon={Target}
-        />
-        <StatCard
-          title="Overall Progress"
-          value={`${stats?.overallProgress ?? 0}%`}
-          icon={Zap}
-        />
-        <StatCard
-          title="Current Streak"
-          value={`${stats?.streak ?? 0} Days`}
-          icon={Flame}
-        />
+      {/* 2. TODAY'S STATISTICS */}
+      <div className="space-y-3">
+        <h2 className="text-xs font-extrabold uppercase tracking-wider text-dark-muted px-1">
+          Today's Overview
+        </h2>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <StatCard
+            title="Focus Time"
+            value={`${Math.floor((telemetryStats?.productiveTime ?? 0) / 60)} min`}
+            icon={Clock}
+            subtext="Deep work today"
+            trend={12}
+            trendLabel="vs yesterday"
+          />
+          <StatCard
+            title="Tasks Completed"
+            value={stats?.completedSkills ?? 0}
+            icon={CheckCircle2}
+            subtext="Milestones finished"
+            trend={3}
+            trendLabel="this week"
+          />
+          <StatCard
+            title="Productivity"
+            value={`${telemetryStats?.productivePercentage ?? 0}%`}
+            icon={Zap}
+            subtext="Focus efficiency"
+            trend={5}
+            trendLabel="overall"
+          />
+          <StatCard
+            title="XP Earned Today"
+            value={`+${xp?.currentLevelXP ?? 0} XP`}
+            icon={Award}
+            subtext="Level progress"
+            trend={45}
+            trendLabel="daily XP"
+          />
+        </div>
       </div>
 
-      {/* Telemetry Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-        <StatCard
-          title="Focus Sessions"
-          value={telemetryStats?.totalSessions ?? 0}
-          icon={Clock}
-        />
-        <StatCard
-          title="Tracked Time"
-          value={`${Math.floor((telemetryStats?.totalTrackedTime ?? 0) / 60)} min`}
-          icon={Activity}
-        />
-        <StatCard
-          title="Productive Time"
-          value={`${Math.floor((telemetryStats?.productiveTime ?? 0) / 60)} min`}
-          icon={Zap}
-        />
-        <StatCard
-          title="Distraction Time"
-          value={`${Math.floor((telemetryStats?.distractionTime ?? 0) / 60)} min`}
-          icon={Clock}
-        />
-        <StatCard
-          title="Productivity"
-          value={`${telemetryStats?.productivePercentage ?? 0}%`}
-          icon={Activity}
-        />
+      {/* 3. QUICK ACTIONS */}
+      <QuickActions onStartFocusClick={handleScrollToFocus} />
+
+      {/* 4. FOCUS SESSION & DAILY CHALLENGE */}
+      <div ref={focusSectionRef} className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
+        <FocusSessionCard />
+        <DailyChallengeCard challenge={challenge} />
       </div>
 
-      {/* XP Header Banner / Card */}
-      {xp && <XPCard xp={xp} />}
+      {/* 5. STUDY HEATMAP & XP PROGRESS */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
+        <Heatmap sessions={focusHistory} streak={stats?.streak ?? 0} />
+        <XPCard xp={xp} />
+      </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
-        {/* Left Side */}
-        <div className="lg:col-span-2 space-y-4 sm:space-y-5">
-          <FocusSessionCard />
-          <DailyChallengeCard challenge={challenge} />
-          <OverallProgress value={stats?.overallProgress ?? 0} />
-          <QuickAnalyticsCard />
-          <Heatmap sessions={focusHistory} />
-        </div>
+      {/* 6. AI COACH PREVIEW & RECENT NOTIFICATIONS */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
+        <AICoachPreviewCard />
+        <RecentNotificationsWidget notifications={notifications} />
+      </div>
 
-        {/* Right Side */}
-        <div className="space-y-4 sm:space-y-5">
-          <RecentSkills skills={recentSkills} />
-          <LeaderboardWidget users={leaderboard} />
-        </div>
+      {/* 7. RECENT SKILLS & RECENT ACHIEVEMENTS */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
+        <RecentSkills skills={recentSkills} />
+        <RecentAchievementsWidget achievements={achievements} />
       </div>
     </div>
   );
