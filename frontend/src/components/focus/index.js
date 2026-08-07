@@ -1,4 +1,10 @@
+export { default as FocusHero } from "./FocusHero";
 export { default as FocusTimer } from "./FocusTimer";
 export { default as FocusControls } from "./FocusControls";
 export { default as FocusStats } from "./FocusStats";
+export { default as WeeklyFocusChart } from "./WeeklyFocusChart";
+export { default as FocusInsightsWidget } from "./FocusInsightsWidget";
+export { default as BreakTimerCard } from "./BreakTimerCard";
+export { default as AIFocusPreviewCard } from "./AIFocusPreviewCard";
+export { default as FocusAchievementsWidget } from "./FocusAchievementsWidget";
 export { default as SessionHistory } from "./SessionHistory";

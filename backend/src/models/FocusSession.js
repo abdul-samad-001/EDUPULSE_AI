@@ -62,6 +62,16 @@ const focusSessionSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+
+    pauseCount: {
+      type: Number,
+      default: 0,
+    },
+
+    pausedDuration: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

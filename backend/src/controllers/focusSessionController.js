@@ -173,9 +173,78 @@ const getSessionHistory = async (req, res) => {
   }
 };
 
+const {
+  getWeeklyData,
+  getStatistics: fetchStatistics,
+  getInsights: fetchInsights,
+} = require("../services/focusAnalyticsService");
+
+/**
+ * GET /api/focus/statistics
+ */
+const getStatistics = async (req, res) => {
+  try {
+    const stats = await fetchStatistics(req.user._id);
+    res.status(200).json({
+      success: true,
+      data: stats,
+    });
+  } catch (error) {
+    console.error("Get Focus Statistics Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch focus statistics.",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * GET /api/focus/weekly
+ */
+const getWeekly = async (req, res) => {
+  try {
+    const weekly = await getWeeklyData(req.user._id);
+    res.status(200).json({
+      success: true,
+      data: weekly,
+    });
+  } catch (error) {
+    console.error("Get Weekly Focus Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch weekly focus.",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * GET /api/focus/insights
+ */
+const getInsights = async (req, res) => {
+  try {
+    const insights = await fetchInsights(req.user._id);
+    res.status(200).json({
+      success: true,
+      data: insights,
+    });
+  } catch (error) {
+    console.error("Get Focus Insights Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch focus insights.",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   startFocusSession,
   stopFocusSession,
   getActiveSession,
   getSessionHistory,
+  getStatistics,
+  getWeekly,
+  getInsights,
 };
