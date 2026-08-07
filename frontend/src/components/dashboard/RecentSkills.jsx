@@ -1,40 +1,48 @@
+import { Card, Badge } from "../ui";
+import { BookOpen } from "lucide-react";
+
 function RecentSkills({ skills }) {
-  // Safe extraction layer: Check if 'skills' is directly an array.
-  // If it's an object containing an array field, extract it. Otherwise fallback to empty array.
   let safeSkillsArray = [];
   
   if (Array.isArray(skills)) {
     safeSkillsArray = skills;
-  } else if (skills && typeof skills === 'object') {
-    // Dynamically checks for common wrapper fields like .recentSkills, .data, or .skills
+  } else if (skills && typeof skills === "object") {
     safeSkillsArray = skills.recentSkills || skills.data || skills.skills || [];
   }
 
   return (
-    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-      <div className="mb-4">
-        <h3 className="text-lg font-bold text-slate-800">Recent Skills</h3>
-        <p className="text-xs text-slate-500">Your latest tracking footprints</p>
-      </div>
-
+    <Card
+      title="Recent Skills"
+      subtitle="Your latest tracking footprints"
+      className="w-full"
+    >
       {safeSkillsArray.length === 0 ? (
-        <div className="text-sm text-slate-400 py-6 text-center border border-dashed border-slate-200 rounded-lg">
+        <div className="text-xs text-dark-muted py-4 text-center border border-dashed border-dark-border rounded-xl">
           No recent skills added yet.
         </div>
       ) : (
-        <ul className="space-y-3">
+        <div className="space-y-2">
           {safeSkillsArray.map((skill) => (
-            <li 
-              key={skill._id || skill.id} 
-              className="text-sm border-b border-slate-100 pb-2 last:border-none last:pb-0"
+            <div
+              key={skill._id || skill.id}
+              className="p-2 px-3 rounded-xl bg-dark-bg border border-dark-border flex justify-between items-center"
             >
-              <div className="font-semibold text-slate-800">{skill.skillName || skill.name}</div>
-              <div className="text-xs text-slate-500 mt-0.5">{skill.category || skill.status}</div>
-            </li>
+              <div className="min-w-0 pr-2">
+                <p className="text-xs font-semibold text-dark-text truncate">
+                  {skill.skillName || skill.name}
+                </p>
+                <p className="text-[10px] text-dark-muted truncate">
+                  {skill.category || skill.status || "General"}
+                </p>
+              </div>
+              <Badge variant="primary" icon={BookOpen} size="sm" className="shrink-0">
+                Skill
+              </Badge>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
-    </div>
+    </Card>
   );
 }
 

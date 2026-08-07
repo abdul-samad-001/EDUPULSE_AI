@@ -16,6 +16,9 @@ import {
   getAIReport,
 } from "../services/reportService";
 
+import { SectionHeader, LoadingSpinner, Card, Button } from "../components/ui";
+import { FileText, AlertCircle } from "lucide-react";
+
 function Reports() {
   const [summary, setSummary] = useState(null);
   const [weekly, setWeekly] = useState(null);
@@ -94,13 +97,7 @@ function Reports() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-[70vh]">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-
-          <h2 className="text-xl font-semibold">
-            Loading Reports...
-          </h2>
-        </div>
+        <LoadingSpinner size="lg" label="Generating detailed reports..." />
       </div>
     );
   }
@@ -108,56 +105,37 @@ function Reports() {
   if (error) {
     return (
       <div className="flex items-center justify-center h-[70vh]">
-        <div className="bg-white rounded-xl shadow-lg p-8 text-center">
-          <div className="text-5xl mb-4">⚠️</div>
-
-          <h2 className="text-2xl font-bold mb-6">
-            {error}
-          </h2>
-
-          <button
-            onClick={fetchReports}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
+        <Card className="max-w-md text-center p-8">
+          <AlertCircle className="w-12 h-12 text-rose-400 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-dark-text mb-4">{error}</h2>
+          <Button variant="primary" onClick={fetchReports}>
             Retry
-          </button>
-        </div>
+          </Button>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
-
-      <h1 className="text-3xl font-bold">
-        📄 Reports
-      </h1>
-
-      <DownloadReportButton />
-
-      <ReportSummaryCard
-        stats={summary?.stats}
+    <div className="space-y-8">
+      <SectionHeader
+        title="Reports & Analytics Export 📄"
+        subtitle="Review weekly, monthly performance, skill growth, and download report summaries."
+        icon={FileText}
+        action={<DownloadReportButton />}
       />
 
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <h2 className="text-2xl font-bold mb-6">
-          Weekly Trend
-        </h2>
+      <ReportSummaryCard stats={summary?.stats} />
 
-        <WeeklyTrendChart
-          data={weekly?.weeklyTrend || []}
-        />
-      </div>
+      <Card title="Weekly Trend" className="w-full">
+        <WeeklyTrendChart data={weekly?.weeklyTrend || []} />
+      </Card>
 
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <TopWebsites
-          websites={monthly?.websites || []}
-        />
-      </div>
+      <Card className="w-full">
+        <TopWebsites websites={monthly?.websites || []} />
+      </Card>
 
-      <SkillProgressCard
-        skills={skills || []}
-      />
+      <SkillProgressCard skills={skills || []} />
 
       <AIInsights
         productivityScore={ai?.productivityScore}
@@ -165,10 +143,7 @@ function Reports() {
         recommendation={ai?.recommendation}
       />
 
-      <AIReportCard
-        ai={ai}
-      />
-
+      <AIReportCard ai={ai} />
     </div>
   );
 }

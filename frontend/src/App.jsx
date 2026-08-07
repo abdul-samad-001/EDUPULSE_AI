@@ -11,6 +11,9 @@ import Settings from "./pages/Settings";
 import Achievements from "./pages/Achievements";
 import AppLayout from "./components/layout/AppLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Leaderboard from "./pages/Leaderboard";
+import Focus from "./pages/Focus";
+import Milestones from "./pages/Milestone";
 
 function App() {
   return (
@@ -45,6 +48,16 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/leaderboard"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <Leaderboard />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
 
       <Route
         path="/reports"
@@ -63,6 +76,17 @@ function App() {
           <ProtectedRoute>
             <AppLayout>
               <Skills />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/focus"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <Focus />
             </AppLayout>
           </ProtectedRoute>
         }
@@ -99,7 +123,16 @@ function App() {
           </ProtectedRoute>
         }
       />
-
+      <Route
+        path="/milestones"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <Milestones />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="*"
         element={

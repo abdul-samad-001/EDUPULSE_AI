@@ -1,6 +1,9 @@
 const generateToken = require("../utils/generateToken");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
+const {
+  initializeXP,
+} = require("../services/xpService");
 const {initializeAchievements} = require("../services/achievementService");
 // Register User
 const registerUser = async (req, res) => {
@@ -34,6 +37,7 @@ const registerUser = async (req, res) => {
     });
 
     await initializeAchievements(user._id);
+    await initializeXP(user._id);
 
 console.log("Achievements initialized for:", user.email);
     res.status(201).json({

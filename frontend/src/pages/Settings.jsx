@@ -1,24 +1,20 @@
+import { SectionHeader, Card } from "../components/ui";
+import { Settings as SettingsIcon } from "lucide-react";
+
 function Settings() {
   return (
-    <div>
+    <div className="space-y-8">
+      <SectionHeader
+        title="Settings ⚙️"
+        subtitle="Manage your platform preferences and notification settings."
+        icon={SettingsIcon}
+      />
 
-      <h1 className="text-3xl font-bold mb-8">
-        ⚙ Settings
-      </h1>
-
-      <div className="bg-white rounded-xl shadow p-6">
-
-        <h2 className="text-xl font-semibold mb-4">
-          Account Settings
-        </h2>
-
-        <p className="text-gray-600">
-          Settings page will be expanded in the
-          final UI sprint.
+      <Card title="Account Settings" className="max-w-2xl">
+        <p className="text-sm text-dark-muted">
+          Custom preferences, integration options, and security settings will be available in future releases.
         </p>
-
-      </div>
-
+      </Card>
     </div>
   );
 }

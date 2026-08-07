@@ -1,13 +1,15 @@
-function StatCard({ title, value }) {
+import { StatCard as UIStatCard } from "../ui/StatCard";
+
+function StatCard({ title, value, icon, trend, subtext, className = "" }) {
   return (
-    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
-      <span className="text-sm font-medium text-slate-500 tracking-wide block mb-2">
-        {title}
-      </span>
-      <span className="text-3xl font-extrabold text-slate-900 tracking-tight">
-        {value}
-      </span>
-    </div>
+    <UIStatCard
+      title={title}
+      value={value}
+      icon={icon}
+      trend={trend}
+      subtext={subtext}
+      className={className}
+    />
   );
 }
 

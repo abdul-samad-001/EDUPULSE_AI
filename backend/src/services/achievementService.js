@@ -1,5 +1,5 @@
 const Achievement = require("../models/Achievement");
-
+const { createNotification } = require("./notificationService");
 // ==============================
 // Default Achievements
 // ==============================
@@ -130,7 +130,17 @@ async function updateAchievementProgress(
     !achievement.unlocked
   ) {
     achievement.unlocked = true;
+    await createNotification ({
+      user: userId,
+      title: "🏆 Achievement Unlocked",
+      message: achievement.title,
+      type: "achievement",
+    });
+    
     achievement.unlockedAt = new Date();
+    const {addXP, XP_REWARDS,} = require("./xpService");
+
+    await addXP(userId,XP_REWARDS.UNLOCK_ACHIEVEMENT);
   }
 
   await achievement.save();
@@ -154,7 +164,16 @@ async function incrementAchievement(userId, key, amount = 1) {
   ) {
     achievement.progress = achievement.target;
     achievement.unlocked = true;
+    await createNotification({
+      user: userId,
+      title: "🏆 Achievement Unlocked",
+      message: achievement.title,
+      type: "achievement",
+    });
     achievement.unlockedAt = new Date();
+    const {addXP, XP_REWARDS,} = require("./xpService");
+
+    await addXP(userId,XP_REWARDS.UNLOCK_ACHIEVEMENT);
   }
 
   await achievement.save();
@@ -184,7 +203,17 @@ async function setAchievementProgress(
     !achievement.unlocked
   ) {
     achievement.unlocked = true;
+    
+    await createNotification({
+    user: userId,
+    title: "🏆 Achievement Unlocked",
+    message: achievement.title,
+    type: "achievement",
+    });
     achievement.unlockedAt = new Date();
+    const {addXP, XP_REWARDS,} = require("./xpService");
+
+    await addXP(userId,XP_REWARDS.UNLOCK_ACHIEVEMENT);
   }
 
   await achievement.save();

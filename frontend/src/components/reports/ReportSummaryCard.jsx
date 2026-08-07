@@ -1,55 +1,36 @@
+import { StatCard } from "../ui";
+import { Timer, Clock, Zap, AlertCircle } from "lucide-react";
+
 function ReportSummaryCard({ stats }) {
+  if (!stats) return null;
+
   return (
-    <div className="bg-white rounded-xl shadow-md p-6">
-
-      <h2 className="text-2xl font-bold mb-6">
+    <div className="space-y-3">
+      <h3 className="text-sm font-bold uppercase tracking-wider text-dark-muted">
         📊 Report Summary
-      </h2>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-
-        <div>
-          <p className="text-gray-500 text-sm">
-            Total Sessions
-          </p>
-
-          <h3 className="text-3xl font-bold">
-            {stats.totalSessions}
-          </h3>
-        </div>
-
-        <div>
-          <p className="text-gray-500 text-sm">
-            Study Time
-          </p>
-
-          <h3 className="text-3xl font-bold text-green-600">
-            {Math.round(stats.productiveTime / 60)} min
-          </h3>
-        </div>
-
-        <div>
-          <p className="text-gray-500 text-sm">
-            Distraction Time
-          </p>
-
-          <h3 className="text-3xl font-bold text-red-600">
-            {Math.round(stats.distractionTime / 60)} min
-          </h3>
-        </div>
-
-        <div>
-          <p className="text-gray-500 text-sm">
-            Productivity
-          </p>
-
-          <h3 className="text-3xl font-bold text-blue-600">
-            {stats.productivePercentage}%
-          </h3>
-        </div>
-
+      </h3>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+        <StatCard
+          title="Total Sessions"
+          value={stats.totalSessions}
+          icon={Timer}
+        />
+        <StatCard
+          title="Study Time"
+          value={`${Math.round(stats.productiveTime / 60)} min`}
+          icon={Clock}
+        />
+        <StatCard
+          title="Distraction Time"
+          value={`${Math.round(stats.distractionTime / 60)} min`}
+          icon={AlertCircle}
+        />
+        <StatCard
+          title="Productivity"
+          value={`${stats.productivePercentage}%`}
+          icon={Zap}
+        />
       </div>
-
     </div>
   );
 }

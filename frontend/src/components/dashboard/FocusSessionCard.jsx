@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import skillService from "../../services/skillService";
 import focusSessionService from "../../services/focusSessionService";
+import { Card, Button, Badge } from "../ui";
+import { Target, Play, Square } from "lucide-react";
 
 function FocusSessionCard() {
   const [skills, setSkills] = useState([]);
@@ -14,7 +16,7 @@ function FocusSessionCard() {
   const [activeSession, setActiveSession] = useState(null);
   const [remainingSeconds, setRemainingSeconds] = useState(0);
 
-  const loadSkills = async () => {
+  const loadSkills = useCallback(async () => {
     try {
       const data = await skillService.getAllSkills();
       setSkills(data || []);
@@ -24,15 +26,14 @@ function FocusSessionCard() {
     } finally {
       setLoadingSkills(false);
     }
-  };
+  }, []);
 
-  const loadActiveSession = async () => {
+  const loadActiveSession = useCallback(async () => {
     try {
       const response = await focusSessionService.getActiveSession();
 
       if (response.success && response.data) {
         const session = response.data;
-
         setActiveSession(session);
 
         const endTime =
@@ -53,17 +54,14 @@ function FocusSessionCard() {
       setActiveSession(null);
       setRemainingSeconds(0);
     }
-  };
+  }, []);
 
-  const stopActiveSession = async () => {
+  const stopActiveSession = useCallback(async () => {
     try {
       const response = await focusSessionService.stopSession();
-
       setMessage(response?.message || "Session stopped.");
-
       setActiveSession(null);
       setRemainingSeconds(0);
-
       setSelectedSkill("");
       setDuration(25);
     } catch (error) {
@@ -74,7 +72,7 @@ function FocusSessionCard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const handleStop = async () => {
     setLoading(true);
@@ -98,7 +96,6 @@ function FocusSessionCard() {
       });
 
       setMessage(response.message);
-
       await loadActiveSession();
     } catch (error) {
       console.error(error);
@@ -115,155 +112,134 @@ function FocusSessionCard() {
   const formatTime = (seconds) => {
     const mins = String(Math.floor(seconds / 60)).padStart(2, "0");
     const secs = String(seconds % 60).padStart(2, "0");
-
     return `${mins}:${secs}`;
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadSkills();
-    loadActiveSession();
-  }, []);
+    const fetchData = async () => {
+      await loadSkills();
+      await loadActiveSession();
+    };
+    fetchData();
+  }, [loadSkills, loadActiveSession]);
 
   useEffect(() => {
     if (!activeSession) return;
 
     const interval = setInterval(() => {
-      setRemainingSeconds((prev) => Math.max(prev - 1, 0));
+      setRemainingSeconds((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          stopActiveSession();
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [activeSession]);
+  }, [activeSession, stopActiveSession]);
 
-  useEffect(() => {
-    if (activeSession && remainingSeconds === 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      stopActiveSession();
-    }
-  }, [activeSession, remainingSeconds]);
-return (
-  <div className="bg-white rounded-xl shadow-md p-6">
-    <h2 className="text-2xl font-bold mb-5">
-      🎯 Focus Session
-    </h2>
+  return (
+    <Card
+      title="🎯 Focus Session"
+      subtitle="Track your focus blocks with deep work timer"
+      className="w-full"
+    >
+      {message && (
+        <div className="mb-3 rounded-xl bg-dark-border/80 border border-dark-border p-2.5 text-xs text-primary font-medium">
+          {message}
+        </div>
+      )}
 
-    {message && (
-      <div className="mb-4 rounded-lg bg-slate-100 border border-slate-200 p-3 text-sm">
-        {message}
-      </div>
-    )}
+      {activeSession ? (
+        <div className="space-y-3">
+          <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 text-center">
+            <Badge variant="primary" icon={Target} className="mb-2" size="sm">
+              Active Focus Mode
+            </Badge>
 
-    {activeSession ? (
-      <div className="space-y-5">
+            <div className="space-y-0.5 mb-2">
+              <p className="text-xs font-semibold text-dark-text">
+                {activeSession.skill?.skillName}
+              </p>
+              <p className="text-[11px] text-dark-muted">
+                Planned Duration: {activeSession.plannedDurationMinutes} mins
+              </p>
+            </div>
 
-        <div className="rounded-xl border border-green-200 bg-green-50 p-5">
-
-          <h3 className="text-xl font-bold text-green-700">
-            Active Focus Session
-          </h3>
-
-          <div className="mt-4 space-y-2">
-
-            <p>
-              <span className="font-semibold">Skill:</span>{" "}
-              {activeSession.skill.skillName}
-            </p>
-
-            <p>
-              <span className="font-semibold">Planned Duration:</span>{" "}
-              {activeSession.plannedDurationMinutes} min
-            </p>
-
-          </div>
-
-          <div className="mt-8 text-center">
-
-            <p className="text-gray-500 text-sm uppercase tracking-wide">
-              Remaining Time
-            </p>
-
-            <h1 className="text-6xl font-bold text-green-700 mt-3">
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-primary tracking-tight my-1 font-mono">
               {formatTime(remainingSeconds)}
             </h1>
-
           </div>
 
-        </div>
-
-        <button
-          onClick={handleStop}
-          disabled={loading}
-          className="w-full rounded-lg bg-red-600 py-3 font-semibold text-white hover:bg-red-700 disabled:opacity-50"
-        >
-          {loading ? "Stopping Session..." : "Stop Session"}
-        </button>
-
-      </div>
-    ) : (
-      <div className="space-y-4">
-
-        <div>
-
-          <label className="block mb-2 font-medium">
-            Select Skill
-          </label>
-
-          <select
-            value={selectedSkill}
-            onChange={(e) => setSelectedSkill(e.target.value)}
-            disabled={loadingSkills}
-            className="w-full rounded-lg border p-3"
+          <Button
+            variant="danger"
+            fullWidth
+            onClick={handleStop}
+            loading={loading}
+            icon={Square}
+            size="md"
           >
-            <option value="">
-              {loadingSkills
-                ? "Loading skills..."
-                : "Choose a skill"}
-            </option>
+            {loading ? "Stopping..." : "Stop Session"}
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-dark-muted mb-1">
+              Select Skill
+            </label>
 
-            {skills.map((skill) => (
-              <option
-                key={skill._id}
-                value={skill._id}
-              >
-                {skill.skillName}
+            <select
+              value={selectedSkill}
+              onChange={(e) => setSelectedSkill(e.target.value)}
+              disabled={loadingSkills}
+              className="w-full rounded-xl bg-dark-bg border border-dark-border text-dark-text text-xs sm:text-sm p-2.5 focus:outline-none focus:border-primary/50"
+            >
+              <option value="">
+                {loadingSkills ? "Loading skills..." : "Choose a skill"}
               </option>
-            ))}
-          </select>
 
+              {skills.map((skill) => (
+                <option key={skill._id} value={skill._id}>
+                  {skill.skillName}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-dark-muted mb-1">
+              Planned Duration (minutes)
+            </label>
+
+            <input
+              type="number"
+              min="1"
+              max="240"
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
+              className="w-full rounded-xl bg-dark-bg border border-dark-border text-dark-text text-xs sm:text-sm p-2.5 focus:outline-none focus:border-primary/50"
+            />
+          </div>
+
+          <Button
+            variant="primary"
+            fullWidth
+            onClick={handleStart}
+            loading={loading}
+            disabled={loadingSkills}
+            icon={Play}
+            size="md"
+            className="mt-1"
+          >
+            {loading ? "Starting Session..." : "Start Focus Session"}
+          </Button>
         </div>
-
-        <div>
-
-          <label className="block mb-2 font-medium">
-            Planned Duration (minutes)
-          </label>
-
-          <input
-            type="number"
-            min="1"
-            max="240"
-            value={duration}
-            onChange={(e) => setDuration(e.target.value)}
-            className="w-full rounded-lg border p-3"
-          />
-
-        </div>
-
-        <button
-          onClick={handleStart}
-          disabled={loading || loadingSkills}
-          className="w-full rounded-lg bg-green-600 py-3 font-semibold text-white hover:bg-green-700 disabled:opacity-50"
-        >
-          {loading
-            ? "Starting Focus Session..."
-            : "Start Focus Session"}
-        </button>
-
-      </div>
-    )}
-  </div>
-);
+      )}
+    </Card>
+  );
 }
 
 export default FocusSessionCard;
-

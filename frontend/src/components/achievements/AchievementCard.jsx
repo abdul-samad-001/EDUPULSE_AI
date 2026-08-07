@@ -1,3 +1,6 @@
+import { Card, Badge, Progress } from "../ui";
+import { Award, Lock } from "lucide-react";
+
 function AchievementCard({ achievement }) {
   const percentage = Math.min(
     (achievement.progress / achievement.target) * 100,
@@ -5,68 +8,49 @@ function AchievementCard({ achievement }) {
   );
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
-
-      <div className="flex items-center justify-between">
-
-        <div className="flex items-center gap-4">
-
-          <div className="text-4xl">
+    <Card className="w-full">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="text-3xl shrink-0">
             {achievement.icon}
           </div>
 
           <div>
-            <h3 className="font-bold text-lg">
+            <h3 className="font-bold text-sm text-dark-text">
               {achievement.title}
             </h3>
 
-            <p className="text-gray-500 text-sm">
+            <p className="text-xs text-dark-muted mt-0.5 leading-relaxed">
               {achievement.description}
             </p>
           </div>
-
         </div>
 
-        {achievement.unlocked ? (
-          <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
-            ✅ Unlocked
-          </span>
-        ) : (
-          <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm">
-            🔒 Locked
-          </span>
-        )}
-
+        <Badge
+          variant={achievement.unlocked ? "success" : "neutral"}
+          icon={achievement.unlocked ? Award : Lock}
+          size="sm"
+          className="shrink-0"
+        >
+          {achievement.unlocked ? "Unlocked" : "Locked"}
+        </Badge>
       </div>
 
-      <div className="mt-6">
-
-        <div className="flex justify-between text-sm mb-2">
-
-          <span>
-            Progress
-          </span>
-
-          <span>
+      <div className="mt-4 space-y-1.5">
+        <div className="flex justify-between text-xs font-semibold">
+          <span className="text-dark-muted">Progress</span>
+          <span className="text-dark-text">
             {achievement.progress}/{achievement.target}
           </span>
-
         </div>
 
-        <div className="w-full bg-gray-200 rounded-full h-3">
-
-          <div
-            className="bg-blue-600 h-3 rounded-full transition-all duration-500"
-            style={{
-              width: `${percentage}%`,
-            }}
-          />
-
-        </div>
-
+        <Progress
+          value={percentage}
+          size="sm"
+          color={achievement.unlocked ? "success" : "primary"}
+        />
       </div>
-
-    </div>
+    </Card>
   );
 }
 

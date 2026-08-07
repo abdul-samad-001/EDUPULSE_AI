@@ -1,47 +1,41 @@
 import { formatSeconds } from "../../../utils/timeFormatter";
+import { Card, Progress } from "../../ui";
 
-function TopWebsites({ websites }) {
+function TopWebsites({ websites = [] }) {
+  const maxDuration = websites.length > 0 ? websites[0].totalDuration : 1;
+
   return (
-    <div className="bg-white rounded-xl shadow p-6">
-      <h2 className="text-xl font-semibold mb-5">
-        🌐 Top Visited Websites
-      </h2>
-
+    <Card title="🌐 Top Visited Websites" className="w-full">
       {websites.length === 0 ? (
-        <p className="text-slate-500">
-          No telemetry available.
+        <p className="text-xs text-dark-muted py-4 text-center border border-dashed border-dark-border rounded-xl">
+          No website telemetry available yet.
         </p>
       ) : (
-        <div className="space-y-5">
-          {websites.map((site, index) => (
-            <div key={site.domain}>
-              <div className="flex justify-between mb-1">
-                <span className="font-medium">
-                  {index + 1}. {site.domain}
-                </span>
+        <div className="space-y-3">
+          {websites.map((site, index) => {
+            const percent = (site.totalDuration / maxDuration) * 100;
 
-                <span className="text-slate-600">
-                  {formatSeconds(site.totalDuration)}
-                </span>
-              </div>
-
-              <div className="w-full bg-slate-200 rounded-full h-2">
-                <div
-                  className="bg-blue-600 h-2 rounded-full"
-                  style={{
-                    width: `${
-                      (site.totalDuration /
-                        websites[0].totalDuration) *
-                      100
-                    }%`,
-                  }}
+            return (
+              <div key={site.domain || index} className="space-y-1">
+                <div className="flex justify-between text-xs font-semibold">
+                  <span className="text-dark-text">
+                    {index + 1}. {site.domain}
+                  </span>
+                  <span className="text-primary">
+                    {formatSeconds(site.totalDuration)}
+                  </span>
+                </div>
+                <Progress
+                  value={percent}
+                  size="sm"
+                  color="primary"
                 />
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
-    </div>
+    </Card>
   );
 }
 
