@@ -20,6 +20,21 @@ const focusSessionService = {
     const res = await axiosInstance.get("/focus/history");
     return res.data;
   },
+
+  getStatistics: async () => {
+    const res = await axiosInstance.get("/focus/statistics");
+    return res.data;
+  },
+
+  getWeekly: async () => {
+    const res = await axiosInstance.get("/focus/weekly");
+    return res.data;
+  },
+
+  getInsights: async () => {
+    const res = await axiosInstance.get("/focus/insights");
+    return res.data;
+  },
 };
 
 export default focusSessionService;

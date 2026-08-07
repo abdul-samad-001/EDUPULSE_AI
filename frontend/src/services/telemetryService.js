@@ -23,6 +23,7 @@ export const getStudyVsDistract = async () => {
 
   return response.data;
 };
+export const getStudyVsDistractStats = getStudyVsDistract;
 export const getAIInsights = async () => {
   const response = await api.get(
     "/telemetry/ai-insights"
@@ -37,6 +38,7 @@ export const getProcrastinationScore = async () => {
 
   return response.data;
 };
+export const getProcrastinationAnalytics = getProcrastinationScore;
 export const getAnalyticsDashboard = async () => {
   const [
     stats,

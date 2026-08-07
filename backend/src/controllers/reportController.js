@@ -83,6 +83,59 @@ const downloadPDF = async (req, res) => {
     });
   }
 };
+const {
+  getTimelineData,
+  getReportsHistoryData,
+} = require("../services/reportService");
+
+const getTimeline = (req, res) =>
+  response(
+    getTimelineData,
+    req,
+    res,
+    "Failed to fetch timeline."
+  );
+
+const getHistory = (req, res) =>
+  response(
+    getReportsHistoryData,
+    req,
+    res,
+    "Failed to fetch report history."
+  );
+
+const exportCSV = async (req, res) => {
+  try {
+    const summary = await getReportSummary(req.user._id);
+    const csvContent = [
+      "Metric,Value",
+      `Total Sessions,${summary.stats?.totalSessions || 0}`,
+      `Productive Time (mins),${Math.round((summary.stats?.productiveTime || 0) / 60)}`,
+      `Distraction Time (mins),${Math.round((summary.stats?.distractionTime || 0) / 60)}`,
+      `Productivity Score,${summary.stats?.productivePercentage || 0}%`,
+    ].join("\n");
+
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", 'attachment; filename="EduPulse_Report.csv"');
+    return res.status(200).send(csvContent);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Failed to export CSV." });
+  }
+};
+
+const exportJSON = async (req, res) => {
+  try {
+    const summary = await getReportSummary(req.user._id);
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Content-Disposition", 'attachment; filename="EduPulse_Report.json"');
+    return res.status(200).json({ success: true, report: summary });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Failed to export JSON." });
+  }
+};
+
 module.exports = {
   getSummary,
   getWeekly,
@@ -90,4 +143,8 @@ module.exports = {
   getSkillProgress,
   getAI,
   downloadPDF,
+  getTimeline,
+  getHistory,
+  exportCSV,
+  exportJSON,
 };

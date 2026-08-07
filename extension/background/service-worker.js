@@ -360,24 +360,26 @@ chrome.idle.onStateChanged.addListener(
 // =====================================================
 
 const handleSaveAuthToken = (message, sender, sendResponse) => {
-  console.log("Message received in background:", message);
-
-  if (message.type === "SAVE_AUTH_TOKEN") {
+  if (message && message.type === "SAVE_AUTH_TOKEN") {
     chrome.storage.local.set(
       {
         edupulseToken: message.token,
       },
       () => {
         console.log("JWT saved successfully!");
-
-        sendResponse({
-          success: true,
-        });
+        try {
+          sendResponse({
+            success: true,
+          });
+        } catch (e) {
+          // Response port closed
+        }
       }
     );
 
     return true;
   }
+  return false;
 };
 
 chrome.runtime.onMessage.addListener(handleSaveAuthToken);
