@@ -1,19 +1,43 @@
+import { Modal, Button } from "../ui";
+import { AlertTriangle, Trash2 } from "lucide-react";
+
 function DeleteSkillModal({ isOpen, skill, onClose, onConfirm }) {
   if (!isOpen || !skill) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white p-6 rounded-xl w-full max-w-sm border border-slate-200 shadow-lg text-center">
-        <h2 className="text-lg font-bold text-slate-900 mb-2">Delete Track Assignment?</h2>
-        <p className="text-sm text-slate-500 mb-6">
-          Are you sure you want to permanently erase <span className="font-semibold text-slate-800">"{skill.skillName}"</span> and all connected milestones?
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Delete Track Assignment?"
+      size="sm"
+    >
+      <div className="text-center py-2">
+        <div className="w-12 h-12 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mx-auto mb-3">
+          <AlertTriangle className="w-6 h-6" />
+        </div>
+        <p className="text-xs sm:text-sm text-dark-muted mb-6 leading-relaxed">
+          Are you sure you want to permanently erase <span className="font-semibold text-dark-text">"{skill.skillName}"</span> and all connected milestones?
         </p>
-        <div className="flex justify-center gap-3">
-          <button type="button" onClick={onClose} className="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50">Cancel</button>
-          <button type="button" onClick={() => { onConfirm(skill._id); onClose(); }} className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700">Confirm Erase</button>
+
+        <div className="flex justify-center gap-2 pt-2 border-t border-dark-border">
+          <Button type="button" variant="outline" size="sm" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            variant="danger"
+            size="sm"
+            icon={Trash2}
+            onClick={() => {
+              onConfirm(skill._id);
+              onClose();
+            }}
+          >
+            Confirm Erase
+          </Button>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }
 

@@ -16,6 +16,8 @@ import dailyChallengeService from "../services/dailyChallengeService";
 import leaderboardService from "../services/leaderboardService";
 import focusSessionService from "../services/focusSessionService";
 import { Heatmap } from "../components/heatmap";
+import { SectionHeader, Button, LoadingSpinner, Card } from "../components/ui";
+import { LayoutDashboard, BookOpen, Clock, Zap, Target, Flame, Activity } from "lucide-react";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -24,7 +26,6 @@ function Dashboard() {
   const [stats, setStats] = useState(null);
   const [telemetryStats, setTelemetryStats] = useState(null);
   const [recentSkills, setRecentSkills] = useState([]);
-  const [categoryData, setCategoryData] = useState([]);
   const [focusHistory, setFocusHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -50,7 +51,6 @@ function Dashboard() {
         const [
           statsData,
           recentData,
-          chartData,
           telemetryData,
           xpData,
           challengeData,
@@ -59,20 +59,15 @@ function Dashboard() {
         ] = await Promise.all([
           dashboardService.getDashboardStats(),
           dashboardService.getRecentSkills(),
-          dashboardService.getCategoryStats(),
           getTelemetryStats(),
           xpService.getXP(),
           dailyChallengeService.getDailyChallenge(),
           leaderboardService.getLeaderboard(),
           focusSessionService.getHistory(),
         ]);
-        console.log("Dashboard Stats:", statsData);
-        console.log("Recent Skills:", recentData);
-        console.log("Category Data:", chartData);
 
         setStats(statsData);
         setRecentSkills(recentData.skills || []);
-        setCategoryData(chartData || []);
         setTelemetryStats(telemetryData.stats);
         setXP(xpData);
         setChallenge(challengeData);
@@ -80,7 +75,6 @@ function Dashboard() {
         setFocusHistory(historyRes.data || []);
       } catch (err) {
         console.error("Dashboard Integration Error:", err);
-
         setError(
           err.response?.data?.message ||
             "Failed to load dashboard data."
@@ -93,137 +87,120 @@ function Dashboard() {
     fetchDashboardData();
   }, [navigate]);
 
-  useEffect(() => {
-    console.log("Stats State:", stats);
-    console.log("Recent Skills State:", recentSkills);
-    console.log("Category State:", categoryData);
-  }, [stats, recentSkills, categoryData]);
-
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-50">
-        <h2 className="text-lg font-medium">
-          Loading Dashboard...
-        </h2>
+      <div className="flex h-[70vh] items-center justify-center">
+        <LoadingSpinner size="lg" label="Loading EduPulse Dashboard..." />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-6 text-red-600">
-        <h2>{error}</h2>
+      <div className="flex items-center justify-center h-[70vh]">
+        <Card className="max-w-md text-center p-6">
+          <h2 className="text-lg font-bold text-rose-400 mb-3">{error}</h2>
+          <Button variant="primary" size="sm" onClick={() => window.location.reload()}>
+            Retry Loading
+          </Button>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <div className="space-y-4 sm:space-y-5">
+      {/* Header */}
+      <SectionHeader
+        title={`Welcome back, ${user?.name || "Learner"} 🚀`}
+        subtitle="Here is your personal learning overview and productivity breakdown."
+        icon={LayoutDashboard}
+        action={
+          <Button
+            variant="primary"
+            size="sm"
+            icon={BookOpen}
+            onClick={() => navigate("/skills")}
+          >
+            Manage Skills
+          </Button>
+        }
+      />
 
-        {/* Header */}
-        <div className="flex justify-between items-center flex-wrap gap-4">
-          <div>
-            <h1 className="text-3xl font-bold">
-              Dashboard 🚀
-            </h1>
+      {/* Stats Overview */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <StatCard
+          title="Total Skills"
+          value={stats?.totalSkills ?? 0}
+          icon={BookOpen}
+        />
+        <StatCard
+          title="Completed"
+          value={stats?.completedSkills ?? 0}
+          icon={Target}
+        />
+        <StatCard
+          title="Overall Progress"
+          value={`${stats?.overallProgress ?? 0}%`}
+          icon={Zap}
+        />
+        <StatCard
+          title="Current Streak"
+          value={`${stats?.streak ?? 0} Days`}
+          icon={Flame}
+        />
+      </div>
 
-            <p className="text-slate-600">
-              Welcome back, {user?.name}
-            </p>
-          </div>
-
-          <div className="flex gap-2">
-            <button
-              onClick={() => navigate("/skills")}
-              className="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 text-sm font-semibold shadow"
-            >
-              Manage Skills
-            </button>
-          </div>
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-
-          <StatCard
-            title="Total Skills"
-            value={stats?.totalSkills ?? 0}
-          />
-
-          <StatCard
-            title="Completed"
-            value={stats?.completedSkills ?? 0}
-          />
-
-          <StatCard
-            title="Overall Progress"
-            value={`${stats?.overallProgress ?? 0}%`}
-          />
-
-          <StatCard
-            title="Current Streak"
-            value={`🔥 ${stats?.streak ?? 0} Days`}
-          />
-
-        </div>
-        {/* Telemetry Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
-          <StatCard
+      {/* Telemetry Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+        <StatCard
           title="Focus Sessions"
           value={telemetryStats?.totalSessions ?? 0}
-          />
-          <StatCard
+          icon={Clock}
+        />
+        <StatCard
           title="Tracked Time"
           value={`${Math.floor((telemetryStats?.totalTrackedTime ?? 0) / 60)} min`}
-          />
-
-          <StatCard
+          icon={Activity}
+        />
+        <StatCard
           title="Productive Time"
           value={`${Math.floor((telemetryStats?.productiveTime ?? 0) / 60)} min`}
-          />
-
-          <StatCard
+          icon={Zap}
+        />
+        <StatCard
           title="Distraction Time"
           value={`${Math.floor((telemetryStats?.distractionTime ?? 0) / 60)} min`}
-          />
-
-          <StatCard
+          icon={Clock}
+        />
+        <StatCard
           title="Productivity"
           value={`${telemetryStats?.productivePercentage ?? 0}%`}
-          />
-          <XPCard xp={xp} />
-        </div>
-
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-          {/* Left Side */}
-          <div className="lg:col-span-2 space-y-8">
-
-            <FocusSessionCard />
-            <DailyChallengeCard challenge={challenge} />
-            <OverallProgress
-              value={stats?.overallProgress ?? 0}
-            />
-            <QuickAnalyticsCard/>
-          </div>
-          <div className="mt-8">
-            <Heatmap sessions={focusHistory} />
-          </div>
-
-          {/* Right Side */}
-          <div className="space-y-8">
-            <RecentSkills
-              skills={recentSkills}
-            />
-            <LeaderboardWidget users={leaderboard} />
-
-
-          </div>
-
-        </div>
-
+          icon={Activity}
+        />
       </div>
+
+      {/* XP Header Banner / Card */}
+      {xp && <XPCard xp={xp} />}
+
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
+        {/* Left Side */}
+        <div className="lg:col-span-2 space-y-4 sm:space-y-5">
+          <FocusSessionCard />
+          <DailyChallengeCard challenge={challenge} />
+          <OverallProgress value={stats?.overallProgress ?? 0} />
+          <QuickAnalyticsCard />
+          <Heatmap sessions={focusHistory} />
+        </div>
+
+        {/* Right Side */}
+        <div className="space-y-4 sm:space-y-5">
+          <RecentSkills skills={recentSkills} />
+          <LeaderboardWidget users={leaderboard} />
+        </div>
+      </div>
+    </div>
   );
 }
 

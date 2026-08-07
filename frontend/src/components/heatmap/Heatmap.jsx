@@ -1,5 +1,7 @@
 import HeatmapCell from "./HeatmapCell";
 import HeatmapLegend from "./HeatmapLegend";
+import { Card } from "../ui";
+import { Flame } from "lucide-react";
 
 function Heatmap({ sessions = [] }) {
   const last30Days = [];
@@ -29,14 +31,13 @@ function Heatmap({ sessions = [] }) {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow p-6">
-
-      <h2 className="text-xl font-bold mb-6">
-        🔥 Study Heatmap
-      </h2>
-
-      <div className="grid grid-cols-10 gap-2">
-
+    <Card
+      title="Study Heatmap"
+      subtitle="Last 30 days activity tracking"
+      headerAction={<Flame className="w-4 h-4 text-amber-400" />}
+      className="w-full"
+    >
+      <div className="grid grid-cols-10 gap-1.5 sm:gap-2 my-2">
         {last30Days.map((day) => (
           <HeatmapCell
             key={day.date}
@@ -44,12 +45,10 @@ function Heatmap({ sessions = [] }) {
             date={day.date}
           />
         ))}
-
       </div>
 
       <HeatmapLegend />
-
-    </div>
+    </Card>
   );
 }
 

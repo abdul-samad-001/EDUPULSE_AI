@@ -1,33 +1,32 @@
 import { formatMinutes } from "../../../utils/timeFormatter";
+import { Card } from "../../ui";
 
 function ProcrastinationCard({ data }) {
-  if (!data) {
-    return null;
-  }
+  if (!data) return null;
 
   const getColor = () => {
     switch (data.level) {
       case "Low":
         return {
-          bg: "bg-green-50",
-          border: "border-green-500",
-          text: "text-green-600",
+          bg: "bg-emerald-500/10",
+          border: "border-emerald-500/40",
+          text: "text-emerald-400",
           emoji: "🟢",
         };
 
       case "Medium":
         return {
-          bg: "bg-yellow-50",
-          border: "border-yellow-500",
-          text: "text-yellow-600",
+          bg: "bg-amber-500/10",
+          border: "border-amber-500/40",
+          text: "text-amber-400",
           emoji: "🟡",
         };
 
       default:
         return {
-          bg: "bg-red-50",
-          border: "border-red-500",
-          text: "text-red-600",
+          bg: "bg-rose-500/10",
+          border: "border-rose-500/40",
+          text: "text-rose-400",
           emoji: "🔴",
         };
     }
@@ -36,51 +35,39 @@ function ProcrastinationCard({ data }) {
   const style = getColor();
 
   return (
-    <div className="bg-white rounded-xl shadow p-6">
-      <h2 className="text-xl font-semibold mb-5">
-        🧠 Procrastination Score
-      </h2>
-
+    <Card title="🧠 Procrastination Score" className="w-full">
       <div
-        className={`${style.bg} ${style.border} border-l-4 rounded-lg p-5`}
+        className={`${style.bg} ${style.border} border-l-4 rounded-xl p-4`}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4">
           <div>
-            <h3 className="text-4xl font-bold">
+            <h3 className="text-3xl font-extrabold text-dark-text tracking-tight">
               {data.score}%
             </h3>
 
-            <p className={`font-semibold ${style.text}`}>
-              {style.emoji} {data.level}
+            <p className={`text-xs font-semibold ${style.text} mt-1`}>
+              {style.emoji} {data.level} Risk
             </p>
           </div>
 
-          <div className="text-right">
-            <p className="text-slate-600 text-sm">
-              Study Time
+          <div className="text-right text-xs">
+            <p className="text-dark-muted">
+              Study Time: <span className="font-bold text-dark-text">{formatMinutes(data.productiveMinutes)}</span>
             </p>
 
-            <p className="font-semibold">
-              {formatMinutes(data.productiveMinutes)}
-            </p>
-
-            <p className="text-slate-600 text-sm mt-3">
-              Distract Time
-            </p>
-
-            <p className="font-semibold">
-              {formatMinutes(data.distractingMinutes)}
+            <p className="text-dark-muted mt-1">
+              Distract Time: <span className="font-bold text-dark-text">{formatMinutes(data.distractingMinutes)}</span>
             </p>
           </div>
         </div>
 
-        <div className="mt-5">
-          <p className="text-slate-700">
+        <div className="mt-3 pt-3 border-t border-dark-border/50">
+          <p className="text-xs text-dark-text leading-relaxed">
             {data.message}
           </p>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }
 

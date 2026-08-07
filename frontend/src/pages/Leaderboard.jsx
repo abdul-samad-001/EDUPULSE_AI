@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import leaderboardService from "../services/leaderboardService";
+import { SectionHeader, Card, Badge, LoadingSpinner } from "../components/ui";
+import { Trophy, Award } from "lucide-react";
 
 function Leaderboard() {
   const [leaderboard, setLeaderboard] = useState([]);
@@ -14,7 +16,7 @@ function Leaderboard() {
           leaderboardService.getMyRank(),
         ]);
 
-        setLeaderboard(leaders);
+        setLeaderboard(leaders || []);
         setMyRank(me);
       } catch (error) {
         console.error(error);
@@ -28,115 +30,121 @@ function Leaderboard() {
 
   if (loading) {
     return (
-      <div className="p-10 text-center">
-        Loading leaderboard...
+      <div className="flex items-center justify-center h-[70vh]">
+        <LoadingSpinner size="lg" label="Loading leaderboard..." />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="space-y-8">
+      <SectionHeader
+        title="Leaderboard 🏆"
+        subtitle="Compete with peers and see top learners ranked by total XP."
+        icon={Trophy}
+      />
 
-        <h1 className="text-3xl font-bold mb-6">
-          🏆 Leaderboard
-        </h1>
-
-        {myRank && (
-          <div className="bg-blue-600 text-white rounded-xl p-6 mb-8 shadow">
-            <h2 className="text-xl font-semibold">
-              Your Rank
+      {myRank && (
+        <Card className="bg-linear-to-r from-primary/10 via-dark-card to-dark-card border-primary/30 p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Trophy className="w-5 h-5 text-primary" />
+            <h2 className="text-lg font-bold text-dark-text">
+              Your Current Ranking
             </h2>
+          </div>
 
-            <div className="mt-3 grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="bg-dark-bg/60 p-4 rounded-xl border border-dark-border">
+              <p className="text-xs text-dark-muted uppercase font-semibold">Rank</p>
+              <p className="text-2xl font-bold text-primary mt-1">
+                #{myRank.rank}
+              </p>
+            </div>
 
-              <div>
-                <p className="text-sm">Rank</p>
-                <p className="text-2xl font-bold">
-                  #{myRank.rank}
-                </p>
-              </div>
+            <div className="bg-dark-bg/60 p-4 rounded-xl border border-dark-border">
+              <p className="text-xs text-dark-muted uppercase font-semibold">Level</p>
+              <p className="text-2xl font-bold text-dark-text mt-1">
+                {myRank.level}
+              </p>
+            </div>
 
-              <div>
-                <p className="text-sm">Level</p>
-                <p className="text-2xl font-bold">
-                  {myRank.level}
-                </p>
-              </div>
+            <div className="bg-dark-bg/60 p-4 rounded-xl border border-dark-border">
+              <p className="text-xs text-dark-muted uppercase font-semibold">XP</p>
+              <p className="text-2xl font-bold text-primary mt-1">
+                {myRank.totalXP}
+              </p>
+            </div>
 
-              <div>
-                <p className="text-sm">XP</p>
-                <p className="text-2xl font-bold">
-                  {myRank.totalXP}
-                </p>
-              </div>
-
-              <div>
-                <p className="text-sm">Next Level</p>
-                <p className="text-2xl font-bold">
-                  {myRank.nextLevelXP}
-                </p>
-              </div>
-
+            <div className="bg-dark-bg/60 p-4 rounded-xl border border-dark-border">
+              <p className="text-xs text-dark-muted uppercase font-semibold">Next Level XP</p>
+              <p className="text-2xl font-bold text-dark-text mt-1">
+                {myRank.nextLevelXP}
+              </p>
             </div>
           </div>
-        )}
+        </Card>
+      )}
 
-        <div className="bg-white rounded-xl shadow overflow-hidden">
-
-          <table className="w-full">
-
-            <thead className="bg-slate-900 text-white">
-
+      <Card className="p-0 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm border-collapse">
+            <thead className="bg-dark-bg text-dark-muted border-b border-dark-border uppercase text-[11px] font-semibold tracking-wider">
               <tr>
-                <th className="p-4 text-left">Rank</th>
-                <th className="p-4 text-left">Student</th>
-                <th className="p-4 text-left">Level</th>
-                <th className="p-4 text-left">XP</th>
+                <th className="p-4">Rank</th>
+                <th className="p-4">Student</th>
+                <th className="p-4">Level</th>
+                <th className="p-4 text-right">Total XP</th>
               </tr>
-
             </thead>
 
-            <tbody>
-
+            <tbody className="divide-y divide-dark-border text-dark-text">
               {leaderboard.map((user) => (
                 <tr
-                  key={user.userId}
-                  className="border-b hover:bg-slate-50"
+                  key={user.userId || user._id}
+                  className="hover:bg-dark-border/40 transition-colors"
                 >
-                  <td className="p-4">
-                    #{user.rank}
+                  <td className="p-4 font-bold">
+                    <span
+                      className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs ${
+                        user.rank === 1
+                          ? "bg-amber-400/20 text-amber-300 border border-amber-400/40"
+                          : user.rank === 2
+                          ? "bg-slate-300/20 text-slate-200 border border-slate-300/40"
+                          : user.rank === 3
+                          ? "bg-amber-700/20 text-amber-500 border border-amber-700/40"
+                          : "bg-dark-border text-dark-muted"
+                      }`}
+                    >
+                      #{user.rank}
+                    </span>
                   </td>
 
                   <td className="p-4">
                     <div>
-                      <p className="font-semibold">
+                      <p className="font-semibold text-dark-text">
                         {user.name}
                       </p>
-
-                      <p className="text-sm text-gray-500">
+                      <p className="text-xs text-dark-muted">
                         {user.email}
                       </p>
                     </div>
                   </td>
 
-                  <td className="p-4">
-                    {user.level}
+                  <td className="p-4 font-medium">
+                    <Badge variant="neutral" icon={Award}>
+                      Lvl {user.level}
+                    </Badge>
                   </td>
 
-                  <td className="p-4 font-bold text-blue-600">
-                    {user.totalXP}
+                  <td className="p-4 text-right font-bold text-primary">
+                    {user.totalXP} XP
                   </td>
                 </tr>
               ))}
-
             </tbody>
-
           </table>
-
         </div>
-
-      </div>
+      </Card>
     </div>
   );
 }

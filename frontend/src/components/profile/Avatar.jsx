@@ -1,5 +1,4 @@
 function Avatar({ name = "User", size = "h-20 w-20" }) {
-  // Extract initials dynamically (e.g., "Abdul Samad" -> "AS")
   const getInitials = (fullName) => {
     if (!fullName) return "U";
     const parts = fullName.trim().split(/\s+/);
@@ -8,7 +7,7 @@ function Avatar({ name = "User", size = "h-20 w-20" }) {
   };
 
   return (
-    <div className={`${size} rounded-full bg-slate-900 text-white flex items-center justify-center font-bold tracking-wider border-2 border-slate-200 text-xl shadow-sm`}>
+    <div className={`${size} rounded-full bg-linear-to-tr from-primary to-emerald-500 text-dark-bg flex items-center justify-center font-bold tracking-wider border-2 border-primary/30 text-xl shadow-lg shadow-primary/10 shrink-0`}>
       {getInitials(name)}
     </div>
   );

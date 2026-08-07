@@ -1,3 +1,6 @@
+import { StatCard } from "../ui";
+import { Timer, Clock, Flame, BarChart2 } from "lucide-react";
+
 function FocusStats({ history = [] }) {
   const totalSessions = history.length;
 
@@ -21,39 +24,35 @@ function FocusStats({ history = [] }) {
     {
       title: "Today's Sessions",
       value: totalSessions,
+      icon: Timer,
     },
     {
       title: "Focus Time",
       value: `${totalMinutes} min`,
+      icon: Clock,
     },
     {
       title: "Longest Session",
       value: `${longestSession} min`,
+      icon: Flame,
     },
     {
       title: "Average Session",
       value: `${averageSession} min`,
+      icon: BarChart2,
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-
+    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       {cards.map((card) => (
-        <div
+        <StatCard
           key={card.title}
-          className="bg-white rounded-xl shadow p-6"
-        >
-          <p className="text-sm text-slate-500">
-            {card.title}
-          </p>
-
-          <h2 className="text-3xl font-bold mt-2">
-            {card.value}
-          </h2>
-        </div>
+          title={card.title}
+          value={card.value}
+          icon={card.icon}
+        />
       ))}
-
     </div>
   );
 }

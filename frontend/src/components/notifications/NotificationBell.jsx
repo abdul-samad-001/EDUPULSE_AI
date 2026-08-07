@@ -12,7 +12,7 @@ function NotificationBell() {
     notificationService
       .getNotifications()
       .then((data) => {
-        setNotifications(data);
+        setNotifications(data || []);
       })
       .catch((err) => console.error(err));
   }, []);
@@ -29,13 +29,15 @@ function NotificationBell() {
     <div className="relative flex items-center">
       <button
         onClick={() => setOpen(!open)}
-        className="relative p-2 rounded-full hover:bg-slate-100"
+        className="relative p-2 rounded-xl text-dark-muted hover:text-dark-text hover:bg-dark-border transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+        aria-label="Notifications"
+        aria-expanded={open}
       >
-        <Bell size={22} />
+        <Bell className="w-5 h-5" />
 
         {unread > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-            {unread}
+          <span className="absolute top-1 right-1 bg-primary text-dark-bg rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold shadow-md shadow-primary/30 animate-pulse">
+            {unread > 9 ? "9+" : unread}
           </span>
         )}
       </button>
@@ -44,6 +46,7 @@ function NotificationBell() {
         open={open}
         notifications={notifications}
         reloadNotifications={fetchNotifications}
+        onClose={() => setOpen(false)}
       />
     </div>
   );

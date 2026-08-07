@@ -1,55 +1,51 @@
-function AIInsights({ insights }) {
+import { Card } from "../../ui";
+
+function AIInsights({ insights = [] }) {
   const getStyles = (type) => {
     switch (type) {
       case "success":
         return {
-          border: "border-green-500",
-          bg: "bg-green-50",
+          border: "border-emerald-500/40",
+          bg: "bg-emerald-500/10 text-emerald-300",
           icon: "✅",
         };
 
       case "warning":
         return {
-          border: "border-yellow-500",
-          bg: "bg-yellow-50",
+          border: "border-amber-500/40",
+          bg: "bg-amber-500/10 text-amber-300",
           icon: "⚠️",
         };
 
       default:
         return {
-          border: "border-blue-500",
-          bg: "bg-blue-50",
+          border: "border-primary/40",
+          bg: "bg-primary/10 text-primary",
           icon: "💡",
         };
     }
   };
 
   return (
-    <div className="bg-white rounded-xl shadow p-6">
-      <h2 className="text-xl font-semibold mb-5">
-        🧠 AI Productivity Insights
-      </h2>
-
-      <div className="space-y-4">
+    <Card title="🧠 AI Productivity Insights" className="w-full">
+      <div className="space-y-3">
         {insights.map((item, index) => {
           const style = getStyles(item.type);
 
           return (
             <div
               key={index}
-              className={`${style.bg} ${style.border} border-l-4 rounded-lg p-4`}
+              className={`${style.bg} ${style.border} border-l-4 rounded-xl p-3.5`}
             >
-              <div className="flex items-start gap-3">
-                <span className="text-xl">
-                  {style.icon}
-                </span>
+              <div className="flex items-start gap-2.5">
+                <span className="text-base shrink-0">{style.icon}</span>
 
                 <div>
-                  <h3 className="font-semibold">
+                  <h4 className="font-semibold text-sm text-dark-text">
                     {item.title}
-                  </h3>
+                  </h4>
 
-                  <p className="text-sm text-slate-700 mt-1">
+                  <p className="text-xs text-dark-muted mt-0.5 leading-relaxed">
                     {item.message}
                   </p>
                 </div>
@@ -58,7 +54,7 @@ function AIInsights({ insights }) {
           );
         })}
       </div>
-    </div>
+    </Card>
   );
 }
 

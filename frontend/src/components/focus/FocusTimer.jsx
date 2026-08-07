@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Card, Badge } from "../ui";
+import { Target } from "lucide-react";
 
 function FocusTimer({ session }) {
   const [now, setNow] = useState(() => Date.now());
@@ -34,37 +36,26 @@ function FocusTimer({ session }) {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow p-8 text-center">
-
-      <h2 className="text-xl font-bold mb-6">
-        ⏳ Focus Timer
-      </h2>
-
-      <div className="text-6xl font-bold text-blue-600 tracking-wider">
+    <Card title="⏳ Focus Timer" className="w-full text-center py-6">
+      <div className="text-4xl sm:text-5xl font-extrabold text-primary tracking-tight my-4 font-mono">
         {formatTime()}
       </div>
 
-      {session && (
-        <div className="mt-6">
-
-          <p className="font-semibold">
+      {session ? (
+        <div className="mt-4 space-y-1">
+          <Badge variant="primary" icon={Target} size="sm">
             {session.skill?.skillName}
-          </p>
-
-          <p className="text-sm text-slate-500">
+          </Badge>
+          <p className="text-xs text-dark-muted mt-1">
             Planned {session.plannedDurationMinutes} minutes
           </p>
-
         </div>
-      )}
-
-      {!session && (
-        <p className="mt-6 text-slate-500">
+      ) : (
+        <p className="mt-4 text-xs text-dark-muted">
           No active focus session
         </p>
       )}
-
-    </div>
+    </Card>
   );
 }
 

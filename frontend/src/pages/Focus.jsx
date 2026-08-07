@@ -10,6 +10,9 @@ import {
   SessionHistory,
 } from "../components/focus";
 
+import { SectionHeader, LoadingSpinner } from "../components/ui";
+import { Timer } from "lucide-react";
+
 function Focus() {
   const [activeSession, setActiveSession] = useState(null);
   const [history, setHistory] = useState([]);
@@ -17,23 +20,23 @@ function Focus() {
   const [loading, setLoading] = useState(true);
 
   const loadData = async () => {
-  try {
-    const [activeRes, historyRes, skillsRes] =
-      await Promise.all([
-        focusSessionService.getActiveSession(),
-        focusSessionService.getHistory(),
-        skillService.getAllSkills(),
-      ]);
+    try {
+      const [activeRes, historyRes, skillsRes] =
+        await Promise.all([
+          focusSessionService.getActiveSession(),
+          focusSessionService.getHistory(),
+          skillService.getAllSkills(),
+        ]);
 
-    setActiveSession(activeRes.data);
-    setHistory(historyRes.data || []);
-    setSkills(skillsRes);
-  } catch (error) {
-    console.error("Focus Page Error:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+      setActiveSession(activeRes.data);
+      setHistory(historyRes.data || []);
+      setSkills(skillsRes || []);
+    } catch (error) {
+      console.error("Focus Page Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,51 +48,35 @@ function Focus() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <h2 className="text-xl font-semibold">
-          Loading Focus Module...
-        </h2>
+      <div className="flex items-center justify-center h-[70vh]">
+        <LoadingSpinner size="lg" label="Loading Focus Module..." />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
+    <div className="space-y-8">
+      <SectionHeader
+        title="Focus Sessions 🎯"
+        subtitle="Manage Pomodoro focus intervals, session tracking, and historical metrics."
+        icon={Timer}
+      />
 
-      <div className="max-w-7xl mx-auto">
+      <div className="grid lg:grid-cols-2 gap-6">
+        <FocusTimer session={activeSession} />
 
-        <h1 className="text-3xl font-bold mb-8">
-          🎯 Focus Sessions
-        </h1>
-
-        <div className="grid lg:grid-cols-2 gap-6 mb-8">
-
-          <FocusTimer
-            session={activeSession}
-          />
-
-          <FocusControls
-            session={activeSession}
-            skills={skills}
-            onSessionChange={loadData}
-          />
-
-        </div>
-
-        <div className="mb-8">
-
-          <FocusStats
-            history={history}
-          />
-
-        </div>
-
-        <SessionHistory
-          history={history}
+        <FocusControls
+          session={activeSession}
+          skills={skills}
+          onSessionChange={loadData}
         />
-
       </div>
 
+      <div>
+        <FocusStats history={history} />
+      </div>
+
+      <SessionHistory history={history} />
     </div>
   );
 }

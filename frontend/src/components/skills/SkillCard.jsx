@@ -2,11 +2,13 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import skillService from "../../services/skillService";
 import CategoryBadge from "./CategoryBadge";
 import SkillProgress from "./SkillProgress";
+import { Card, Button, Badge, LoadingSpinner } from "../ui";
+import { Flame, Edit, Trash2, ChevronDown, ChevronUp, Plus, RefreshCw } from "lucide-react";
 
 const DIFFICULTY_STYLES = {
-  Easy: "bg-green-100 text-green-700",
-  Medium: "bg-amber-100 text-amber-700",
-  Hard: "bg-red-100 text-red-700",
+  Easy: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30",
+  Medium: "bg-amber-500/15 text-amber-400 border border-amber-500/30",
+  Hard: "bg-rose-500/15 text-rose-400 border border-rose-500/30",
 };
 
 function SkillCard({ skill, onProgressUpdate, onEditTrigger, onDeleteTrigger }) {
@@ -15,14 +17,9 @@ function SkillCard({ skill, onProgressUpdate, onEditTrigger, onDeleteTrigger }) 
   const [newTaskName, setNewTaskName] = useState("");
   const [generating, setGenerating] = useState(false);
 
-  // Use a ref to guard against infinite auto-generation loops without causing re-renders
   const hasAttemptedAutoGen = useRef(false);
-
-  // NEW — toggles whether completed earlier days are shown.
-  // Defaults to collapsed so the card stays focused on "today".
   const [showHistory, setShowHistory] = useState(false);
 
-  // Define handleGenerateRoadmap as a reusable callback ABOVE the useEffect hooks
   const handleGenerateRoadmap = useCallback(async () => {
     setGenerating(true);
     try {
@@ -51,12 +48,6 @@ function SkillCard({ skill, onProgressUpdate, onEditTrigger, onDeleteTrigger }) 
     }
   }, [isExpanded, tasks.length, generating, handleGenerateRoadmap]);
 
-  // NEW — Day-Wise filtering. skill.currentDay is the source of truth
-  // from the backend (advanced server-side in taskController.updateTask).
-  // Tasks with assignedDay < currentDay are "history" (past, completed).
-  // Tasks with assignedDay === currentDay are "today" (the focused view).
-  // Tasks with assignedDay > currentDay are not rendered at all — they
-  // stay hidden client-side, matching the "Focused View" requirement.
   const currentDay = skill.currentDay || 1;
   const todaysTasks = tasks.filter((t) => (t.assignedDay || 1) === currentDay);
   const historyTasks = tasks.filter((t) => (t.assignedDay || 1) < currentDay);
@@ -66,18 +57,12 @@ function SkillCard({ skill, onProgressUpdate, onEditTrigger, onDeleteTrigger }) 
     ? Math.round((todaysCompletedCount / todaysTasks.length) * 100)
     : 0;
 
-  // Optimistic UI Toggle Pipeline
   const handleTaskToggle = async (taskId, currentStatus) => {
-    const backupSnapshot = [...tasks];
-
     const targetOptimisticArray = tasks.map(t =>
       t._id === taskId ? { ...t, completed: !currentStatus } : t
     );
     setTasks(targetOptimisticArray);
 
-    // NOTE: overall skill.progress (the card-level bar) still reflects
-    // ALL tasks across all days, same as before — todaysProgress (above)
-    // is a separate, additional metric for the "today" view only.
     const completedCount = targetOptimisticArray.filter(t => t.completed).length;
     const computedPercentage = targetOptimisticArray.length > 0 
       ? Math.round((completedCount / targetOptimisticArray.length) * 100) 
@@ -86,10 +71,6 @@ function SkillCard({ skill, onProgressUpdate, onEditTrigger, onDeleteTrigger }) 
 
     try {
       const result = await skillService.toggleTask(taskId, !currentStatus);
-      // NEW — backend returns the updated skill alongside the task when
-      // a day advances. If skill.currentDay or streakCount changed,
-      // bubble it up so the parent's skills[] state reflects the new
-      // fire badge / unlocked day immediately, without a full re-fetch.
       if (result?.skill) {
         onProgressUpdate(skill._id, result.skill.progress, {
           currentDay: result.skill.currentDay,
@@ -98,10 +79,7 @@ function SkillCard({ skill, onProgressUpdate, onEditTrigger, onDeleteTrigger }) 
       }
     } catch (err) {
       console.error(err);
-      setTasks(backupSnapshot);
-      const rollBackCount = backupSnapshot.filter(t => t.completed).length;
-      const rollBackPercentage = backupSnapshot.length > 0 ? Math.round((rollBackCount / backupSnapshot.length) * 100) : 0;
-      onProgressUpdate(skill._id, rollBackPercentage);
+      setTasks(tasks);
     }
   };
 
@@ -110,23 +88,16 @@ function SkillCard({ skill, onProgressUpdate, onEditTrigger, onDeleteTrigger }) 
     if (!newTaskName.trim()) return;
 
     try {
-      // Manually-added tasks attach to the CURRENT day by default, so
-      // they appear in today's focused view immediately.
-      const addedTask = await skillService.createTask(skill._id, newTaskName, currentDay);
-      const extendedTasks = [...tasks, addedTask];
-      setTasks(extendedTasks);
+      const added = await skillService.createTask(skill._id, newTaskName.trim());
+      setTasks(prev => [...prev, added]);
       setNewTaskName("");
-
-      const completedCount = extendedTasks.filter(t => t.completed).length;
-      onProgressUpdate(skill._id, Math.round((completedCount / extendedTasks.length) * 100));
     } catch (err) {
       console.error(err);
-      alert("Failed to append milestone task.");
     }
   };
 
   const handleManualRegenerate = async () => {
-    if (!window.confirm("This will replace all current milestones, reset your day progress, and reset this skill's streak. Continue?")) {
+    if (!window.confirm("Regenerating will replace all existing tasks with a fresh AI roadmap. Continue?")) {
       return;
     }
     setGenerating(true);
@@ -143,18 +114,17 @@ function SkillCard({ skill, onProgressUpdate, onEditTrigger, onDeleteTrigger }) 
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+    <Card className="w-full">
       <div>
         <div className="flex justify-between items-start">
           <div>
             <CategoryBadge category={skill.category} />
-            <div className="flex items-center gap-2 mt-2">
-              <h3 className="text-lg font-bold text-slate-800">{skill.skillName}</h3>
-              {/* NEW — streak fire badge, only shown once a streak exists */}
+            <div className="flex items-center gap-2 mt-1.5">
+              <h3 className="text-base font-bold text-dark-text">{skill.skillName}</h3>
               {skill.streakCount > 0 && (
-                <span className="inline-flex items-center gap-1 text-xs font-semibold bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full">
-                  🔥 {skill.streakCount} Day{skill.streakCount !== 1 ? "s" : ""}
-                </span>
+                <Badge variant="warning" icon={Flame} size="sm">
+                  {skill.streakCount} Day{skill.streakCount !== 1 ? "s" : ""}
+                </Badge>
               )}
             </div>
           </div>
@@ -162,85 +132,98 @@ function SkillCard({ skill, onProgressUpdate, onEditTrigger, onDeleteTrigger }) 
         <SkillProgress progress={skill.progress} />
       </div>
 
-      <div className="space-y-4 pt-2">
-        <div className="flex justify-between items-center text-sm font-medium">
-          <button onClick={() => setIsExpanded(!isExpanded)} className="text-slate-700 hover:underline">
-            {isExpanded ? "Hide Milestones ↑" : "Manage Tasks ↓"}
+      <div className="space-y-3 pt-2">
+        <div className="flex justify-between items-center text-xs font-semibold border-t border-dark-border pt-3">
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="text-primary hover:underline inline-flex items-center gap-1 focus:outline-none"
+          >
+            {isExpanded ? (
+              <><span>Hide Milestones</span> <ChevronUp className="w-3.5 h-3.5" /></>
+            ) : (
+              <><span>Manage Tasks</span> <ChevronDown className="w-3.5 h-3.5" /></>
+            )}
           </button>
-          <div className="flex gap-3">
-            <button onClick={() => onEditTrigger(skill)} className="text-slate-600 hover:text-slate-900">Edit</button>
-            <button onClick={() => onDeleteTrigger(skill)} className="text-red-600 hover:underline">Delete</button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => onEditTrigger(skill)}
+              className="text-dark-muted hover:text-dark-text transition-colors p-1"
+              aria-label="Edit Skill"
+            >
+              <Edit className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => onDeleteTrigger(skill)}
+              className="text-rose-400 hover:text-rose-300 transition-colors p-1"
+              aria-label="Delete Skill"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
         {isExpanded && (
-          <div className="border-t border-slate-100 pt-4 space-y-3">
-
+          <div className="border-t border-dark-border pt-3 space-y-3">
             {generating && (
-              <div className="text-xs text-slate-400 italic py-2">
-                ✨ Generating AI roadmap…
+              <div className="flex items-center gap-2 text-xs text-primary py-2">
+                <LoadingSpinner size="sm" />
+                <span>Generating AI roadmap…</span>
               </div>
             )}
 
             {!generating && tasks.length === 0 && (
-              <div className="text-xs text-slate-400 italic py-2">
+              <p className="text-xs text-dark-muted italic py-2">
                 No milestones yet. Add one below, or it will auto-generate shortly.
-              </div>
+              </p>
             )}
 
-            {/* NEW — Day header + today's progress bar */}
             {!generating && todaysTasks.length > 0 && (
-              <div className="flex items-center justify-between text-xs font-semibold text-slate-500 pb-1">
+              <div className="flex items-center justify-between text-xs font-semibold text-dark-muted">
                 <span>Day {currentDay}</span>
                 <span>{todaysCompletedCount}/{todaysTasks.length} today &middot; {todaysProgress}%</span>
               </div>
             )}
 
-            {/* NEW — collapsed history toggle, only if earlier days exist */}
             {historyTasks.length > 0 && (
               <button
                 onClick={() => setShowHistory((s) => !s)}
-                className="text-xs text-slate-400 hover:text-slate-600 underline"
+                className="text-[11px] text-dark-muted hover:text-dark-text underline"
               >
                 {showHistory ? "Hide completed days ↑" : `Show ${currentDay - 1} completed day${currentDay - 1 !== 1 ? "s" : ""} ↓`}
               </button>
             )}
 
-            {/* NEW — history section: past days, greyed out, read-only feel
-                but checkbox stays interactive (per "deadline not a gate" —
-                unchecking an old task doesn't reverse day-advance). */}
             {showHistory && historyTasks.length > 0 && (
-              <div className="space-y-2 opacity-60 border-l-2 border-slate-200 pl-3">
+              <div className="space-y-1.5 opacity-60 border-l-2 border-dark-border pl-2.5">
                 {historyTasks.map((task) => (
-                  <div key={task._id} className="flex items-center gap-3 text-sm">
+                  <div key={task._id} className="flex items-center gap-2 text-xs">
                     <input
                       type="checkbox"
                       checked={task.completed || false}
                       onChange={() => handleTaskToggle(task._id, task.completed)}
-                      className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+                      className="h-3.5 w-3.5 rounded border-dark-border bg-dark-bg text-primary focus:ring-primary"
                     />
-                    <span className="text-slate-400 line-through flex-1">{task.taskName}</span>
-                    <span className="text-[10px] text-slate-400 shrink-0">Day {task.assignedDay}</span>
+                    <span className="text-dark-muted line-through flex-1">{task.taskName}</span>
+                    <span className="text-[10px] text-dark-muted/60 shrink-0">Day {task.assignedDay}</span>
                   </div>
                 ))}
               </div>
             )}
 
-            {/* Today's focused task list — the main view */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {todaysTasks.map((task) => (
-                <div key={task._id} className="flex items-center gap-3 text-sm bg-slate-50 p-2 rounded border border-slate-100">
+                <div key={task._id} className="flex items-center gap-2.5 text-xs bg-dark-bg p-2 rounded-xl border border-dark-border">
                   <input
                     type="checkbox"
                     checked={task.completed || false}
                     onChange={() => handleTaskToggle(task._id, task.completed)}
-                    className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+                    className="h-4 w-4 rounded border-dark-border bg-dark-card text-primary focus:ring-primary"
                   />
-                  <span className={task.completed ? "line-through text-slate-400 flex-1" : "font-medium text-slate-800 flex-1"}>
+                  <span className={task.completed ? "line-through text-dark-muted flex-1" : "font-medium text-dark-text flex-1"}>
                     {task.taskName}
                   </span>
                   {task.difficulty && (
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ${DIFFICULTY_STYLES[task.difficulty] || DIFFICULTY_STYLES.Easy}`}>
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${DIFFICULTY_STYLES[task.difficulty] || DIFFICULTY_STYLES.Easy}`}>
                       {task.difficulty}
                     </span>
                   )}
@@ -254,24 +237,27 @@ function SkillCard({ skill, onProgressUpdate, onEditTrigger, onDeleteTrigger }) 
                 placeholder="New milestone..."
                 value={newTaskName}
                 onChange={(e) => setNewTaskName(e.target.value)}
-                className="flex-1 text-xs border border-slate-200 rounded px-2 py-1.5 focus:outline-none"
+                className="flex-1 text-xs bg-dark-bg border border-dark-border text-dark-text rounded-lg px-3 py-1.5 focus:outline-none focus:border-primary/50"
               />
-              <button type="submit" className="bg-slate-900 text-white text-xs px-3 rounded font-semibold">Add</button>
+              <Button type="submit" variant="primary" size="sm" icon={Plus}>
+                Add
+              </Button>
             </form>
 
             {tasks.length > 0 && (
               <button
                 onClick={handleManualRegenerate}
                 disabled={generating}
-                className="text-xs text-slate-400 hover:text-slate-700 disabled:opacity-50 pt-1"
+                className="inline-flex items-center gap-1.5 text-xs text-dark-muted hover:text-primary disabled:opacity-50 pt-1"
               >
-                ↻ Regenerate AI Roadmap
+                <RefreshCw className="w-3 h-3" />
+                <span>Regenerate AI Roadmap</span>
               </button>
             )}
           </div>
         )}
       </div>
-    </div>
+    </Card>
   );
 }
 

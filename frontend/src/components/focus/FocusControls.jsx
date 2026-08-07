@@ -1,5 +1,7 @@
 import { useState } from "react";
 import focusSessionService from "../../services/focusSessionService";
+import { Card, Button } from "../ui";
+import { Play, Square } from "lucide-react";
 
 function FocusControls({
   session,
@@ -53,70 +55,75 @@ function FocusControls({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow p-6">
-
-      <h2 className="text-xl font-bold mb-5">
-        🎯 Focus Controls
-      </h2>
-
+    <Card title="🎯 Focus Controls" className="w-full">
       {!session ? (
-        <>
-          <select
-            value={selectedSkill}
-            onChange={(e) => setSelectedSkill(e.target.value)}
-            className="w-full border rounded-lg p-3 mb-4"
-          >
-            <option value="">Select Skill</option>
-
-            {skills.map((skill) => (
-              <option key={skill._id} value={skill._id}>
-                {skill.skillName}
-              </option>
-            ))}
-          </select>
-
-          <input
-            type="number"
-            min="5"
-            max="180"
-            value={duration}
-            onChange={(e) => setDuration(Number(e.target.value))}
-            className="w-full border rounded-lg p-3 mb-4"
-          />
-
-          <button
-            onClick={startSession}
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold"
-          >
-            {loading ? "Starting..." : "▶ Start Focus Session"}
-          </button>
-        </>
-      ) : (
-        <>
-          <div className="mb-5">
-
-            <p className="font-semibold">
-              Active Session
-            </p>
-
-            <p className="text-slate-500">
-              {session.skill?.skillName}
-            </p>
-
+        <div className="space-y-3">
+          <div>
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-dark-muted mb-1">
+              Select Skill
+            </label>
+            <select
+              value={selectedSkill}
+              onChange={(e) => setSelectedSkill(e.target.value)}
+              className="w-full rounded-xl bg-dark-bg border border-dark-border text-dark-text text-xs sm:text-sm p-2.5 focus:outline-none focus:border-primary/50"
+            >
+              <option value="">Choose a skill</option>
+              {skills.map((skill) => (
+                <option key={skill._id} value={skill._id}>
+                  {skill.skillName}
+                </option>
+              ))}
+            </select>
           </div>
 
-          <button
-            onClick={stopSession}
-            disabled={loading}
-            className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold"
-          >
-            {loading ? "Stopping..." : "■ Stop Session"}
-          </button>
-        </>
-      )}
+          <div>
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-dark-muted mb-1">
+              Planned Duration (minutes)
+            </label>
+            <input
+              type="number"
+              min="5"
+              max="180"
+              value={duration}
+              onChange={(e) => setDuration(Number(e.target.value))}
+              className="w-full rounded-xl bg-dark-bg border border-dark-border text-dark-text text-xs sm:text-sm p-2.5 focus:outline-none focus:border-primary/50"
+            />
+          </div>
 
-    </div>
+          <Button
+            variant="primary"
+            fullWidth
+            onClick={startSession}
+            loading={loading}
+            icon={Play}
+            size="md"
+            className="mt-2"
+          >
+            {loading ? "Starting..." : "Start Focus Session"}
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div className="p-3 rounded-xl bg-dark-bg border border-dark-border">
+            <p className="text-xs text-dark-muted">Active Session</p>
+            <p className="text-sm font-semibold text-dark-text mt-0.5">
+              {session.skill?.skillName}
+            </p>
+          </div>
+
+          <Button
+            variant="danger"
+            fullWidth
+            onClick={stopSession}
+            loading={loading}
+            icon={Square}
+            size="md"
+          >
+            {loading ? "Stopping..." : "Stop Session"}
+          </Button>
+        </div>
+      )}
+    </Card>
   );
 }
 

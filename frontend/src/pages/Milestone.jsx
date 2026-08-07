@@ -7,6 +7,9 @@ import {
   MilestoneTimeline,
 } from "../components/milestones";
 
+import { SectionHeader, LoadingSpinner } from "../components/ui";
+import { Flag } from "lucide-react";
+
 function Milestones() {
   const [milestones, setMilestones] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +23,7 @@ function Milestones() {
           await achievementService.getAchievements();
 
         if (isMounted) {
-          setMilestones(achievements);
+          setMilestones(achievements || []);
         }
       } catch (error) {
         console.error("Milestones Error:", error);
@@ -40,35 +43,25 @@ function Milestones() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <h2 className="text-xl font-semibold">
-          Loading Milestones...
-        </h2>
+      <div className="flex items-center justify-center h-[70vh]">
+        <LoadingSpinner size="lg" label="Loading Milestones..." />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
+    <div className="space-y-8">
+      <SectionHeader
+        title="Learning Milestones 🏁"
+        subtitle="Visualize your timeline journey, goal checkpoints, and milestone progress."
+        icon={Flag}
+      />
 
-      <div className="max-w-7xl mx-auto">
-
-        <h1 className="text-3xl font-bold mb-8">
-          🏁 Learning Milestones
-        </h1>
-
-        <div className="mb-8">
-          <MilestoneProgress
-            milestones={milestones}
-          />
-        </div>
-
-        <MilestoneTimeline
-          milestones={milestones}
-        />
-
+      <div>
+        <MilestoneProgress milestones={milestones} />
       </div>
 
+      <MilestoneTimeline milestones={milestones} />
     </div>
   );
 }

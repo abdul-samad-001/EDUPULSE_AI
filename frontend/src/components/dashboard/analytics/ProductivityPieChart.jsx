@@ -6,11 +6,12 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import { Card } from "../../ui";
 
 const COLORS = [
-  "#22c55e", // Productive
-  "#f59e0b", // Neutral
-  "#ef4444", // Distraction
+  "#10B981", // Productive
+  "#F59E0B", // Neutral
+  "#EF4444", // Distraction
 ];
 
 function ProductivityPieChart({ telemetryStats }) {
@@ -30,19 +31,15 @@ function ProductivityPieChart({ telemetryStats }) {
   ];
 
   return (
-    <div className="bg-white rounded-xl shadow p-6">
-      <h2 className="text-xl font-semibold mb-4">
-        Productivity Analytics
-      </h2>
-
-      <div className="w-full h-80">
+    <Card title="Productivity Analytics" className="w-full">
+      <div className="w-full h-64 sm:h-72">
         <ResponsiveContainer>
           <PieChart>
             <Pie
               data={data}
               dataKey="value"
-              outerRadius={110}
-              innerRadius={55}
+              outerRadius={95}
+              innerRadius={50}
               label
             >
               {data.map((entry, index) => (
@@ -53,13 +50,20 @@ function ProductivityPieChart({ telemetryStats }) {
               ))}
             </Pie>
 
-            <Tooltip />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "#181A20",
+                borderColor: "#262A33",
+                borderRadius: "12px",
+                color: "#F5F5F5",
+              }}
+            />
 
-            <Legend />
+            <Legend wrapperStyle={{ color: "#9CA3AF", fontSize: "12px" }} />
           </PieChart>
         </ResponsiveContainer>
       </div>
-    </div>
+    </Card>
   );
 }
 

@@ -1,36 +1,37 @@
+import { Card, Progress, Badge } from "../ui";
+import { Zap } from "lucide-react";
+
 function XPCard({ xp }) {
   if (!xp) return null;
 
-  const percentage =
-    (xp.currentLevelXP / xp.nextLevelXP) * 100;
-
   return (
-    <div className="bg-white rounded-xl shadow p-6">
+    <Card
+      title={`⭐ Level ${xp.level}`}
+      headerAction={
+        <Badge variant="primary" icon={Zap} size="sm">
+          {xp.totalXP} XP
+        </Badge>
+      }
+      className="w-full"
+    >
+      <div className="mt-1 space-y-2">
+        <div className="flex justify-between items-baseline">
+          <span className="text-xl font-bold text-dark-text">
+            {xp.totalXP} <span className="text-[11px] text-dark-muted font-normal">total XP</span>
+          </span>
+          <span className="text-[11px] font-semibold text-primary">
+            {xp.currentLevelXP} / {xp.nextLevelXP} XP
+          </span>
+        </div>
 
-      <h2 className="text-xl font-bold mb-4">
-        ⭐ Level {xp.level}
-      </h2>
-
-      <p className="text-3xl font-bold text-blue-600">
-        {xp.totalXP} XP
-      </p>
-
-      <div className="w-full h-3 bg-gray-200 rounded-full mt-5">
-
-        <div
-          className="h-3 bg-blue-600 rounded-full"
-          style={{
-            width: `${percentage}%`,
-          }}
+        <Progress
+          value={xp.currentLevelXP}
+          max={xp.nextLevelXP || 100}
+          size="sm"
+          color="primary"
         />
-
       </div>
-
-      <p className="mt-3 text-sm text-gray-500">
-        {xp.currentLevelXP} / {xp.nextLevelXP} XP
-      </p>
-
-    </div>
+    </Card>
   );
 }
 

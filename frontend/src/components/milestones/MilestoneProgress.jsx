@@ -1,43 +1,29 @@
+import { Card, Progress } from "../ui";
+
 function MilestoneProgress({ milestones = [] }) {
-
-  const completed = milestones.filter(
-    (m) => m.unlocked
-  ).length;
-
+  const completed = milestones.filter((m) => m.unlocked).length;
   const percentage =
     milestones.length === 0
       ? 0
-      : Math.round(
-          (completed / milestones.length) * 100
-        );
+      : Math.round((completed / milestones.length) * 100);
 
   return (
-    <div className="bg-white rounded-xl shadow p-6">
-
-      <h2 className="text-xl font-bold mb-5">
-        📈 Overall Progress
-      </h2>
-
-      <div className="text-4xl font-bold text-blue-600">
-        {percentage}%
+    <Card
+      title="📈 Overall Progress"
+      headerAction={
+        <span className="text-xl font-extrabold text-primary">
+          {percentage}%
+        </span>
+      }
+      className="w-full"
+    >
+      <div className="space-y-2 mt-1">
+        <Progress value={percentage} size="md" color="primary" />
+        <p className="text-xs text-dark-muted">
+          {completed} of {milestones.length} milestones completed
+        </p>
       </div>
-
-      <div className="mt-4 h-3 bg-gray-200 rounded-full">
-
-        <div
-          className="h-3 bg-blue-600 rounded-full"
-          style={{
-            width: `${percentage}%`,
-          }}
-        />
-
-      </div>
-
-      <p className="mt-4 text-gray-500">
-        {completed} of {milestones.length} milestones completed
-      </p>
-
-    </div>
+    </Card>
   );
 }
 

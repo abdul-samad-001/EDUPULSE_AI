@@ -1,60 +1,51 @@
+import { Card, Badge, Progress } from "../ui";
+import { Zap, Award } from "lucide-react";
+
 function DailyChallengeCard({ challenge }) {
   if (!challenge) return null;
 
   return (
-    <div className="bg-white rounded-xl shadow p-6">
+    <Card title="🎯 Daily Challenge" className="w-full">
+      <div className="flex justify-between items-start mb-1.5">
+        <h3 className="font-bold text-sm text-dark-text">
+          {challenge.title}
+        </h3>
+        <Badge
+          variant={challenge.completed ? "success" : "warning"}
+          icon={challenge.completed ? Award : Zap}
+          size="sm"
+        >
+          {challenge.completed ? "Completed" : "In Progress"}
+        </Badge>
+      </div>
 
-      <h2 className="text-xl font-bold mb-4">
-        🎯 Daily Challenge
-      </h2>
-
-      <h3 className="font-semibold">
-        {challenge.title}
-      </h3>
-
-      <p className="text-sm text-gray-500 mt-2">
+      <p className="text-xs text-dark-muted mb-3">
         {challenge.description}
       </p>
 
-      <div className="mt-5">
-
-        <p>
-          Progress
-        </p>
-
-        <p className="font-bold">
-          {challenge.progress} / {challenge.target}
-        </p>
-
-      </div>
-
-      <div className="mt-4">
-
-        <p>
-          Reward
-        </p>
-
-        <p className="font-bold text-green-600">
-          {challenge.rewardXP} XP
-        </p>
-
-      </div>
-
-      <div className="mt-4">
-
-        {challenge.completed ? (
-          <span className="text-green-600 font-bold">
-            ✅ Completed
+      <div className="space-y-2 bg-dark-bg p-3 rounded-xl border border-dark-border">
+        <div className="flex justify-between items-center text-xs font-semibold">
+          <span className="text-dark-muted">Progress</span>
+          <span className="text-dark-text">
+            {challenge.progress} / {challenge.target}
           </span>
-        ) : (
-          <span className="text-yellow-600 font-bold">
-            In Progress
+        </div>
+
+        <Progress
+          value={challenge.progress}
+          max={challenge.target || 1}
+          size="sm"
+          color={challenge.completed ? "success" : "primary"}
+        />
+
+        <div className="flex justify-between items-center text-[11px] pt-1.5 border-t border-dark-border">
+          <span className="text-dark-muted">Reward XP</span>
+          <span className="text-primary font-bold">
+            +{challenge.rewardXP} XP
           </span>
-        )}
-
+        </div>
       </div>
-
-    </div>
+    </Card>
   );
 }
 

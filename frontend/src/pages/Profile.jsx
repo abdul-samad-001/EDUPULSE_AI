@@ -4,6 +4,9 @@ import profileService from "../services/profileService";
 import Avatar from "../components/profile/Avatar";
 import ProfileForm from "../components/profile/ProfileForm";
 
+import { SectionHeader, Card, LoadingSpinner } from "../components/ui";
+import { User } from "lucide-react";
+
 function Profile() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -38,9 +41,7 @@ function Profile() {
     try {
       setMessage(null);
 
-      const data = await profileService.updateProfile(
-        updatedFields
-      );
+      const data = await profileService.updateProfile(updatedFields);
 
       setProfile(data);
 
@@ -66,45 +67,41 @@ function Profile() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-[70vh]">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-
-          <h2 className="text-xl font-semibold">
-            Loading Profile...
-          </h2>
-        </div>
+        <LoadingSpinner size="lg" label="Loading Profile..." />
       </div>
     );
   }
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto space-y-8">
+      <SectionHeader
+        title="User Profile 👤"
+        subtitle="Manage your personal information, avatar, and account settings."
+        icon={User}
+      />
 
-      <div className="bg-white rounded-xl shadow border p-8">
-
-        <div className="flex flex-col items-center border-b pb-6">
-
+      <Card className="p-8">
+        <div className="flex flex-col items-center border-b border-dark-border pb-6">
           <Avatar
             name={profile?.name}
             size="h-24 w-24"
           />
 
-          <h1 className="text-3xl font-bold mt-4">
+          <h2 className="text-2xl font-bold text-dark-text mt-4">
             {profile?.name}
-          </h1>
+          </h2>
 
-          <p className="text-gray-500">
+          <p className="text-sm text-dark-muted mt-1">
             {profile?.email}
           </p>
-
         </div>
 
         {message && (
           <div
-            className={`mt-6 p-4 rounded-lg ${
+            className={`mt-6 p-4 rounded-xl text-sm font-medium border ${
               message.type === "success"
-                ? "bg-green-100 text-green-700"
-                : "bg-red-100 text-red-700"
+                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                : "bg-rose-500/10 border-rose-500/30 text-rose-400"
             }`}
           >
             {message.text}
@@ -117,9 +114,7 @@ function Profile() {
             onSave={handleProfileSave}
           />
         </div>
-
-      </div>
-
+      </Card>
     </div>
   );
 }
