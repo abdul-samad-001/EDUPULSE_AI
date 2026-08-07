@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import skillService from "../../services/skillService";
 import CategoryBadge from "./CategoryBadge";
-import SkillProgress from "./SkillProgress";
-import { Card, Button, Badge, LoadingSpinner } from "../ui";
-import { Flame, Edit, Trash2, ChevronDown, ChevronUp, Plus, RefreshCw } from "lucide-react";
+import { Card, Button, Badge, Progress, LoadingSpinner } from "../ui";
+import { Flame, Edit, Trash2, ChevronDown, ChevronUp, Plus, RefreshCw, Clock, Calendar } from "lucide-react";
 
 const DIFFICULTY_STYLES = {
   Easy: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30",
@@ -113,55 +112,102 @@ function SkillCard({ skill, onProgressUpdate, onEditTrigger, onDeleteTrigger }) 
     }
   };
 
+  // Status Badge Logic
+  const isCompleted = (skill.progress || 0) === 100;
+  const statusLabel = isCompleted
+    ? "Completed"
+    : (skill.progress || 0) > 0
+    ? "In Progress"
+    : "Just Started";
+  const statusVariant = isCompleted ? "success" : (skill.progress || 0) > 0 ? "primary" : "neutral";
+
+  // Last Updated & Estimated Completion placeholders
+  const updatedDate = skill.updatedAt
+    ? new Date(skill.updatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+    : "Recently";
+
   return (
-    <Card className="w-full">
-      <div>
-        <div className="flex justify-between items-start">
-          <div>
-            <CategoryBadge category={skill.category} />
-            <div className="flex items-center gap-2 mt-1.5">
-              <h3 className="text-base font-bold text-dark-text">{skill.skillName}</h3>
-              {skill.streakCount > 0 && (
-                <Badge variant="warning" icon={Flame} size="sm">
-                  {skill.streakCount} Day{skill.streakCount !== 1 ? "s" : ""}
-                </Badge>
-              )}
-            </div>
+    <Card hoverable className="w-full flex flex-col justify-between transition-all duration-300 hover:border-primary/40 hover:shadow-xl">
+      <div className="space-y-3">
+        {/* Top Header: Category & Status */}
+        <div className="flex items-center justify-between gap-2">
+          <CategoryBadge category={skill.category} />
+          <div className="flex items-center gap-1.5">
+            <Badge variant={statusVariant} size="sm">
+              {statusLabel}
+            </Badge>
+            {skill.streakCount > 0 && (
+              <Badge variant="warning" icon={Flame} size="sm">
+                {skill.streakCount}d
+              </Badge>
+            )}
           </div>
         </div>
-        <SkillProgress progress={skill.progress} />
+
+        {/* Title */}
+        <div>
+          <h3 className="text-base font-extrabold text-dark-text tracking-tight">
+            {skill.skillName}
+          </h3>
+          <div className="flex flex-wrap items-center gap-3 text-[11px] text-dark-muted mt-1">
+            <span className="flex items-center gap-1">
+              <Calendar className="w-3 h-3 text-primary" /> Day {currentDay}
+            </span>
+            <span className="flex items-center gap-1">
+              <Clock className="w-3 h-3 text-amber-400" /> Est. ~3 wks
+            </span>
+            <span>Updated {updatedDate}</span>
+          </div>
+        </div>
+
+        {/* Progress Bar Component */}
+        <div className="space-y-1">
+          <div className="flex justify-between items-baseline text-xs font-semibold">
+            <span className="text-dark-muted">Roadmap Progress</span>
+            <span className="text-primary font-bold">{skill.progress || 0}%</span>
+          </div>
+          <Progress
+            value={skill.progress || 0}
+            max={100}
+            size="sm"
+            color={isCompleted ? "success" : "primary"}
+          />
+        </div>
       </div>
 
-      <div className="space-y-3 pt-2">
-        <div className="flex justify-between items-center text-xs font-semibold border-t border-dark-border pt-3">
+      {/* Action Footer & Expandable Milestones */}
+      <div className="space-y-3 pt-3 mt-3 border-t border-dark-border">
+        <div className="flex justify-between items-center text-xs font-semibold">
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-primary hover:underline inline-flex items-center gap-1 focus:outline-none"
+            className="text-primary hover:underline inline-flex items-center gap-1 focus:outline-none cursor-pointer"
           >
             {isExpanded ? (
-              <><span>Hide Milestones</span> <ChevronUp className="w-3.5 h-3.5" /></>
+              <><span>Hide AI Roadmap</span> <ChevronUp className="w-3.5 h-3.5" /></>
             ) : (
-              <><span>Manage Tasks</span> <ChevronDown className="w-3.5 h-3.5" /></>
+              <><span>Open Roadmap & Milestones</span> <ChevronDown className="w-3.5 h-3.5" /></>
             )}
           </button>
-          <div className="flex items-center gap-3">
+
+          <div className="flex items-center gap-2">
             <button
               onClick={() => onEditTrigger(skill)}
-              className="text-dark-muted hover:text-dark-text transition-colors p-1"
+              className="text-dark-muted hover:text-dark-text transition-colors p-1 rounded-lg hover:bg-dark-border/50"
               aria-label="Edit Skill"
             >
-              <Edit className="w-4 h-4" />
+              <Edit className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => onDeleteTrigger(skill)}
-              className="text-rose-400 hover:text-rose-300 transition-colors p-1"
+              className="text-rose-400 hover:text-rose-300 transition-colors p-1 rounded-lg hover:bg-rose-500/10"
               aria-label="Delete Skill"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
 
+        {/* Milestones Drawer */}
         {isExpanded && (
           <div className="border-t border-dark-border pt-3 space-y-3">
             {generating && (
@@ -173,13 +219,13 @@ function SkillCard({ skill, onProgressUpdate, onEditTrigger, onDeleteTrigger }) 
 
             {!generating && tasks.length === 0 && (
               <p className="text-xs text-dark-muted italic py-2">
-                No milestones yet. Add one below, or it will auto-generate shortly.
+                No milestones yet. Add one below, or it will auto-generate.
               </p>
             )}
 
             {!generating && todaysTasks.length > 0 && (
               <div className="flex items-center justify-between text-xs font-semibold text-dark-muted">
-                <span>Day {currentDay}</span>
+                <span>Day {currentDay} Milestones</span>
                 <span>{todaysCompletedCount}/{todaysTasks.length} today &middot; {todaysProgress}%</span>
               </div>
             )}
@@ -187,7 +233,7 @@ function SkillCard({ skill, onProgressUpdate, onEditTrigger, onDeleteTrigger }) 
             {historyTasks.length > 0 && (
               <button
                 onClick={() => setShowHistory((s) => !s)}
-                className="text-[11px] text-dark-muted hover:text-dark-text underline"
+                className="text-[11px] text-dark-muted hover:text-dark-text underline cursor-pointer"
               >
                 {showHistory ? "Hide completed days ↑" : `Show ${currentDay - 1} completed day${currentDay - 1 !== 1 ? "s" : ""} ↓`}
               </button>
@@ -217,7 +263,7 @@ function SkillCard({ skill, onProgressUpdate, onEditTrigger, onDeleteTrigger }) 
                     type="checkbox"
                     checked={task.completed || false}
                     onChange={() => handleTaskToggle(task._id, task.completed)}
-                    className="h-4 w-4 rounded border-dark-border bg-dark-card text-primary focus:ring-primary"
+                    className="h-4 w-4 rounded border-dark-border bg-dark-card text-primary focus:ring-primary cursor-pointer"
                   />
                   <span className={task.completed ? "line-through text-dark-muted flex-1" : "font-medium text-dark-text flex-1"}>
                     {task.taskName}
@@ -248,7 +294,7 @@ function SkillCard({ skill, onProgressUpdate, onEditTrigger, onDeleteTrigger }) 
               <button
                 onClick={handleManualRegenerate}
                 disabled={generating}
-                className="inline-flex items-center gap-1.5 text-xs text-dark-muted hover:text-primary disabled:opacity-50 pt-1"
+                className="inline-flex items-center gap-1.5 text-xs text-dark-muted hover:text-primary disabled:opacity-50 pt-1 cursor-pointer"
               >
                 <RefreshCw className="w-3 h-3" />
                 <span>Regenerate AI Roadmap</span>
