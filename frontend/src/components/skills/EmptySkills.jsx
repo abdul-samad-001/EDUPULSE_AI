@@ -5,11 +5,11 @@ function EmptySkills({ onOpenModal }) {
   return (
     <EmptyState
       icon={BookOpen}
-      title="No Learning Tracks Created Yet"
-      description="Start organizing your learning roadmap by adding your first skill track."
+      title="You haven't started learning yet."
+      description="Track your skills, follow AI-generated roadmaps, and master your learning journey."
       action={
         <Button variant="primary" icon={Plus} size="sm" onClick={onOpenModal}>
-          Track First Skill
+          Add First Skill
         </Button>
       }
     />

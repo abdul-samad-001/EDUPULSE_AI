@@ -1,22 +1,35 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import skillService from "../services/skillService";
 
+import SkillsHero from "../components/skills/SkillsHero";
+import SkillsFilterBar from "../components/skills/SkillsFilterBar";
 import SkillList from "../components/skills/SkillList";
+import LearningInsightsWidget from "../components/skills/LearningInsightsWidget";
+
 import AddSkillModal from "../components/skills/AddSkillModal";
 import EditSkillModal from "../components/skills/EditSkillModal";
 import DeleteSkillModal from "../components/skills/DeleteSkillModal";
+import SkillDetailsModal from "../components/skills/SkillDetailsModal";
 
-import { SectionHeader, Button, LoadingSpinner, Card } from "../components/ui";
-import { BookOpen, Plus, AlertCircle } from "lucide-react";
+import { LoadingSpinner, Card, Button } from "../components/ui";
+import { AlertCircle } from "lucide-react";
 
 function Skills() {
   const [skills, setSkills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Filters & Search
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
+
+  // Modals
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [activeEditTarget, setActiveEditTarget] = useState(null);
   const [activeDeleteTarget, setActiveDeleteTarget] = useState(null);
+  const [activeDetailsTarget, setActiveDetailsTarget] = useState(null);
 
   const loadSkills = async () => {
     try {
@@ -34,11 +47,31 @@ function Skills() {
   };
 
   useEffect(() => {
+    let isMounted = true;
     const fetchSkills = async () => {
-      await loadSkills();
+      try {
+        const data = await skillService.getAllSkills();
+        if (isMounted) {
+          setSkills(data || []);
+          setError(null);
+        }
+      } catch (err) {
+        console.error(err);
+        if (isMounted) {
+          setError("Failed to load skills.");
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
     };
 
     fetchSkills();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleAddSkillSubmit = async (name, category) => {
@@ -92,10 +125,46 @@ function Skills() {
     );
   };
 
+  // Filter and Sort Pipeline
+  const processedSkills = useMemo(() => {
+    let list = Array.isArray(skills) ? [...skills] : [];
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter(
+        (s) =>
+          (s.skillName || "").toLowerCase().includes(q) ||
+          (s.category || "").toLowerCase().includes(q)
+      );
+    }
+
+    if (statusFilter === "active") {
+      list = list.filter((s) => (s.progress || 0) < 100);
+    } else if (statusFilter === "completed") {
+      list = list.filter((s) => (s.progress || 0) === 100);
+    }
+
+    if (categoryFilter !== "all") {
+      list = list.filter((s) => s.category === categoryFilter);
+    }
+
+    if (sortBy === "newest") {
+      list.reverse();
+    } else if (sortBy === "oldest") {
+      // Keep original array order
+    } else if (sortBy === "highest") {
+      list.sort((a, b) => (b.progress || 0) - (a.progress || 0));
+    } else if (sortBy === "alphabetical") {
+      list.sort((a, b) => (a.skillName || "").localeCompare(b.skillName || ""));
+    }
+
+    return list;
+  }, [skills, searchQuery, statusFilter, categoryFilter, sortBy]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-[70vh]">
-        <LoadingSpinner size="lg" label="Loading your skills..." />
+        <LoadingSpinner size="lg" label="Loading EduPulse Skill Library..." />
       </div>
     );
   }
@@ -115,30 +184,36 @@ function Skills() {
   }
 
   return (
-    <div className="space-y-8">
-      <SectionHeader
-        title="Skills & Roadmap 📚"
-        subtitle="Manage your learning roadmap, track skill levels, and update progress."
-        icon={BookOpen}
-        action={
-          <Button
-            variant="primary"
-            icon={Plus}
-            onClick={() => setIsAddOpen(true)}
-          >
-            Add Skill
-          </Button>
-        }
+    <div className="space-y-6 sm:space-y-8 max-w-7xl mx-auto pb-10">
+      {/* 1. HERO SECTION */}
+      <SkillsHero skills={skills} onAddSkillClick={() => setIsAddOpen(true)} />
+
+      {/* 2. SEARCH & FILTERS */}
+      <SkillsFilterBar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
+        categoryFilter={categoryFilter}
+        onCategoryFilterChange={setCategoryFilter}
+        sortBy={sortBy}
+        onSortByChange={setSortBy}
       />
 
+      {/* 3. SKILLS GRID + AI RECOMMENDATION CARD */}
       <SkillList
-        skills={skills}
+        skills={processedSkills}
         onProgressUpdate={handleProgressPipelineUpdate}
         onEditTrigger={setActiveEditTarget}
         onDeleteTrigger={setActiveDeleteTarget}
         onOpenModal={() => setIsAddOpen(true)}
+        onAddSuggested={handleAddSkillSubmit}
       />
 
+      {/* 4. LEARNING INSIGHTS WIDGET */}
+      <LearningInsightsWidget skills={skills} />
+
+      {/* MODALS */}
       <AddSkillModal
         isOpen={isAddOpen}
         onClose={() => setIsAddOpen(false)}
@@ -158,6 +233,12 @@ function Skills() {
         skill={activeDeleteTarget}
         onClose={() => setActiveDeleteTarget(null)}
         onConfirm={handleDeleteSkillSubmit}
+      />
+
+      <SkillDetailsModal
+        isOpen={!!activeDetailsTarget}
+        skill={activeDetailsTarget}
+        onClose={() => setActiveDetailsTarget(null)}
       />
     </div>
   );
