@@ -57,33 +57,6 @@ function Login() {
         "*"
       );
 
-      if (
-        window.chrome &&
-        window.chrome.runtime &&
-        typeof window.chrome.runtime.sendMessage === "function"
-      ) {
-        try {
-          window.chrome.runtime.sendMessage(
-            {
-              type: "SAVE_AUTH_TOKEN",
-              token: data.token,
-            },
-            (response) => {
-              if (window.chrome?.runtime?.lastError) {
-                console.warn(
-                  "Extension messaging notice:",
-                  window.chrome.runtime.lastError.message
-                );
-              } else {
-                console.log("Extension response:", response);
-              }
-            }
-          );
-        } catch (err) {
-          console.warn("Chrome runtime sendMessage not available or blocked:", err);
-        }
-      }
-
       alert("Login Successful");
       navigate("/dashboard");
     } catch (error) {

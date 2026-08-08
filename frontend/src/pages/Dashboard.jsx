@@ -14,6 +14,7 @@ import FocusSessionCard from "../components/dashboard/FocusSessionCard";
 import DailyChallengeCard from "../components/dashboard/DailyChallengeCard";
 import XPCard from "../components/dashboard/XPCard";
 import AICoachPreviewCard from "../components/dashboard/AICoachPreviewCard";
+import ExtensionStatusCard from "../components/dashboard/ExtensionStatusCard";
 import RecentNotificationsWidget from "../components/dashboard/RecentNotificationsWidget";
 import RecentSkills from "../components/dashboard/RecentSkills";
 import RecentAchievementsWidget from "../components/dashboard/RecentAchievementsWidget";
@@ -173,8 +174,11 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* 3. QUICK ACTIONS */}
-      <QuickActions onStartFocusClick={handleScrollToFocus} />
+      {/* 3. QUICK ACTIONS & EXTENSION STATUS */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
+        <QuickActions onStartFocusClick={handleScrollToFocus} />
+        <ExtensionStatusCard />
+      </div>
 
       {/* 4. FOCUS SESSION & DAILY CHALLENGE */}
       <div ref={focusSectionRef} className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">

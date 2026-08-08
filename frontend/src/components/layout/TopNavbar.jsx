@@ -1,7 +1,15 @@
+import { useEffect } from "react";
 import { Search, Menu, Moon } from "lucide-react";
 import { NotificationBell } from "../notifications";
 
 function TopNavbar({ onMenuToggle }) {
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      window.postMessage({ type: "EDUPULSE_AUTH_TOKEN", token }, "*");
+    }
+  }, []);
+
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const initials = user.name
     ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)

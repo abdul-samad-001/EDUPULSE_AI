@@ -39,6 +39,16 @@ export const getProcrastinationScore = async () => {
   return response.data;
 };
 export const getProcrastinationAnalytics = getProcrastinationScore;
+
+export const getTelemetryStatus = async () => {
+  const response = await api.get("/telemetry/status");
+  return response.data;
+};
+
+export const getTelemetrySummary = async () => {
+  const response = await api.get("/telemetry/summary");
+  return response.data;
+};
 export const getAnalyticsDashboard = async () => {
   const [
     stats,
