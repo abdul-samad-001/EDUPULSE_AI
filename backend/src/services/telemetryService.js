@@ -72,6 +72,16 @@ const aggregateTodayTelemetry = async (userId) => {
       setDefaultsOnInsert: true,
     }
   );
+
+  return {
+    productiveSeconds,
+    totalDistractionSeconds,
+    neutralSeconds,
+    distractionVisits,
+    totalTrackedSeconds,
+    totalSeconds: totalTrackedSeconds,
+    log,
+  };
 };
 /**
  * Get all telemetry sessions for a user

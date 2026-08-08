@@ -1,0 +1,32 @@
+{
+    "model_comparison": [
+        {
+            "model_name": "Linear Regression",
+            "r2_score": 0.9423713793368335,
+            "rmse": 4.84197212532908,
+            "mae": 3.8534457103906257,
+            "mse": 23.444694062463803,
+            "explained_variance": 0.94238074069238,
+            "training_time_sec": 0.03524494171142578
+        },
+        {
+            "model_name": "Random Forest Regressor",
+            "r2_score": 0.948157914204113,
+            "rmse": 4.592449672835947,
+            "mae": 3.6508979299999997,
+            "mse": 21.090593997531,
+            "explained_variance": 0.9481765877504075,
+            "training_time_sec": 25.155694484710693
+        },
+        {
+            "model_name": "Gradient Boosting Regressor",
+            "r2_score": 0.9488788632459196,
+            "rmse": 4.560405110683357,
+            "mae": 3.6189514449593063,
+            "mse": 20.79729477354688,
+            "explained_variance": 0.9488840207969269,
+            "training_time_sec": 24.164295434951782
+        }
+    ],
+    "best_model": "Gradient Boosting Regressor"
+}

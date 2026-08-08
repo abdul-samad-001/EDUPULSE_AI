@@ -14,7 +14,7 @@ function WeeklySummaryCard({ summary = null }) {
       subtitle="Summary of aggregate achievements, focus intervals, and skill progress"
       className="w-full"
     >
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 pt-1">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 pt-1">
         <StatCard
           title="Study Hours"
           value={`${studyHours}h`}

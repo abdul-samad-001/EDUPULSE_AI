@@ -48,6 +48,11 @@ const tabSessionSchema = new mongoose.Schema(
       enum: ["extension"],
       default: "extension",
     },
+
+    focusSession: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

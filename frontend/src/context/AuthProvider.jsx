@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
 
 export const AuthProvider = ({ children }) => {
@@ -14,10 +14,19 @@ export const AuthProvider = ({ children }) => {
 
   const [user, setUser] = useState(getStoredUser());
 
+  // Broadcast token to Extension on mount / refresh
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      window.postMessage({ type: "EDUPULSE_AUTH_TOKEN", token }, "*");
+    }
+  }, []);
+
   const login = (userData, token) => {
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("token", token);
     setUser(userData);
+    window.postMessage({ type: "EDUPULSE_AUTH_TOKEN", token }, "*");
   };
 
   const logout = () => {

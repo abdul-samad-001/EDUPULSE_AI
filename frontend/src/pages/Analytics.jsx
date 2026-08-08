@@ -188,14 +188,14 @@ function Analytics() {
         <MergedLeaderboardCard leaderboard={leaderboardData} />
       </div>
 
-      {/* 7. WEEKLY SUMMARY & GOAL TRACKER */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
-        <WeeklySummaryCard summary={summary} />
-        <GoalTrackerWidget goals={goals} />
-      </div>
+      {/* 7. COMPREHENSIVE WEEKLY SUMMARY */}
+      <WeeklySummaryCard summary={summary} />
 
-      {/* 8. AI ANALYTICS PREVIEW */}
-      <AIAnalyticsPreviewCard />
+      {/* 8. GOAL TRACKER & AI ANALYTICS PREVIEW */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
+        <GoalTrackerWidget goals={goals} />
+        <AIAnalyticsPreviewCard />
+      </div>
     </div>
   );
 }

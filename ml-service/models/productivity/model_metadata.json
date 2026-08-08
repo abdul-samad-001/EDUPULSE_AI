@@ -1,0 +1,39 @@
+{
+    "model_name": "Gradient Boosting Regressor",
+    "task": "Productivity Prediction",
+    "target_variable": "productivity_score",
+    "metrics": {
+        "r2_score": 0.9489,
+        "rmse": 4.5604,
+        "mae": 3.619,
+        "mse": 20.7973,
+        "explained_variance": 0.9489
+    },
+    "feature_names": [
+        "study_hours_per_day",
+        "focus_session_minutes",
+        "productive_minutes",
+        "distraction_minutes",
+        "idle_time_minutes",
+        "completed_tasks",
+        "pending_tasks",
+        "deadline_completion_rate",
+        "coding_hours",
+        "reading_hours",
+        "revision_hours",
+        "quiz_score",
+        "practice_questions",
+        "sleep_hours",
+        "break_frequency",
+        "focus_score",
+        "xp_earned",
+        "current_level",
+        "streak_days",
+        "skills_completed"
+    ],
+    "num_features": 20,
+    "train_samples": 80000,
+    "test_samples": 20000,
+    "uses_raw_features": true,
+    "training_timestamp": "2026-08-08 01:33:09"
+}
