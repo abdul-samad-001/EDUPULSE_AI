@@ -1,0 +1,113 @@
+{
+    "test_timestamp": "2026-08-13 16:58:36",
+    "service_name": "EduPulse AI ML Service",
+    "service_url": "http://127.0.0.1:8000",
+    "endpoints": {
+        "model_1": "POST /predict",
+        "model_2": "POST /predict/productivity",
+        "model_3": "POST /predict/recommendation",
+        "health": "GET /health"
+    },
+    "model_loading_status": {
+        "model_1": "loaded",
+        "model_2": "loaded",
+        "model_3_v2": "loaded"
+    },
+    "test_summary": {
+        "total_requests_executed": 123,
+        "successful_requests": 119,
+        "expected_400_invalid_requests": 4,
+        "failed_requests": 0
+    },
+    "model_1_results": {
+        "status": "PASS",
+        "sample_response": {
+            "is_procrastinator": false,
+            "model": "Logistic Regression",
+            "prediction": 0,
+            "probability": 0.2015,
+            "risk_level": "Low",
+            "success": true
+        }
+    },
+    "model_2_results": {
+        "status": "PASS",
+        "sample_response": {
+            "model": "Gradient Boosting Regressor",
+            "productivity_score": 27.15,
+            "success": true
+        }
+    },
+    "model_3_v2_results": {
+        "status": "PASS",
+        "sample_response": {
+            "confidence": 0.69,
+            "model_type": "Random Forest",
+            "model_version": "v2",
+            "recommendation": "Take Short Break",
+            "recommendation_class": 2,
+            "success": true
+        }
+    },
+    "invalid_input_test": {
+        "status": "PASS",
+        "details": {
+            "empty_json": {
+                "status_code": 400,
+                "pass": true,
+                "response": {
+                    "message": "JSON request body is required",
+                    "success": false
+                }
+            },
+            "missing_field": {
+                "status_code": 400,
+                "pass": true,
+                "response": {
+                    "message": "Missing required features",
+                    "missing_features": [
+                        "quiz_score"
+                    ],
+                    "success": false
+                }
+            },
+            "invalid_string": {
+                "status_code": 400,
+                "pass": true,
+                "response": {
+                    "message": "All feature values must be numeric",
+                    "success": false
+                }
+            },
+            "null_value": {
+                "status_code": 400,
+                "pass": true,
+                "response": {
+                    "message": "All feature values must be numeric",
+                    "success": false
+                }
+            }
+        }
+    },
+    "class_mapping_test": "PASS",
+    "confidence_validation": "PASS",
+    "api_stability": "PASS",
+    "performance_latency_ms": {
+        "model_1": {
+            "avg": 0.65,
+            "min": 0.48,
+            "max": 1.1
+        },
+        "model_2": {
+            "avg": 1.94,
+            "min": 1.83,
+            "max": 2.45
+        },
+        "model_3": {
+            "avg": 36.73,
+            "min": 33.46,
+            "max": 55.94
+        }
+    },
+    "overall_result": "PASS"
+}

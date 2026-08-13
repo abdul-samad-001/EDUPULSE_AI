@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ResponsiveContainer,
   LineChart,
@@ -8,11 +8,35 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts";
-import { Card } from "../ui";
-import { Zap, Award, AlertTriangle } from "lucide-react";
+import { Card, Badge, LoadingSpinner } from "../ui";
+import { Zap, Award, AlertTriangle, Sparkles } from "lucide-react";
+import { getProductivityPrediction } from "../../services/mlService";
 
 function ProductivityAnalyticsCard({ productivityData = null }) {
   const [viewMode, setViewMode] = useState("daily"); // daily | weekly | monthly
+  const [mlScore, setMlScore] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchModel2 = async () => {
+      try {
+        setLoading(true);
+        const res = await getProductivityPrediction();
+        if (isMounted && res?.success && res?.data) {
+          setMlScore(res.data.productivity_score);
+        }
+      } catch (err) {
+        console.warn("Productivity Prediction Warning:", err?.message);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    fetchModel2();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const daily = productivityData?.daily || [
     { day: "Mon", score: 85 },
@@ -47,23 +71,30 @@ function ProductivityAnalyticsCard({ productivityData = null }) {
 
   return (
     <Card
-      title="⚡ Productivity Score Evolution"
-      subtitle="Historical trends tracking focus efficiency and study performance"
+      title="⚡ AI Productivity Score & Trends"
+      subtitle="Historical focus trends paired with real-time AI productivity analysis"
       headerAction={
-        <div className="flex items-center gap-1 bg-dark-bg p-1 rounded-xl border border-dark-border">
-          {["daily", "weekly", "monthly"].map((mode) => (
-            <button
-              key={mode}
-              onClick={() => setViewMode(mode)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-bold capitalize transition-all cursor-pointer ${
-                viewMode === mode
-                  ? "bg-primary text-dark-bg shadow-sm"
-                  : "text-dark-muted hover:text-dark-text"
-              }`}
-            >
-              {mode}
-            </button>
-          ))}
+        <div className="flex items-center gap-2">
+          {mlScore !== null && (
+            <Badge variant="primary" icon={Sparkles} size="sm">
+              AI Score: {mlScore}%
+            </Badge>
+          )}
+          <div className="flex items-center gap-1 bg-dark-bg p-1 rounded-xl border border-dark-border">
+            {["daily", "weekly", "monthly"].map((mode) => (
+              <button
+                key={mode}
+                onClick={() => setViewMode(mode)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold capitalize transition-all cursor-pointer ${
+                  viewMode === mode
+                    ? "bg-primary text-dark-bg shadow-sm"
+                    : "text-dark-muted hover:text-dark-text"
+                }`}
+              >
+                {mode}
+              </button>
+            ))}
+          </div>
         </div>
       }
       className="w-full"
@@ -76,8 +107,12 @@ function ProductivityAnalyticsCard({ productivityData = null }) {
               <Zap className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-dark-muted uppercase">Avg Productivity</p>
-              <p className="text-base font-extrabold text-dark-text">{average}%</p>
+              <p className="text-[11px] font-bold text-dark-muted uppercase">
+                {mlScore !== null ? "AI Predicted Score" : "Avg Productivity"}
+              </p>
+              <div className="text-base font-extrabold text-dark-text">
+                {loading ? <LoadingSpinner size="xs" /> : `${mlScore !== null ? mlScore : average}%`}
+              </div>
             </div>
           </div>
 
@@ -115,7 +150,7 @@ function ProductivityAnalyticsCard({ productivityData = null }) {
                     return (
                       <div className="bg-dark-card border border-dark-border text-dark-text p-2.5 rounded-lg text-xs font-semibold shadow-xl">
                         <p className="text-primary font-bold">{payload[0].payload[xKey]}</p>
-                        <p className="text-dark-text">Productivity Score: <span className="text-emerald-400 font-extrabold">{payload[0].value}%</span></p>
+                        <p className="text-dark-text">Historical Score: <span className="text-emerald-400 font-extrabold">{payload[0].value}%</span></p>
                       </div>
                     );
                   }

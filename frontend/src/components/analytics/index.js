@@ -7,3 +7,4 @@ export { default as MergedLeaderboardCard } from "./MergedLeaderboardCard";
 export { default as WeeklySummaryCard } from "./WeeklySummaryCard";
 export { default as GoalTrackerWidget } from "./GoalTrackerWidget";
 export { default as AIAnalyticsPreviewCard } from "./AIAnalyticsPreviewCard";
+export { default as RecommendationPerformanceCard } from "./RecommendationPerformanceCard";

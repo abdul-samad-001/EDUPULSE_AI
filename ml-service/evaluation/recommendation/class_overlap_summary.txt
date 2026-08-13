@@ -1,0 +1,20 @@
+EDUPULSE AI - MODEL 3 CLASS OVERLAP RESEARCH SUMMARY
+============================================================
+
+1. Dataset Size             : 100,000 records (Train: 80,000, Test: 20,000)
+2. Number of Classes        : 8 classes (0 to 7)
+3. Class Distribution       : Reasonably balanced across all 8 classes (~10.4% to ~14.0% per class)
+4. Current Model Accuracy   : 0.5228 (Weighted F1: 0.5220, MCC: 0.4539, ROC AUC: 0.8973)
+5. Best-Performing Class    : Class 5 (Watch Learning Video) - F1 Score: 0.5661
+6. Worst-Performing Class   : Class 4 (Revision) - F1 Score: 0.4746
+7. Most Confused Class Pair : True 'Attempt Quiz' --> Pred 'Continue Current Skill' (721 errors, 26.16%)
+8. Top Discriminating Features: productivity_score, study_hours, productive_minutes, quiz_score, streak_days
+9. Evidence of Class Overlap : Substantial KDE density overlap across top features and 2D PCA cluster blending.
+10. Research Conclusion     :
+B. Significant class overlap exists.
+
+EMPIRICAL EVIDENCE:
+1. The 2D PCA projection reveals substantial, continuous overlap among recommendation classes in feature space.
+2. Gaussian noise introduced during synthetic target logit generation deliberately creates non-crisp, overlapping class boundaries.
+3. Features like 'productivity_score', 'focus_score', and 'study_hours' serve multi-class rules simultaneously, leading to cross-talk between related actions (e.g. 'Continue Current Skill' vs 'Attempt Quiz' or 'Start Focus Session').
+4. Standard multi-class tree models achieve ~52-53% accuracy on this 8-class system (compared to random baseline of 12.5%), reflecting realistic behavioral noise rather than trivial separability.

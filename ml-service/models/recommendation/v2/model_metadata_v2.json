@@ -1,0 +1,50 @@
+{
+    "model_name": "Random Forest",
+    "dataset_version": "Experiment B - Refined Recommendation Labels",
+    "train_samples": 80000,
+    "test_samples": 20000,
+    "features": [
+        "productivity_score",
+        "focus_score",
+        "study_hours",
+        "xp",
+        "level",
+        "streak_days",
+        "completed_tasks",
+        "pending_tasks",
+        "coding_hours",
+        "reading_hours",
+        "revision_hours",
+        "quiz_score",
+        "productive_minutes",
+        "distraction_minutes",
+        "idle_minutes",
+        "sleep_hours",
+        "skill_progress",
+        "deadline_completion_rate",
+        "focus_sessions",
+        "average_session_minutes"
+    ],
+    "target": "recommendation",
+    "class_names": [
+        "Continue Current Skill",
+        "Start Focus Session",
+        "Take Short Break",
+        "Practice Coding",
+        "Revision",
+        "Watch Learning Video",
+        "Complete Pending Tasks",
+        "Attempt Quiz"
+    ],
+    "metrics": {
+        "accuracy": 0.97815,
+        "precision": 0.9787605672234051,
+        "recall": 0.97815,
+        "macro_f1": 0.9789188764013765,
+        "weighted_f1": 0.9781272926599737,
+        "specificity": 0.9968667637842805,
+        "roc_auc": 0.9970877614766945,
+        "mcc": 0.9750111059125908
+    },
+    "saved_timestamp": "2026-08-13T16:13:18.123234"
+}

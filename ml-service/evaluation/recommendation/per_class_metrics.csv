@@ -1,0 +1,9 @@
+Class,Class Name,Precision,Recall,F1,Support
+0,Continue Current Skill,0.5122,0.5133,0.5127,2792
+1,Start Focus Session,0.5261,0.5298,0.528,2565
+2,Take Short Break,0.5404,0.5263,0.5333,2375
+3,Practice Coding,0.5342,0.5685,0.5508,2255
+4,Revision,0.5068,0.4463,0.4746,2075
+5,Watch Learning Video,0.5411,0.5935,0.5661,2571
+6,Complete Pending Tasks,0.5066,0.4975,0.502,2611
+7,Attempt Quiz,0.5121,0.5007,0.5063,2756

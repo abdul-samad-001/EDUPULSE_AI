@@ -18,6 +18,7 @@ import ExtensionStatusCard from "../components/dashboard/ExtensionStatusCard";
 import RecentNotificationsWidget from "../components/dashboard/RecentNotificationsWidget";
 import RecentSkills from "../components/dashboard/RecentSkills";
 import RecentAchievementsWidget from "../components/dashboard/RecentAchievementsWidget";
+import MLIntelligenceSummaryWidget from "../components/dashboard/MLIntelligenceSummaryWidget";
 
 import { Heatmap } from "../components/heatmap";
 import { StatCard, LoadingSpinner, Card, Button } from "../components/ui";
@@ -132,6 +133,9 @@ function Dashboard() {
         streak={stats?.streak ?? 0}
         onStartFocus={handleScrollToFocus}
       />
+
+      {/* ML INTELLIGENCE SUMMARY */}
+      <MLIntelligenceSummaryWidget />
 
       {/* 2. TODAY'S STATISTICS */}
       <div className="space-y-3">

@@ -1,0 +1,122 @@
+{
+    "baseline": {
+        "Model": "Gradient Boosting (BASELINE)",
+        "IsBaseline": true,
+        "Accuracy": 0.5227,
+        "Precision": 0.5221751998503015,
+        "Recall": 0.5227,
+        "Macro F1": 0.5216808121045431,
+        "Weighted F1": 0.5219952334879391,
+        "Specificity": 0.9316979854530106,
+        "ROC AUC": 0.8973307154431542,
+        "MCC": 0.45382388769916304,
+        "Training Time": 1118.7974245548248,
+        "Prediction Time": 2.3661279678344727
+    },
+    "best_experimental_model": {
+        "Model": "XGBoost",
+        "IsBaseline": false,
+        "Accuracy": 0.5256,
+        "Precision": 0.5251482630259366,
+        "Recall": 0.5256,
+        "Macro F1": 0.524671524814841,
+        "Weighted F1": 0.5249206020450103,
+        "Specificity": 0.9321160901921804,
+        "ROC AUC": 0.8981539646201835,
+        "MCC": 0.45716862105211775,
+        "Training Time": 7.186980962753296,
+        "Prediction Time": 0.2712728977203369
+    },
+    "improvements": {
+        "accuracy_difference": 0.0029,
+        "accuracy_percent": 0.55,
+        "f1_difference": 0.0029,
+        "f1_percent": 0.56
+    },
+    "all_models": [
+        {
+            "Model": "Gradient Boosting (BASELINE)",
+            "IsBaseline": true,
+            "Accuracy": 0.5227,
+            "Precision": 0.5221751998503015,
+            "Recall": 0.5227,
+            "Macro F1": 0.5216808121045431,
+            "Weighted F1": 0.5219952334879391,
+            "Specificity": 0.9316979854530106,
+            "ROC AUC": 0.8973307154431542,
+            "MCC": 0.45382388769916304,
+            "Training Time": 1118.7974245548248,
+            "Prediction Time": 2.3661279678344727
+        },
+        {
+            "Model": "Random Forest",
+            "IsBaseline": false,
+            "Accuracy": 0.5066,
+            "Precision": 0.5070714093151285,
+            "Recall": 0.5066,
+            "Macro F1": 0.504525977588371,
+            "Weighted F1": 0.5051941594842508,
+            "Specificity": 0.9293335228600921,
+            "ROC AUC": 0.8823792956967896,
+            "MCC": 0.4353086317477555,
+            "Training Time": 21.744240045547485,
+            "Prediction Time": 0.2967395782470703
+        },
+        {
+            "Model": "Extra Trees",
+            "IsBaseline": false,
+            "Accuracy": 0.49645,
+            "Precision": 0.49735550864334127,
+            "Recall": 0.49645,
+            "Macro F1": 0.4927491947391608,
+            "Weighted F1": 0.49413450796899605,
+            "Specificity": 0.9278467603298934,
+            "ROC AUC": 0.8801412129000767,
+            "MCC": 0.42369451771461053,
+            "Training Time": 2.3485987186431885,
+            "Prediction Time": 0.3943817615509033
+        },
+        {
+            "Model": "XGBoost",
+            "IsBaseline": false,
+            "Accuracy": 0.5256,
+            "Precision": 0.5251482630259366,
+            "Recall": 0.5256,
+            "Macro F1": 0.524671524814841,
+            "Weighted F1": 0.5249206020450103,
+            "Specificity": 0.9321160901921804,
+            "ROC AUC": 0.8981539646201835,
+            "MCC": 0.45716862105211775,
+            "Training Time": 7.186980962753296,
+            "Prediction Time": 0.2712728977203369
+        },
+        {
+            "Model": "LightGBM",
+            "IsBaseline": false,
+            "Accuracy": 0.52325,
+            "Precision": 0.5227748807680713,
+            "Recall": 0.52325,
+            "Macro F1": 0.5224941201553184,
+            "Weighted F1": 0.522690661482866,
+            "Specificity": 0.9317884471338352,
+            "ROC AUC": 0.897179449291397,
+            "MCC": 0.4544958228280857,
+            "Training Time": 6.974037408828735,
+            "Prediction Time": 0.5697333812713623
+        },
+        {
+            "Model": "CatBoost",
+            "IsBaseline": false,
+            "Accuracy": 0.51875,
+            "Precision": 0.5188467113995135,
+            "Recall": 0.51875,
+            "Macro F1": 0.5168805560564306,
+            "Weighted F1": 0.5173935557033745,
+            "Specificity": 0.9310921527441508,
+            "ROC AUC": 0.8949382810196548,
+            "MCC": 0.44927637544890653,
+            "Training Time": 3.9341704845428467,
+            "Prediction Time": 0.027666091918945312
+        }
+    ]
+}
