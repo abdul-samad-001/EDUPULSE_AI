@@ -1,5 +1,7 @@
 const UserXP = require("../models/UserXP");
 const { createNotification } = require("./notificationService");
+const { triggerUserMLRefresh } = require("./mlRefreshService");
+
 const XP_REWARDS = {
   CREATE_SKILL: 20,
   COMPLETE_TASK: 10,
@@ -67,6 +69,9 @@ const addXP = async (userId, amount) => {
       type: "xp",
     });
   }
+
+  // Automatic Telemetry ML Refresh Trigger (Sprint 10 Step 3)
+  triggerUserMLRefresh(userId, "xp_earned").catch(() => {});
 
   return xp;
 };

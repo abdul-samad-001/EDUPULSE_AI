@@ -2,9 +2,11 @@ const Skill = require("../models/Skill");
 
 const { checkStreakDeadline } = require("../utils/streakEngine");
 const { createNotification } = require("../services/notificationService");
-const {incrementAchievement,setAchievementProgress,} = require("../services/achievementService");
-const {addXP,XP_REWARDS} = require("../services/xpService");
-const {updateChallengeProgress} = require("../services/dailyChallengeService");
+const { incrementAchievement, setAchievementProgress } = require("../services/achievementService");
+const { addXP, XP_REWARDS } = require("../services/xpService");
+const { updateChallengeProgress } = require("../services/dailyChallengeService");
+const { triggerUserMLRefresh } = require("../services/mlRefreshService");
+
 /**
  * Add Skill
  */
@@ -18,10 +20,10 @@ const addSkill = async (req, res) => {
       category,
     });
     await createNotification({
-    user: req.user._id,
-    title: "📚 New Skill Added",
-    message: `${skill.skillName} has been added successfully.`,
-    type: "skill",
+      user: req.user._id,
+      title: "📚 New Skill Added",
+      message: `${skill.skillName} has been added successfully.`,
+      type: "skill",
     });
     // ===========================
     // Achievement Integration
@@ -54,7 +56,10 @@ const addSkill = async (req, res) => {
       req.user._id,
       XP_REWARDS.CREATE_SKILL
     );
-    await updateChallengeProgress(req.user._id,"skill",1);
+    await updateChallengeProgress(req.user._id, "skill", 1);
+
+    // Automatic Telemetry ML Refresh Trigger (Sprint 10 Step 3)
+    triggerUserMLRefresh(req.user._id, "skill_created").catch(() => {});
 
     res.status(201).json({
       success: true,
@@ -157,6 +162,9 @@ const updateSkill = async (req, res) => {
     }
 
     await skill.save();
+
+    // Automatic Telemetry ML Refresh Trigger (Sprint 10 Step 3)
+    triggerUserMLRefresh(req.user._id, "skill_progress_updated").catch(() => {});
 
     res.status(200).json({
       success: true,

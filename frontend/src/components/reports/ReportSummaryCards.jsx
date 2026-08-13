@@ -11,21 +11,66 @@ function ReportSummaryCards({ summary = null }) {
   const productivity = summary?.productivity || 84;
 
   const cards = [
-    { title: "Study Hours", value: `${studyHours}h`, icon: Clock, subtext: "Total interval duration" },
-    { title: "Focus Sessions", value: sessions, icon: Timer, subtext: "Pomodoro blocks finished" },
-    { title: "Tasks Completed", value: tasks, icon: CheckCircle2, subtext: "Roadmap milestones" },
-    { title: "Skills Improved", value: skills, icon: TrendingUp, subtext: "Active tracks updated" },
-    { title: "Achievements", value: achievements, icon: ShieldCheck, subtext: "Badges unlocked" },
-    { title: "XP Earned", value: `+${xp} XP`, icon: Award, subtext: "Level experience gain" },
-    { title: "Avg Productivity", value: `${productivity}%`, icon: Zap, subtext: "Focus rating" },
+    {
+      title: "Study Hours",
+      value: `${studyHours}h`,
+      icon: Clock,
+      subtext: "Total interval duration",
+      colorTheme: "cyan",
+    },
+    {
+      title: "Focus Sessions",
+      value: sessions,
+      icon: Timer,
+      subtext: "Pomodoro blocks finished",
+      colorTheme: "emerald",
+    },
+    {
+      title: "Tasks Completed",
+      value: tasks,
+      icon: CheckCircle2,
+      subtext: "Roadmap milestones",
+      colorTheme: "violet",
+    },
+    {
+      title: "Skills Improved",
+      value: skills,
+      icon: TrendingUp,
+      subtext: "Active tracks updated",
+      colorTheme: "amber",
+    },
+    {
+      title: "Achievements",
+      value: achievements,
+      icon: ShieldCheck,
+      subtext: "Badges unlocked",
+      colorTheme: "rose",
+    },
+    {
+      title: "XP Earned",
+      value: `+${xp} XP`,
+      icon: Award,
+      subtext: "Level experience gain",
+      colorTheme: "indigo",
+    },
+    {
+      title: "Avg Productivity",
+      value: `${productivity}%`,
+      icon: Zap,
+      subtext: "Focus rating",
+      colorTheme: "sky",
+    },
   ];
 
   return (
     <div className="space-y-3">
-      <h2 className="text-xs font-extrabold uppercase tracking-wider text-dark-muted px-1">
-        Comprehensive Report Summary
-      </h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+      <div className="flex items-center justify-between px-1">
+        <h2 className="text-xs font-extrabold uppercase tracking-wider text-dark-muted flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+          Comprehensive Report Summary
+        </h2>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-7 gap-3 sm:gap-3.5">
         {cards.map((card) => (
           <StatCard
             key={card.title}
@@ -33,6 +78,7 @@ function ReportSummaryCards({ summary = null }) {
             value={card.value}
             icon={card.icon}
             subtext={card.subtext}
+            colorTheme={card.colorTheme}
           />
         ))}
       </div>

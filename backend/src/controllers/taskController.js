@@ -4,8 +4,9 @@ const Skill = require("../models/Skill");
 const User = require("../models/User"); // Imported to handle user updates
 const { checkStreakDeadline, advanceDayIfComplete } = require("../utils/streakEngine");
 const { setAchievementProgress } = require("../services/achievementService");
-const {addXP,XP_REWARDS,} = require("../services/xpService");
-const {updateChallengeProgress} = require("../services/dailyChallengeService");
+const { addXP, XP_REWARDS } = require("../services/xpService");
+const { updateChallengeProgress } = require("../services/dailyChallengeService");
+const { triggerUserMLRefresh } = require("../services/mlRefreshService");
 
 const getTasksBySkill = async (req, res) => {
   try {
@@ -37,6 +38,7 @@ const getTasksBySkill = async (req, res) => {
     });
   }
 };
+
 const createTask = async (req, res) => {
   try {
     const { taskName, assignedDay } = req.body;
@@ -51,6 +53,11 @@ const createTask = async (req, res) => {
       taskName,
       assignedDay: assignedDay || skill.currentDay || 1,
     });
+
+    if (req.user && req.user._id) {
+      triggerUserMLRefresh(req.user._id, "task_created").catch(() => {});
+    }
+
     res.status(201).json({
       success: true,
       task,
@@ -78,7 +85,7 @@ const updateTask = async (req, res) => {
     await task.save();
     // Award XP only when a task is completed
     if (completed === true) {
-      await addXP(req.user._id,XP_REWARDS.COMPLETE_TASK);
+      await addXP(req.user._id, XP_REWARDS.COMPLETE_TASK);
     }
     // Recalculate progress for the linked skill
     const tasks = await Task.find({
@@ -139,11 +146,16 @@ const updateTask = async (req, res) => {
           skill: { $in: skillIds },
           completed: true,
         });
-        await updateChallengeProgress(req.user._id,"task",totalCompletedTasks);
-        await setAchievementProgress(req.user._id,"task_master",totalCompletedTasks);
+        await updateChallengeProgress(req.user._id, "task", totalCompletedTasks);
+        await setAchievementProgress(req.user._id, "task_master", totalCompletedTasks);
       }
     }
     // ==========================================
+
+    // Automatic Telemetry ML Refresh Trigger (Sprint 10 Step 3)
+    if (req.user && req.user._id) {
+      triggerUserMLRefresh(req.user._id, completed ? "task_completed" : "task_status_changed").catch(() => {});
+    }
 
     res.status(200).json({
       success: true,
@@ -156,6 +168,7 @@ const updateTask = async (req, res) => {
     });
   }
 };
+
 const generateAIRoadmap = async (req, res) => {
   try {
     const skill = await Skill.findById(req.params.skillId);
@@ -198,6 +211,10 @@ const generateAIRoadmap = async (req, res) => {
       streakCount: 0,
       lastCompletedAt: null,
     });
+
+    if (req.user && req.user._id) {
+      triggerUserMLRefresh(req.user._id, "ai_roadmap_generated").catch(() => {});
+    }
 
     res.status(201).json({
       success: true,
