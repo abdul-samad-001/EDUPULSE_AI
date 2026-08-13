@@ -3,22 +3,24 @@ import { Card, Button, Badge, LoadingSpinner } from "../ui";
 import { Sparkles, Brain, ArrowRight, Play, Coffee, Code, BookOpen, CheckSquare, HelpCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getRecommendationPrediction } from "../../services/mlService";
+import { respondToRecommendation } from "../../services/recommendationService";
 
 const ACTION_CONFIG = {
-  0: { label: "Open Skill Roadmap", route: "/skills", icon: BookOpen },
-  1: { label: "Start Focus Session", route: "/focus", icon: Play },
-  2: { label: "Start Short Break", route: "/focus", icon: Coffee },
-  3: { label: "Practice Coding", route: "/skills", icon: Code },
-  4: { label: "Start Revision", route: "/skills", icon: BookOpen },
-  5: { label: "Watch Video Lesson", route: "/skills", icon: Play },
-  6: { label: "Complete Pending Tasks", route: "/skills", icon: CheckSquare },
-  7: { label: "Attempt Challenge Quiz", route: "/daily-challenge", icon: HelpCircle },
+  0: { label: "Open Skill Roadmap", route: "/skills", actionTarget: "skills", icon: BookOpen },
+  1: { label: "Start Focus Session", route: "/focus", actionTarget: "focus", icon: Play },
+  2: { label: "Start Short Break", route: "/focus?mode=break", actionTarget: "break", icon: Coffee },
+  3: { label: "Start Coding Focus Session", route: "/focus?mode=coding", actionTarget: "coding", icon: Code },
+  4: { label: "Start Revision Session", route: "/focus?mode=revision", actionTarget: "revision", icon: BookOpen },
+  5: { label: "Watch Video Lesson", route: "/skills", actionTarget: "video", icon: Play },
+  6: { label: "Complete Pending Tasks", route: "/tasks", actionTarget: "tasks", icon: CheckSquare },
+  7: { label: "Attempt Challenge Quiz", route: "/daily-challenge", actionTarget: "quiz", icon: HelpCircle },
 };
 
 function AIFocusPreviewCard() {
   const navigate = useNavigate();
   const [recommendationData, setRecommendationData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [actionProcessing, setActionProcessing] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -41,6 +43,7 @@ function AIFocusPreviewCard() {
     };
   }, []);
 
+  const eventId = recommendationData?.event_id || null;
   const classIdx = recommendationData?.recommendation_class ?? 1;
   const recText = recommendationData?.recommendation || "Start Focus Session";
   const confidence = recommendationData?.confidence
@@ -49,6 +52,22 @@ function AIFocusPreviewCard() {
 
   const actionCfg = ACTION_CONFIG[classIdx] || ACTION_CONFIG[1];
   const ActionIcon = actionCfg.icon || ArrowRight;
+
+  const handleAction = async () => {
+    if (actionProcessing) return;
+    try {
+      setActionProcessing(true);
+      await respondToRecommendation(eventId, "accepted", "cta_click", actionCfg.actionTarget).catch(() => null);
+      navigate(actionCfg.route, {
+        state: { mode: actionCfg.actionTarget, recommendationId: eventId },
+      });
+    } catch (err) {
+      console.warn("Focus CTA Action Warning:", err);
+      navigate(actionCfg.route);
+    } finally {
+      setActionProcessing(false);
+    }
+  };
 
   return (
     <Card
@@ -95,9 +114,10 @@ function AIFocusPreviewCard() {
           size="sm"
           icon={ActionIcon}
           iconPosition="right"
-          onClick={() => navigate(actionCfg.route)}
+          onClick={handleAction}
+          disabled={actionProcessing}
         >
-          {actionCfg.label}
+          {actionProcessing ? "Launching..." : actionCfg.label}
         </Button>
       </div>
     </Card>

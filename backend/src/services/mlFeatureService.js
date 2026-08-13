@@ -81,11 +81,21 @@ const getUserAggregatedMetrics = async (userId) => {
   const xp = xpDoc ? xpDoc.totalXP : 0;
   const level = xpDoc ? xpDoc.level : 1;
 
-  // 5. TabSessions (Category-based domain breakdown)
+  // 5. TabSessions & FocusSessions (Category-based domain breakdown)
   const tabSessions = await TabSession.find({ user: userId });
   let codingHours = 0;
   let readingHours = 0;
   let revisionHours = 0;
+
+  // Include completed coding FocusSessions
+  const codingSessions = sessions.filter(
+    (s) => s.category === "coding" || (s.notes && s.notes.toLowerCase().includes("coding"))
+  );
+  const codingSessionMinutes = codingSessions.reduce(
+    (sum, s) => sum + (s.actualDurationMinutes || 0),
+    0
+  );
+  codingHours += codingSessionMinutes / 60;
 
   tabSessions.forEach((t) => {
     const hours = (t.durationSeconds || 0) / 3600;
@@ -119,9 +129,9 @@ const getUserAggregatedMetrics = async (userId) => {
     streak_days: maxStreak,
     completed_tasks: completedTasks,
     pending_tasks: pendingTasks,
-    coding_hours: Number(codingHours.toFixed(1)) || 1.5,
-    reading_hours: Number(readingHours.toFixed(1)) || 1.0,
-    revision_hours: Number(revisionHours.toFixed(1)) || 1.0,
+    coding_hours: Number(codingHours.toFixed(1)),
+    reading_hours: Number(readingHours.toFixed(1)),
+    revision_hours: Number(revisionHours.toFixed(1)),
     quiz_score: 75.0,
     practice_questions: completedTasks * 3 || 20,
     productive_minutes: productiveMinutes || 180.0,

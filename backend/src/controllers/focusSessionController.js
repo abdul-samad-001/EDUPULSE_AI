@@ -4,6 +4,7 @@ const { addXP, XP_REWARDS } = require("../services/xpService");
 const { updateChallengeProgress } = require("../services/dailyChallengeService");
 const { createNotification } = require("../services/notificationService");
 const { triggerUserMLRefresh } = require("../services/mlRefreshService");
+const { markRecommendationComplete } = require("./recommendationController");
 
 /**
  * POST /api/focus/start
@@ -11,7 +12,7 @@ const { triggerUserMLRefresh } = require("../services/mlRefreshService");
  */
 const startFocusSession = async (req, res) => {
   try {
-    const { skill, plannedDurationMinutes, notes } = req.body;
+    const { skill, plannedDurationMinutes, notes, category, recommendationId } = req.body;
 
     if (!skill || !plannedDurationMinutes) {
       return res.status(400).json({
@@ -38,6 +39,8 @@ const startFocusSession = async (req, res) => {
       skill,
       plannedDurationMinutes,
       notes,
+      category: category || "general",
+      recommendationId,
     });
 
     // Automatic Telemetry ML Refresh Trigger (Sprint 10 Step 3)
@@ -65,6 +68,7 @@ const startFocusSession = async (req, res) => {
  */
 const stopFocusSession = async (req, res) => {
   try {
+    const { recommendationId } = req.body || {};
     const session = await FocusSession.findOne({
       user: req.user._id,
       status: "active",
@@ -79,8 +83,9 @@ const stopFocusSession = async (req, res) => {
 
     const endedAt = new Date();
 
-    const actualDurationMinutes = Math.round(
-      (endedAt - session.startedAt) / (1000 * 60)
+    const actualDurationMinutes = Math.max(
+      1,
+      Math.round((endedAt - session.startedAt) / (1000 * 60))
     );
 
     session.endedAt = endedAt;
@@ -88,13 +93,22 @@ const stopFocusSession = async (req, res) => {
     session.status = "completed";
 
     await session.save();
+
+    // Mark corresponding RecommendationEvent as COMPLETED
+    let recClass = undefined;
+    if (session.category === "coding") recClass = 3;
+    else if (session.category === "break") recClass = 2;
+    else if (session.category === "revision") recClass = 4;
+
+    await markRecommendationComplete(req.user._id, recClass).catch(() => null);
+
     await addXP(req.user._id, XP_REWARDS.COMPLETE_FOCUS);
     await incrementAchievement(req.user._id, "first_focus");
     await updateChallengeProgress(req.user._id, "focus", actualDurationMinutes);
     await createNotification({
       user: req.user._id,
       title: "⏳ Focus Session Completed",
-      message: `You completed a ${session.actualDurationMinutes} minute focus session.`,
+      message: `You completed a ${session.actualDurationMinutes} minute ${session.category || "focus"} session.`,
       type: "focus",
     });
     const totalSessions = await FocusSession.countDocuments({
@@ -109,7 +123,8 @@ const stopFocusSession = async (req, res) => {
     );
 
     // Automatic Telemetry ML Refresh Trigger (Sprint 10 Step 3)
-    triggerUserMLRefresh(req.user._id, "focus_session_completed").catch(() => {});
+    const refreshTrigger = session.category === "coding" ? "coding_session_completed" : "focus_session_completed";
+    triggerUserMLRefresh(req.user._id, refreshTrigger).catch(() => {});
 
     res.status(200).json({
       success: true,

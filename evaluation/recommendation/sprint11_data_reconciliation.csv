@@ -1,0 +1,8 @@
+stage,step2_count,step3_count,difference,explanation
+raw_events_at_extraction,31,34,3,Three new RecommendationEvents created in DB between 16:23 UTC and 16:31 UTC
+valid_user_object_id,31,34,3,All events contain valid user ObjectId references
+valid_shown_at_timestamp,31,34,3,All events contain valid shownAt timestamps
+valid_recommendation_class,31,34,3,All events fall within valid 0-7 recommendation class range
+valid_status_value,31,34,3,All events contain valid status strings (shown accepted completed)
+valid_telemetry_join,31,34,3,All events paired with user TabSession/FocusSession telemetry
+final_canonical_dataset,34,34,0,Canonical dataset defined as N=34 for reproducible Sprint 11 analysis

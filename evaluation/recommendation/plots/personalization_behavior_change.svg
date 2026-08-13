@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 350" style="background:#0F1115; font-family:sans-serif;">
+      <text x="350" y="30" fill="#F5F5F5" font-size="16" font-weight="bold" text-anchor="middle">Productive Minutes Change (30m) by Profile</text>
+      
+            <text x="190" y="95" fill="#9CA3AF" font-size="12" font-weight="bold" text-anchor="end">Low Productivity (N=23)</text>
+            <rect x="200" y="80" width="34.78260869565217" height="22" fill="#10B981" rx="4"/>
+            <text x="244.7826086956522" y="95" fill="#10B981" font-size="11" font-weight="bold">+1.74m</text>
+          
+            <text x="190" y="145" fill="#9CA3AF" font-size="12" font-weight="bold" text-anchor="end">Medium Productivity (N=5)</text>
+            <rect x="200" y="130" width="87.86666666666667" height="22" fill="#10B981" rx="4"/>
+            <text x="297.8666666666667" y="145" fill="#10B981" font-size="11" font-weight="bold">+4.39m</text>
+          
+            <text x="190" y="195" fill="#9CA3AF" font-size="12" font-weight="bold" text-anchor="end">High Productivity (N=11)</text>
+            <rect x="200" y="180" width="133.2121212121212" height="22" fill="#EF4444" rx="4"/>
+            <text x="343.2121212121212" y="195" fill="#EF4444" font-size="11" font-weight="bold">-6.66m</text>
+          
+    </svg>

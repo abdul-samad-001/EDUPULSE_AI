@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 400" style="background:#0F1115; font-family:sans-serif;">
+      <text x="350" y="30" fill="#F5F5F5" font-size="16" font-weight="bold" text-anchor="middle">Observed Class Distribution (N=31 Total)</text>
+      
+            <text x="190" y="78" fill="#9CA3AF" font-size="11" font-weight="bold" text-anchor="end">0. Continue Current S</text>
+            <rect x="210" y="60" width="296.7741935483871" height="24" fill="#38BDF8" rx="4"/>
+            <text x="516.7741935483871" y="77" fill="#38BDF8" font-size="11" font-weight="bold">N = 23</text>
+          
+            <text x="190" y="118" fill="#9CA3AF" font-size="11" font-weight="bold" text-anchor="end">1. Start Focus Sessio</text>
+            <rect x="210" y="100" width="38.70967741935484" height="24" fill="#38BDF8" rx="4"/>
+            <text x="258.7096774193548" y="117" fill="#38BDF8" font-size="11" font-weight="bold">N = 3</text>
+          
+            <text x="190" y="158" fill="#9CA3AF" font-size="11" font-weight="bold" text-anchor="end">2. Take Short Break</text>
+            <rect x="210" y="140" width="38.70967741935484" height="24" fill="#38BDF8" rx="4"/>
+            <text x="258.7096774193548" y="157" fill="#38BDF8" font-size="11" font-weight="bold">N = 3</text>
+          
+            <text x="190" y="198" fill="#9CA3AF" font-size="11" font-weight="bold" text-anchor="end">3. Practice Coding</text>
+            <rect x="210" y="180" width="51.61290322580645" height="24" fill="#38BDF8" rx="4"/>
+            <text x="271.61290322580646" y="197" fill="#38BDF8" font-size="11" font-weight="bold">N = 4</text>
+          
+            <text x="190" y="238" fill="#9CA3AF" font-size="11" font-weight="bold" text-anchor="end">4. Revision</text>
+            <rect x="210" y="220" width="4" height="24" fill="#38BDF8" rx="4"/>
+            <text x="220" y="237" fill="#38BDF8" font-size="11" font-weight="bold">N = 0</text>
+          
+            <text x="190" y="278" fill="#9CA3AF" font-size="11" font-weight="bold" text-anchor="end">5. Watch Learning Vid</text>
+            <rect x="210" y="260" width="12.903225806451612" height="24" fill="#38BDF8" rx="4"/>
+            <text x="232.90322580645162" y="277" fill="#38BDF8" font-size="11" font-weight="bold">N = 1</text>
+          
+            <text x="190" y="318" fill="#9CA3AF" font-size="11" font-weight="bold" text-anchor="end">6. Complete Pending T</text>
+            <rect x="210" y="300" width="4" height="24" fill="#38BDF8" rx="4"/>
+            <text x="220" y="317" fill="#38BDF8" font-size="11" font-weight="bold">N = 0</text>
+          
+            <text x="190" y="358" fill="#9CA3AF" font-size="11" font-weight="bold" text-anchor="end">7. Attempt Quiz</text>
+            <rect x="210" y="340" width="4" height="24" fill="#38BDF8" rx="4"/>
+            <text x="220" y="357" fill="#38BDF8" font-size="11" font-weight="bold">N = 0</text>
+          
+    </svg>

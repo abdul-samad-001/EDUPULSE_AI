@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 350" style="background:#0F1115; font-family:sans-serif;">
+      <text x="300" y="35" fill="#F5F5F5" font-size="16" font-weight="bold" text-anchor="middle">Recommendation Status Outcome Distribution</text>
+      <rect x="80" y="240" width="80" height="36.12903225806451" fill="#2DD4BF" rx="6"/>
+      <text x="120" y="235" fill="#2DD4BF" font-size="12" font-weight="bold" text-anchor="middle">7</text>
+      <text x="120" y="270" fill="#9CA3AF" font-size="11" text-anchor="middle">Accepted</text>
+
+      <rect x="200" y="240" width="80" height="30.967741935483872" fill="#38BDF8" rx="6"/>
+      <text x="240" y="235" fill="#38BDF8" font-size="12" font-weight="bold" text-anchor="middle">6</text>
+      <text x="240" y="270" fill="#9CA3AF" font-size="11" text-anchor="middle">Completed</text>
+
+      <rect x="320" y="240" width="80" height="5.161290322580645" fill="#F43F5E" rx="6"/>
+      <text x="360" y="235" fill="#F43F5E" font-size="12" font-weight="bold" text-anchor="middle">1</text>
+      <text x="360" y="270" fill="#9CA3AF" font-size="11" text-anchor="middle">Dismissed</text>
+
+      <rect x="440" y="240" width="80" height="10.32258064516129" fill="#94A3B8" rx="6"/>
+      <text x="480" y="235" fill="#94A3B8" font-size="12" font-weight="bold" text-anchor="middle">2</text>
+      <text x="480" y="270" fill="#9CA3AF" font-size="11" text-anchor="middle">Ignored</text>
+
+      <line x1="50" y1="240" x2="550" y2="240" stroke="#262A33" stroke-width="2"/>
+    </svg>

@@ -1,0 +1,32 @@
+event_id,user_id,recommendation_class,class_name,status,confidence,shown_at,responded_at,completed_at,pre_productive_mins,post_productive_mins,productive_change_mins,pre_distraction_mins,post_distraction_mins,distraction_change_mins,post_focus_sessions,post_tasks_completed
+6a7daf3a9bc27212e09480e0,6a7daf39ac31d1b8b5ecb951,0,"Continue Current Skill",shown,0.28,"2026-08-13T11:49:14.869Z","","",0.00,0.00,0.00,0.00,0.00,0.00,0,0
+6a7daf3b9bc27212e09480e5,6a7dab603f0f4990f99a6222,1,"Start Focus Session",completed,0.88,"2026-08-13T11:49:15.184Z","2026-08-13T11:56:53.810Z","2026-08-13T11:56:53.936Z",0.00,0.00,0.00,0.00,0.00,0.00,5,0
+6a7db1054525a37aed4ecadb,6a7db104457527e736c44a4f,0,"Continue Current Skill",shown,0.28,"2026-08-13T11:56:53.342Z","","",0.00,0.00,0.00,0.00,0.00,0.00,0,0
+6a7db1f94525a37aed4ecbb8,6a7dab603f0f4990f99a6222,0,"Continue Current Skill",accepted,0.28,"2026-08-13T12:00:57.723Z","2026-08-13T12:00:57.878Z","",0.00,0.00,0.00,0.00,0.00,0.00,5,0
+6a7dd3e14525a37aed4ecc6d,6a7dab603f0f4990f99a6222,0,"Continue Current Skill",ignored,0.28,"2026-08-13T14:25:37.683Z","","",0.00,0.00,0.00,0.00,0.00,0.00,5,0
+6a7dd6354525a37aed4ece60,6a738ddf64da240543b95d29,0,"Continue Current Skill",ignored,0.25,"2026-08-13T14:35:33.384Z","","",0.88,2.87,1.98,0.00,0.00,0.00,1,0
+6a7ddd644525a37aed4ecfe0,6a738ddf64da240543b95d29,0,"Continue Current Skill",shown,0.25,"2026-08-13T15:06:12.774Z","","",2.87,13.12,10.25,0.00,0.45,0.45,1,0
+6a7ddd644525a37aed4ecfe3,6a738ddf64da240543b95d29,0,"Continue Current Skill",shown,0.25,"2026-08-13T15:06:12.824Z","","",2.87,13.12,10.25,0.00,0.45,0.45,1,0
+6a7de08d4525a37aed4ed035,6a738ddf64da240543b95d29,3,"Practice Coding",shown,0.32,"2026-08-13T15:19:41.249Z","","",15.70,1.57,-14.13,0.00,0.45,0.45,1,0
+6a7de08d4525a37aed4ed037,6a738ddf64da240543b95d29,3,"Practice Coding",dismissed,0.32,"2026-08-13T15:19:41.278Z","2026-08-13T15:21:30.807Z","",15.70,1.57,-14.13,0.00,0.45,0.45,1,0
+6a7de2fbff5fe6c975432fb8,6a7de2fa72be63f52538c235,0,"Continue Current Skill",shown,0.28,"2026-08-13T15:30:03.604Z","","",0.00,0.00,0.00,0.00,0.00,0.00,0,0
+6a7de2fbff5fe6c975432fbd,6a7dab603f0f4990f99a6222,1,"Start Focus Session",completed,0.88,"2026-08-13T15:30:03.880Z","2026-08-13T15:57:51.657Z","2026-08-13T15:57:51.818Z",0.00,20.00,20.00,0.00,0.00,0.00,5,0
+6a7de2fdff5fe6c975432fe1,6a7dab603f0f4990f99a6222,0,"Continue Current Skill",completed,0.29,"2026-08-13T15:30:05.028Z","2026-08-13T15:57:55.303Z","2026-08-13T15:57:55.465Z",0.00,20.00,20.00,0.00,0.00,0.00,5,0
+6a7de3be9dc42611a6235307,6a7de3bccb8e10c53db32b9c,0,"Continue Current Skill",shown,0.28,"2026-08-13T15:33:18.193Z","","",0.00,0.00,0.00,0.00,0.00,0.00,0,0
+6a7de4009dc42611a623540b,6a7de3ff56b9519e8aae23d8,0,"Continue Current Skill",shown,0.28,"2026-08-13T15:34:24.071Z","","",0.00,0.00,0.00,0.00,0.00,0.00,0,0
+6a7de53d9dc42611a6235597,6a7de53c58661b5be21c58ae,0,"Continue Current Skill",shown,0.28,"2026-08-13T15:39:41.339Z","","",0.00,0.00,0.00,0.00,0.00,0.00,0,0
+6a7de66e9dc42611a623567a,6a7de66d3a0a69a33f9cdc6d,0,"Continue Current Skill",shown,0.28,"2026-08-13T15:44:46.710Z","","",0.00,0.00,0.00,0.00,0.00,0.00,0,0
+6a7de772028df18a765a5478,6a7de7707c6481af8b8ca70b,0,"Continue Current Skill",shown,0.28,"2026-08-13T15:49:06.377Z","","",0.00,0.00,0.00,0.00,0.00,0.00,0,0
+6a7de77b028df18a765a5570,6a7dab603f0f4990f99a6333,0,"Continue Current Skill",shown,0.28,"2026-08-13T15:49:15.545Z","","",0.00,0.00,0.00,0.00,0.00,0.00,0,0
+6a7de872028df18a765a5595,6a7de8716688100420a59386,0,"Continue Current Skill",shown,0.28,"2026-08-13T15:53:22.100Z","","",0.00,0.00,0.00,0.00,0.00,0.00,0,0
+6a7de874028df18a765a55cd,6a7dab603f0f4990f99a6222,5,"Watch Learning Video",shown,0.23,"2026-08-13T15:53:24.313Z","","",15.00,10.00,-5.00,0.00,0.00,0.00,4,0
+6a7de8b6028df18a765a56b4,6a738ddf64da240543b95d29,3,"Practice Coding",shown,0.34,"2026-08-13T15:54:30.398Z","","",1.57,0.42,-1.15,0.45,0.00,-0.45,0,0
+6a7de97f028df18a765a578b,6a7de97db9c063280d343d9d,0,"Continue Current Skill",shown,0.28,"2026-08-13T15:57:51.088Z","","",0.00,0.00,0.00,0.00,0.00,0.00,0,0
+6a7dea36028df18a765a58aa,6a7dea358a9b32f9c1587071,0,"Continue Current Skill",shown,0.28,"2026-08-13T16:00:54.305Z","","",0.00,0.00,0.00,0.00,0.00,0.00,0,0
+6a7dea36028df18a765a58af,6a7dab603f0f4990f99a6222,1,"Start Focus Session",completed,0.88,"2026-08-13T16:00:54.627Z","2026-08-13T16:19:29.282Z","2026-08-13T16:19:29.431Z",20.00,5.00,-15.00,0.00,0.00,0.00,2,0
+6a7dea38028df18a765a58d3,6a7dab603f0f4990f99a6222,0,"Continue Current Skill",completed,0.26,"2026-08-13T16:00:56.227Z","2026-08-13T16:00:58.749Z","2026-08-13T16:00:58.913Z",20.00,5.00,-15.00,0.00,0.00,0.00,2,0
+6a7dea3c028df18a765a5980,6a7dab603f0f4990f99a6222,2,"Take Short Break",shown,0.32,"2026-08-13T16:01:00.933Z","","",20.00,5.00,-15.00,0.00,0.00,0.00,1,0
+6a7dea3c028df18a765a5982,6a7dab603f0f4990f99a6222,2,"Take Short Break",shown,0.32,"2026-08-13T16:01:00.935Z","","",20.00,5.00,-15.00,0.00,0.00,0.00,1,0
+6a7dea3c028df18a765a5984,6a7dab603f0f4990f99a6222,2,"Take Short Break",completed,0.32,"2026-08-13T16:01:00.937Z","2026-08-13T16:19:32.664Z","2026-08-13T16:19:32.812Z",20.00,5.00,-15.00,0.00,0.00,0.00,1,0
+6a7dee90028df18a765a5ae0,6a7dee8f779cac297dba6437,0,"Continue Current Skill",shown,0.28,"2026-08-13T16:19:28.670Z","","",0.00,0.00,0.00,0.00,0.00,0.00,0,0
+6a7dee97028df18a765a5bd4,6a7dab603f0f4990f99a6333,0,"Continue Current Skill",shown,0.28,"2026-08-13T16:19:35.446Z","","",0.00,0.00,0.00,0.00,0.00,0.00,0,0

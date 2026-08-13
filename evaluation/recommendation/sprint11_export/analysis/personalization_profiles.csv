@@ -1,0 +1,6 @@
+profile_type,segment_name,total_observations_n,pct_of_total,sample_size_flag
+"Productivity Profile","Low Productivity",23,58.97,"small sample — interpret cautiously"
+"Productivity Profile","Medium Productivity",5,12.82,"very small sample — insufficient for reliable personalization inference"
+"Productivity Profile","High Productivity",11,28.21,"small sample — interpret cautiously"
+"Focus Profile","Low Focus",0,0.00,"no observed data"
+"Focus Profile","High Focus",39,100.00,"adequate for descriptive analysis"
