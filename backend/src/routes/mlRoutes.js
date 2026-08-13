@@ -15,4 +15,7 @@ router.post("/productivity", protect, mlController.predictProductivity);
 // POST /api/ml/recommendation — Model 3 V2 Recommendation Prediction (Protected)
 router.post("/recommendation", protect, mlController.predictRecommendation);
 
+// POST /api/ml/refresh — Real-Time Telemetry-Triggered ML Intelligence Refresh (Protected)
+router.post("/refresh", protect, mlController.refreshMLIntelligence);
+
 module.exports = router;
