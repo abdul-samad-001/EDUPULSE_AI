@@ -16,10 +16,7 @@ const protect = async (req, res, next) => {
       console.log("Token:", token);
       console.log("Decoded:", decoded);
       const user = await User.findById(decoded.id);
-      console.log("User from DB:", user);
-      req.user = user;
-      console.log("req.user:", req.user);
-      console.log("===============================");
+      req.user = user || { _id: decoded.id, id: decoded.id };
       next();
     } else {
       return res.status(401).json({

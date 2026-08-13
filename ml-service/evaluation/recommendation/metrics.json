@@ -1,0 +1,320 @@
+{
+    "dataset_size": 100000,
+    "train_samples": 80000,
+    "test_samples": 20000,
+    "feature_count": 20,
+    "feature_names": [
+        "productivity_score",
+        "focus_score",
+        "study_hours",
+        "xp",
+        "level",
+        "streak_days",
+        "completed_tasks",
+        "pending_tasks",
+        "coding_hours",
+        "reading_hours",
+        "revision_hours",
+        "quiz_score",
+        "productive_minutes",
+        "distraction_minutes",
+        "idle_minutes",
+        "sleep_hours",
+        "skill_progress",
+        "deadline_completion_rate",
+        "focus_sessions",
+        "average_session_minutes"
+    ],
+    "class_names": [
+        "Continue Current Skill",
+        "Start Focus Session",
+        "Take Short Break",
+        "Practice Coding",
+        "Revision",
+        "Watch Learning Video",
+        "Complete Pending Tasks",
+        "Attempt Quiz"
+    ],
+    "best_model": "Gradient Boosting",
+    "models": {
+        "Decision Tree": {
+            "accuracy": 0.4339,
+            "precision": 0.433,
+            "recall": 0.4339,
+            "specificity": 0.9189,
+            "f1": 0.4325,
+            "roc_auc": 0.7985,
+            "average_precision": 0.3836,
+            "mcc": 0.3518,
+            "confusion_matrix": [
+                [
+                    1251,
+                    93,
+                    299,
+                    90,
+                    76,
+                    92,
+                    113,
+                    778
+                ],
+                [
+                    84,
+                    1210,
+                    66,
+                    130,
+                    132,
+                    251,
+                    549,
+                    143
+                ],
+                [
+                    383,
+                    94,
+                    850,
+                    196,
+                    146,
+                    178,
+                    144,
+                    384
+                ],
+                [
+                    155,
+                    187,
+                    171,
+                    1023,
+                    221,
+                    203,
+                    154,
+                    141
+                ],
+                [
+                    94,
+                    213,
+                    143,
+                    281,
+                    698,
+                    391,
+                    160,
+                    95
+                ],
+                [
+                    96,
+                    215,
+                    137,
+                    165,
+                    290,
+                    1354,
+                    230,
+                    84
+                ],
+                [
+                    98,
+                    647,
+                    81,
+                    122,
+                    126,
+                    321,
+                    1128,
+                    88
+                ],
+                [
+                    833,
+                    106,
+                    295,
+                    121,
+                    69,
+                    85,
+                    84,
+                    1163
+                ]
+            ],
+            "training_time": 1.9646
+        },
+        "Random Forest": {
+            "accuracy": 0.5058,
+            "precision": 0.5061,
+            "recall": 0.5058,
+            "specificity": 0.9292,
+            "f1": 0.5043,
+            "roc_auc": 0.8824,
+            "average_precision": 0.5185,
+            "mcc": 0.4344,
+            "confusion_matrix": [
+                [
+                    1446,
+                    78,
+                    256,
+                    102,
+                    45,
+                    86,
+                    103,
+                    676
+                ],
+                [
+                    82,
+                    1306,
+                    45,
+                    112,
+                    94,
+                    267,
+                    552,
+                    107
+                ],
+                [
+                    311,
+                    52,
+                    1127,
+                    175,
+                    126,
+                    163,
+                    125,
+                    296
+                ],
+                [
+                    129,
+                    155,
+                    132,
+                    1211,
+                    169,
+                    197,
+                    165,
+                    97
+                ],
+                [
+                    74,
+                    156,
+                    120,
+                    317,
+                    815,
+                    373,
+                    160,
+                    60
+                ],
+                [
+                    68,
+                    202,
+                    109,
+                    127,
+                    230,
+                    1584,
+                    212,
+                    39
+                ],
+                [
+                    79,
+                    595,
+                    63,
+                    97,
+                    74,
+                    336,
+                    1306,
+                    61
+                ],
+                [
+                    748,
+                    96,
+                    287,
+                    94,
+                    54,
+                    83,
+                    73,
+                    1321
+                ]
+            ],
+            "training_time": 6.901
+        },
+        "Gradient Boosting": {
+            "accuracy": 0.5228,
+            "precision": 0.5222,
+            "recall": 0.5228,
+            "specificity": 0.9317,
+            "f1": 0.522,
+            "roc_auc": 0.8973,
+            "average_precision": 0.5548,
+            "mcc": 0.4539,
+            "confusion_matrix": [
+                [
+                    1433,
+                    64,
+                    267,
+                    110,
+                    51,
+                    81,
+                    96,
+                    690
+                ],
+                [
+                    60,
+                    1359,
+                    48,
+                    127,
+                    113,
+                    231,
+                    521,
+                    106
+                ],
+                [
+                    250,
+                    48,
+                    1250,
+                    167,
+                    118,
+                    145,
+                    116,
+                    281
+                ],
+                [
+                    112,
+                    141,
+                    133,
+                    1282,
+                    210,
+                    157,
+                    135,
+                    85
+                ],
+                [
+                    72,
+                    131,
+                    133,
+                    337,
+                    926,
+                    304,
+                    121,
+                    51
+                ],
+                [
+                    72,
+                    196,
+                    123,
+                    156,
+                    240,
+                    1526,
+                    208,
+                    50
+                ],
+                [
+                    78,
+                    556,
+                    87,
+                    133,
+                    106,
+                    300,
+                    1299,
+                    52
+                ],
+                [
+                    721,
+                    88,
+                    272,
+                    88,
+                    63,
+                    76,
+                    68,
+                    1380
+                ]
+            ],
+            "training_time": 513.309
+        }
+    }
+}

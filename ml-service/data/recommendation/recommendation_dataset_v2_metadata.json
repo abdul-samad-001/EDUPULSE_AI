@@ -1,0 +1,29 @@
+{
+    "dataset_version": "Experiment B - Refined Recommendation Labels",
+    "record_count": 100000,
+    "feature_count": 20,
+    "target": "recommendation",
+    "class_names": {
+        "0": "Continue Current Skill",
+        "1": "Start Focus Session",
+        "2": "Take Short Break",
+        "3": "Practice Coding",
+        "4": "Revision",
+        "5": "Watch Learning Video",
+        "6": "Complete Pending Tasks",
+        "7": "Attempt Quiz"
+    },
+    "random_seed": 42,
+    "label_generation_method": "Priority-based behavioral rules with boundary-aware noise",
+    "rule_priority": [
+        "Complete Pending Tasks",
+        "Start Focus Session",
+        "Take Short Break",
+        "Revision",
+        "Practice Coding",
+        "Attempt Quiz",
+        "Watch Learning Video",
+        "Continue Current Skill"
+    ],
+    "noise_strategy": "Boundary-aware stochastic component applied near rule intersections without global Gaussian noise"
+}

@@ -1,0 +1,57 @@
+True Class,True Class Name,Predicted Class,Predicted Class Name,Count,Percentage of True Class
+7,Attempt Quiz,0,Continue Current Skill,721,26.16
+0,Continue Current Skill,7,Attempt Quiz,690,24.71
+6,Complete Pending Tasks,1,Start Focus Session,556,21.29
+1,Start Focus Session,6,Complete Pending Tasks,521,20.31
+4,Revision,3,Practice Coding,337,16.24
+4,Revision,5,Watch Learning Video,304,14.65
+6,Complete Pending Tasks,5,Watch Learning Video,300,11.49
+2,Take Short Break,7,Attempt Quiz,281,11.83
+7,Attempt Quiz,2,Take Short Break,272,9.87
+0,Continue Current Skill,2,Take Short Break,267,9.56
+2,Take Short Break,0,Continue Current Skill,250,10.53
+5,Watch Learning Video,4,Revision,240,9.33
+1,Start Focus Session,5,Watch Learning Video,231,9.01
+3,Practice Coding,4,Revision,210,9.31
+5,Watch Learning Video,6,Complete Pending Tasks,208,8.09
+5,Watch Learning Video,1,Start Focus Session,196,7.62
+2,Take Short Break,3,Practice Coding,167,7.03
+3,Practice Coding,5,Watch Learning Video,157,6.96
+5,Watch Learning Video,3,Practice Coding,156,6.07
+2,Take Short Break,5,Watch Learning Video,145,6.11
+3,Practice Coding,1,Start Focus Session,141,6.25
+3,Practice Coding,6,Complete Pending Tasks,135,5.99
+3,Practice Coding,2,Take Short Break,133,5.9
+4,Revision,2,Take Short Break,133,6.41
+6,Complete Pending Tasks,3,Practice Coding,133,5.09
+4,Revision,1,Start Focus Session,131,6.31
+1,Start Focus Session,3,Practice Coding,127,4.95
+5,Watch Learning Video,2,Take Short Break,123,4.78
+4,Revision,6,Complete Pending Tasks,121,5.83
+2,Take Short Break,4,Revision,118,4.97
+2,Take Short Break,6,Complete Pending Tasks,116,4.88
+1,Start Focus Session,4,Revision,113,4.41
+3,Practice Coding,0,Continue Current Skill,112,4.97
+0,Continue Current Skill,3,Practice Coding,110,3.94
+1,Start Focus Session,7,Attempt Quiz,106,4.13
+6,Complete Pending Tasks,4,Revision,106,4.06
+0,Continue Current Skill,6,Complete Pending Tasks,96,3.44
+7,Attempt Quiz,1,Start Focus Session,88,3.19
+7,Attempt Quiz,3,Practice Coding,88,3.19
+6,Complete Pending Tasks,2,Take Short Break,87,3.33
+3,Practice Coding,7,Attempt Quiz,85,3.77
+0,Continue Current Skill,5,Watch Learning Video,81,2.9
+6,Complete Pending Tasks,0,Continue Current Skill,78,2.99
+7,Attempt Quiz,5,Watch Learning Video,76,2.76
+4,Revision,0,Continue Current Skill,72,3.47
+5,Watch Learning Video,0,Continue Current Skill,72,2.8
+7,Attempt Quiz,6,Complete Pending Tasks,68,2.47
+0,Continue Current Skill,1,Start Focus Session,64,2.29
+7,Attempt Quiz,4,Revision,63,2.29
+1,Start Focus Session,0,Continue Current Skill,60,2.34
+6,Complete Pending Tasks,7,Attempt Quiz,52,1.99
+0,Continue Current Skill,4,Revision,51,1.83
+4,Revision,7,Attempt Quiz,51,2.46
+5,Watch Learning Video,7,Attempt Quiz,50,1.94
+1,Start Focus Session,2,Take Short Break,48,1.87
+2,Take Short Break,1,Start Focus Session,48,2.02

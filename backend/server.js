@@ -20,6 +20,8 @@ const leaderboardRoutes = require("./src/routes/leaderboardRoutes");
 const dailyChallengeRoutes = require("./src/routes/dailyChallengeRoutes");
 const notificationRoutes = require("./src/routes/notificationRoutes");
 const analyticsRoutes = require("./src/routes/analyticsRoutes");
+const mlRoutes = require("./src/routes/mlRoutes");
+const recommendationRoutes = require("./src/routes/recommendationRoutes");
 
 // Connect Database
 connectDB();
@@ -51,6 +53,8 @@ app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/daily-challenge", dailyChallengeRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/analytics", analyticsRoutes);
+app.use("/api/ml", mlRoutes);
+app.use("/api/recommendations", recommendationRoutes);
 // Health Check Route
 app.get("/", (req, res) => {
   res.json({

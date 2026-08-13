@@ -14,6 +14,7 @@ import {
   WeeklySummaryCard,
   GoalTrackerWidget,
   AIAnalyticsPreviewCard,
+  RecommendationPerformanceCard,
 } from "../components/analytics";
 
 import { Heatmap } from "../components/heatmap";
@@ -190,6 +191,9 @@ function Analytics() {
 
       {/* 7. COMPREHENSIVE WEEKLY SUMMARY */}
       <WeeklySummaryCard summary={summary} />
+
+      {/* 8. AI RECOMMENDATION PERFORMANCE & OUTCOMES */}
+      <RecommendationPerformanceCard />
 
       {/* 8. GOAL TRACKER & AI ANALYTICS PREVIEW */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">

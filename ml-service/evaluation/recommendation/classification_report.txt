@@ -1,0 +1,17 @@
+EDUPULSE AI - RECOMMENDATION MODEL (Gradient Boosting)
+============================================================
+
+                        precision    recall  f1-score   support
+
+Continue Current Skill       0.51      0.51      0.51      2792
+   Start Focus Session       0.53      0.53      0.53      2565
+      Take Short Break       0.54      0.53      0.53      2375
+       Practice Coding       0.53      0.57      0.55      2255
+              Revision       0.51      0.45      0.47      2075
+  Watch Learning Video       0.54      0.59      0.57      2571
+Complete Pending Tasks       0.51      0.50      0.50      2611
+          Attempt Quiz       0.51      0.50      0.51      2756
+
+              accuracy                           0.52     20000
+             macro avg       0.52      0.52      0.52     20000
+          weighted avg       0.52      0.52      0.52     20000

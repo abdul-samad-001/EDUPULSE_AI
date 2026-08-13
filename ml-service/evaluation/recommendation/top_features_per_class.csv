@@ -1,0 +1,41 @@
+Class,Class Name,Feature,Standardized Difference,Abs Difference
+0,Continue Current Skill,productivity_score,0.8106,0.8106
+0,Continue Current Skill,focus_score,0.7955,0.7955
+0,Continue Current Skill,pending_tasks,-0.768,0.768
+0,Continue Current Skill,streak_days,0.727,0.727
+0,Continue Current Skill,completed_tasks,0.714,0.714
+1,Start Focus Session,focus_score,-0.9959,0.9959
+1,Start Focus Session,distraction_minutes,0.9291,0.9291
+1,Start Focus Session,productivity_score,-0.8265,0.8265
+1,Start Focus Session,productive_minutes,-0.8213,0.8213
+1,Start Focus Session,study_hours,-0.8176,0.8176
+2,Take Short Break,average_session_minutes,0.6925,0.6925
+2,Take Short Break,sleep_hours,-0.6412,0.6412
+2,Take Short Break,productive_minutes,0.6237,0.6237
+2,Take Short Break,study_hours,0.5956,0.5956
+2,Take Short Break,streak_days,0.5038,0.5038
+3,Practice Coding,coding_hours,0.9688,0.9688
+3,Practice Coding,skill_progress,-0.3858,0.3858
+3,Practice Coding,xp,-0.2825,0.2825
+3,Practice Coding,level,-0.2823,0.2823
+3,Practice Coding,study_hours,0.2372,0.2372
+4,Revision,skill_progress,-0.7407,0.7407
+4,Revision,xp,-0.6207,0.6207
+4,Revision,level,-0.6201,0.6201
+4,Revision,revision_hours,0.4423,0.4423
+4,Revision,quiz_score,-0.4261,0.4261
+5,Watch Learning Video,xp,-1.0538,1.0538
+5,Watch Learning Video,level,-1.0535,1.0535
+5,Watch Learning Video,skill_progress,-0.952,0.952
+5,Watch Learning Video,coding_hours,-0.5425,0.5425
+5,Watch Learning Video,study_hours,-0.5266,0.5266
+6,Complete Pending Tasks,deadline_completion_rate,-1.0207,1.0207
+6,Complete Pending Tasks,pending_tasks,0.9345,0.9345
+6,Complete Pending Tasks,completed_tasks,-0.9315,0.9315
+6,Complete Pending Tasks,productivity_score,-0.9302,0.9302
+6,Complete Pending Tasks,study_hours,-0.909,0.909
+7,Attempt Quiz,quiz_score,0.8761,0.8761
+7,Attempt Quiz,deadline_completion_rate,0.778,0.778
+7,Attempt Quiz,streak_days,0.7081,0.7081
+7,Attempt Quiz,productivity_score,0.7051,0.7051
+7,Attempt Quiz,completed_tasks,0.697,0.697
