@@ -25,11 +25,17 @@ export const getRecommendationPrediction = async (payload = {}) => {
   return response.data;
 };
 
+export const refreshMLIntelligence = async (payload = {}) => {
+  const response = await axiosInstance.post("/ml/refresh", payload);
+  return response.data;
+};
+
 const mlService = {
   getMLHealth,
   getProcrastinationPrediction,
   getProductivityPrediction,
   getRecommendationPrediction,
+  refreshMLIntelligence,
 };
 
 export default mlService;

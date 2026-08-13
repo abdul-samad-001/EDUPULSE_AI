@@ -31,7 +31,7 @@ function SkillList({
           onDeleteTrigger={onDeleteTrigger}
         />
       ))}
-      <AISuggestionCard onAddSuggested={onAddSuggested} />
+      <AISuggestionCard existingSkills={skillsArray} onAddSuggested={onAddSuggested} />
     </div>
   );
 }

@@ -1,0 +1,9 @@
+class_id,class_name,total_shown,accepted,dismissed,ignored,completed,acceptance_rate_pct,completion_rate_pct,completion_among_accepted_pct,sample_size_n
+0,"Continue Current Skill",21,3,0,2,2,14.29,9.52,66.67,21
+1,"Start Focus Session",3,3,0,0,3,100.00,100.00,100.00,3
+2,"Take Short Break",3,1,0,0,1,33.33,33.33,100.00,3
+3,"Practice Coding",3,0,1,0,0,0.00,0.00,0.00,3
+4,"Revision",0,0,0,0,0,0.00,0.00,0.00,0
+5,"Watch Learning Video",1,0,0,0,0,0.00,0.00,0.00,1
+6,"Complete Pending Tasks",0,0,0,0,0,0.00,0.00,0.00,0
+7,"Attempt Quiz",0,0,0,0,0,0.00,0.00,0.00,0

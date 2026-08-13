@@ -20,30 +20,35 @@ function WeeklySummaryCard({ summary = null }) {
           value={`${studyHours}h`}
           icon={Clock}
           subtext="Total time logged"
+          colorTheme="cyan"
         />
         <StatCard
           title="Focus Sessions"
           value={focusSessions}
           icon={Timer}
           subtext="Intervals completed"
+          colorTheme="emerald"
         />
         <StatCard
           title="XP Earned"
           value={`+${xpEarned}`}
           icon={Award}
           subtext="Weekly XP gain"
+          colorTheme="indigo"
         />
         <StatCard
           title="Skills Improved"
           value={skillsImproved}
           icon={TrendingUp}
           subtext="Active tracks updated"
+          colorTheme="amber"
         />
         <StatCard
           title="Challenges Done"
           value={challengesCompleted}
           icon={CheckCircle2}
           subtext="Daily goals met"
+          colorTheme="rose"
         />
       </div>
     </Card>

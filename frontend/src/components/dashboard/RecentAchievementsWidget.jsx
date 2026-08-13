@@ -1,7 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import { Card, Badge, Progress } from "../ui";
-import { Award, Trophy, Star } from "lucide-react";
+import { Award, Trophy, Star, ChevronRight } from "lucide-react";
 
 function RecentAchievementsWidget({ achievements = [] }) {
+  const navigate = useNavigate();
   const displayList = (Array.isArray(achievements) ? achievements : []).slice(0, 4);
 
   return (
@@ -9,7 +11,13 @@ function RecentAchievementsWidget({ achievements = [] }) {
       title="🏆 Recent Achievements & Milestones"
       subtitle="Your unlocked badges and milestone progress"
       headerAction={
-        <Badge variant="warning" icon={Trophy} size="sm">
+        <Badge
+          variant="warning"
+          icon={Trophy}
+          size="sm"
+          className="cursor-pointer hover:bg-amber-500/20 transition-all active:scale-95"
+          onClick={() => navigate("/achievements")}
+        >
           Achievements
         </Badge>
       }
@@ -49,7 +57,8 @@ function RecentAchievementsWidget({ achievements = [] }) {
           {displayList.map((item, idx) => (
             <div
               key={item._id || item.id || idx}
-              className="p-3 rounded-xl bg-dark-bg border border-dark-border space-y-1.5"
+              onClick={() => navigate("/achievements")}
+              className="p-3 rounded-xl bg-dark-bg border border-dark-border space-y-1.5 cursor-pointer hover:border-primary/40 transition-colors"
             >
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
@@ -76,9 +85,14 @@ function RecentAchievementsWidget({ achievements = [] }) {
       )}
 
       <div className="pt-2 text-right">
-        <span className="text-xs font-semibold text-primary hover:underline cursor-pointer">
-          View All Achievements &rarr;
-        </span>
+        <button
+          type="button"
+          onClick={() => navigate("/achievements")}
+          className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline cursor-pointer bg-transparent border-0 p-0 focus:outline-none transition-colors"
+        >
+          <span>View All Achievements</span>
+          <ChevronRight className="w-3.5 h-3.5" />
+        </button>
       </div>
     </Card>
   );

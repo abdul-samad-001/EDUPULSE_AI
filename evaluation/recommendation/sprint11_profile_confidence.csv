@@ -1,0 +1,6 @@
+profile_segment,sample_size_n,mean_confidence,median_confidence,min_confidence,max_confidence,acceptance_rate_pct
+"Low Productivity",23,0.33,0.28,0.28,0.88,17.39
+"Medium Productivity",5,0.29,0.25,0.25,0.34,0.00
+"High Productivity",11,0.41,0.32,0.23,0.88,45.45
+"Low Focus",0,0.00,0.00,0.00,0.00,0.00
+"High Focus",39,0.35,0.28,0.23,0.88,23.08

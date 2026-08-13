@@ -10,6 +10,7 @@ const {
   getProcrastinationScore,
 } = require("../services/telemetryService");
 const TabSession = require("../models/TabSession");
+const { triggerUserMLRefresh } = require("../services/mlRefreshService");
 
 /**
  * POST /api/telemetry/sessions
@@ -53,6 +54,8 @@ const uploadSessions = async (req, res) => {
 
     if (documents.length > 0) {
       await TabSession.insertMany(documents);
+      // Automatic Telemetry ML Refresh Trigger (Sprint 10 Step 3)
+      triggerUserMLRefresh(req.user._id, "telemetry_sync").catch(() => {});
     }
 
     return res.status(201).json({

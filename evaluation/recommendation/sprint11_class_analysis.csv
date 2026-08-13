@@ -1,0 +1,9 @@
+class_id,class_name,total_shown_n,accepted,dismissed,ignored,completed,acceptance_rate_pct,dismissal_rate_pct,ignore_rate_pct,completion_rate_pct,completion_among_accepted_pct,sample_size_flag
+0,"Continue Current Skill",23,3,0,4,2,13.04,0.00,17.39,8.70,66.67,"small sample — interpret cautiously"
+1,"Start Focus Session",3,3,0,0,3,100.00,0.00,0.00,100.00,100.00,"very small sample — insufficient for reliable class-level generalization"
+2,"Take Short Break",3,1,0,0,1,33.33,0.00,0.00,33.33,100.00,"very small sample — insufficient for reliable class-level generalization"
+3,"Practice Coding",4,0,1,1,0,0.00,25.00,25.00,0.00,0.00,"very small sample — insufficient for reliable class-level generalization"
+4,"Revision",0,0,0,0,0,0.00,0.00,0.00,0.00,0.00,"no observed data"
+5,"Watch Learning Video",1,0,0,0,0,0.00,0.00,0.00,0.00,0.00,"very small sample — insufficient for reliable class-level generalization"
+6,"Complete Pending Tasks",0,0,0,0,0,0.00,0.00,0.00,0.00,0.00,"no observed data"
+7,"Attempt Quiz",0,0,0,0,0,0.00,0.00,0.00,0.00,0.00,"no observed data"

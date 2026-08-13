@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 350" style="background:#0F1115; font-family:sans-serif;">
+      <text x="350" y="30" fill="#F5F5F5" font-size="16" font-weight="bold" text-anchor="middle">Acceptance Rate by Baseline User Profile</text>
+      
+            <text x="190" y="95" fill="#9CA3AF" font-size="12" font-weight="bold" text-anchor="end">Low Productivity (N=23)</text>
+            <rect x="200" y="80" width="60.869565217391305" height="22" fill="#2DD4BF" rx="4"/>
+            <text x="270.8695652173913" y="95" fill="#2DD4BF" font-size="11" font-weight="bold">17.4%</text>
+          
+            <text x="190" y="145" fill="#9CA3AF" font-size="12" font-weight="bold" text-anchor="end">Medium Productivity (N=5)</text>
+            <rect x="200" y="130" width="6" height="22" fill="#2DD4BF" rx="4"/>
+            <text x="210" y="145" fill="#2DD4BF" font-size="11" font-weight="bold">0.0%</text>
+          
+            <text x="190" y="195" fill="#9CA3AF" font-size="12" font-weight="bold" text-anchor="end">High Productivity (N=11)</text>
+            <rect x="200" y="180" width="159.0909090909091" height="22" fill="#2DD4BF" rx="4"/>
+            <text x="369.0909090909091" y="195" fill="#2DD4BF" font-size="11" font-weight="bold">45.5%</text>
+          
+    </svg>

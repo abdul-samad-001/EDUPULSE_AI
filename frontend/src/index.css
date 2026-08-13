@@ -25,6 +25,29 @@
   color-scheme: dark;
 }
 
+/* Light Theme Variable Overrides */
+html.light-mode {
+  --color-primary: #0D9488;
+  --color-primary-hover: #0F766E;
+  --color-dark-bg: #F8FAFC;
+  --color-dark-card: #FFFFFF;
+  --color-dark-border: #E2E8F0;
+  --color-dark-text: #0F172A;
+  --color-dark-muted: #64748B;
+  --primary: #0D9488;
+  --bg-main: #F8FAFC;
+  --bg-card: #FFFFFF;
+  --border-color: #E2E8F0;
+  --text-main: #0F172A;
+  --text-muted: #64748B;
+  color-scheme: light;
+}
+
+html.light-mode body {
+  background-color: #F8FAFC;
+  color: #0F172A;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -37,6 +60,7 @@ html, body {
   padding: 0;
   min-height: 100vh;
   overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Custom Scrollbar */
@@ -56,6 +80,18 @@ html, body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #373d4a;
+}
+
+html.light-mode ::-webkit-scrollbar-track {
+  background: #F8FAFC;
+}
+
+html.light-mode ::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+}
+
+html.light-mode ::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
 }
 
 /* Selection */

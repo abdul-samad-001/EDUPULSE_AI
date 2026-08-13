@@ -1,0 +1,26 @@
+{
+  "manifest_version": "1.0",
+  "canonical_dataset": "dataset/sprint11_canonical_research_dataset.csv",
+  "data_dictionary": "dataset/sprint11_research_data_dictionary.csv",
+  "metadata": "dataset/sprint11_research_metadata.json",
+  "analysis_files": [
+    "behavioral_changes.csv",
+    "class_effectiveness.csv",
+    "confidence_analysis.csv",
+    "engagement_metrics.csv",
+    "personalization_behavior.csv",
+    "personalization_engagement.csv",
+    "personalization_profiles.csv"
+  ],
+  "report_files": [
+    "class_effectiveness_report.md",
+    "data_consistency_validation.md",
+    "personalization_effectiveness_report.md",
+    "recommendation_effectiveness_report.md",
+    "research_dashboard_report.md"
+  ],
+  "provenance_files": [
+    "analysis_provenance.md",
+    "reproduction_manifest.json"
+  ]
+}

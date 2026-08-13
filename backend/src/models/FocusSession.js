@@ -21,6 +21,17 @@ const focusSessionSchema = new mongoose.Schema(
       default: "active",
     },
 
+    category: {
+      type: String,
+      enum: ["general", "coding", "revision", "reading", "break"],
+      default: "general",
+    },
+
+    recommendationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "RecommendationEvent",
+    },
+
     startedAt: {
       type: Date,
       default: Date.now,

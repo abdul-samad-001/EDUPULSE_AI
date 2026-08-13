@@ -1,0 +1,6 @@
+profile_segment,sample_size_n,descriptive_flag,inferential_testing_suitability
+"Low Productivity",23,"small sample — interpret cautiously","statistical inference not appropriate for this subgroup"
+"Medium Productivity",5,"very small sample — insufficient for reliable personalization inference","statistical inference not appropriate for this subgroup"
+"High Productivity",11,"small sample — interpret cautiously","statistical inference not appropriate for this subgroup"
+"Low Focus",0,"no observed data","statistical inference not appropriate for this subgroup"
+"High Focus",39,"adequate for descriptive analysis","suitable for inferential test"

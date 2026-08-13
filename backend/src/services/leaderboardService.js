@@ -1,22 +1,27 @@
 const UserXP = require("../models/UserXP");
-const User = require("../models/User");
+require("../models/User"); // Ensure User model is registered for populate
 
 /**
- * Get Top Users
+ * Get Top Users (Leaderboard)
  */
 const getLeaderboard = async () => {
   const leaderboard = await UserXP.find()
     .populate("user", "name email")
     .sort({ totalXP: -1 })
-    .limit(10);
+    .limit(20);
 
-  return leaderboard.map((item, index) => ({
+  // Filter out any orphaned records where user document no longer exists
+  const validLeaderboard = leaderboard.filter(
+    (item) => item && item.user && item.user._id
+  );
+
+  return validLeaderboard.slice(0, 10).map((item, index) => ({
     rank: index + 1,
     userId: item.user._id,
-    name: item.user.name,
-    email: item.user.email,
-    totalXP: item.totalXP,
-    level: item.level,
+    name: item.user.name || "EduPulse Learner",
+    email: item.user.email || "",
+    totalXP: item.totalXP || 0,
+    level: item.level || 1,
   }));
 };
 
@@ -24,25 +29,33 @@ const getLeaderboard = async () => {
  * Get Current User Rank
  */
 const getUserRank = async (userId) => {
-  const allUsers = await UserXP.find()
-    .sort({ totalXP: -1 });
+  const allUsers = await UserXP.find().sort({ totalXP: -1 });
 
-  const rank =
-    allUsers.findIndex(
-      (user) =>
-        user.user.toString() === userId.toString()
-    ) + 1;
+  const validUsers = allUsers.filter((item) => item && item.user);
 
-  const current = await UserXP.findOne({
-    user: userId,
-  });
+  const rankIndex = validUsers.findIndex(
+    (item) => item.user.toString() === userId.toString()
+  );
+
+  const rank = rankIndex !== -1 ? rankIndex + 1 : validUsers.length + 1;
+
+  let current = await UserXP.findOne({ user: userId });
+
+  if (!current) {
+    current = {
+      totalXP: 0,
+      level: 1,
+      currentLevelXP: 0,
+      nextLevelXP: 100,
+    };
+  }
 
   return {
     rank,
-    totalXP: current.totalXP,
-    level: current.level,
-    currentLevelXP: current.currentLevelXP,
-    nextLevelXP: current.nextLevelXP,
+    totalXP: current.totalXP || 0,
+    level: current.level || 1,
+    currentLevelXP: current.currentLevelXP || 0,
+    nextLevelXP: current.nextLevelXP || 100,
   };
 };
 

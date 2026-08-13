@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 350" style="background:#0F1115; font-family:sans-serif;">
+      <text x="350" y="30" fill="#F5F5F5" font-size="16" font-weight="bold" text-anchor="middle">Recommendation Class Distribution by Baseline Productivity Profile</text>
+      
+      <text x="180" y="80" fill="#9CA3AF" font-size="12" font-weight="bold" text-anchor="end">Low Productivity (N=26)</text>
+      <rect x="200" y="65" width="300" fill="#38BDF8" height="20" rx="4"/>
+      <text x="510" y="80" fill="#38BDF8" font-size="11" font-weight="bold">Continue Skill (21), Focus (2), Break (2), Coding (1)</text>
+
+      <text x="180" y="140" fill="#9CA3AF" font-size="12" font-weight="bold" text-anchor="end">Medium Productivity (N=5)</text>
+      <rect x="200" y="125" width="180" fill="#2DD4BF" height="20" rx="4"/>
+      <text x="390" y="140" fill="#2DD4BF" font-size="11" font-weight="bold">Coding (3), Focus (1), Video (1)</text>
+
+      <text x="180" y="200" fill="#9CA3AF" font-size="12" font-weight="bold" text-anchor="end">High Productivity (N=3)</text>
+      <rect x="200" y="185" width="120" fill="#F59E0B" height="20" rx="4"/>
+      <text x="330" y="200" fill="#F59E0B" font-size="11" font-weight="bold">Continue Skill (2), Break (1)</text>
+    </svg>

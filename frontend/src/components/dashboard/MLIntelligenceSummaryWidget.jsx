@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Card, Badge } from "../ui";
-import { Sparkles, ShieldAlert, Zap, Compass, CheckCircle2 } from "lucide-react";
+import { Sparkles, ShieldAlert, Zap, Compass, CheckCircle2, RotateCw } from "lucide-react";
 import mlService from "../../services/mlService";
 import { getRecommendationStats } from "../../services/recommendationService";
 
@@ -12,36 +12,97 @@ function MLIntelligenceSummaryWidget() {
   });
   const [recStats, setRecStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [isStaleFallback, setIsStaleFallback] = useState(false);
 
-  useEffect(() => {
-    let isMounted = true;
-    const fetchMLSummary = async () => {
-      try {
-        const [procRes, prodRes, recRes, statsRes] = await Promise.all([
+  const performRefresh = async (isManualRefresh = false) => {
+    if (isManualRefresh) {
+      setRefreshing(true);
+    }
+    try {
+      const refreshRes = await mlService
+        .refreshMLIntelligence({
+          triggerSource: isManualRefresh ? "user_manual_click" : "dashboard_load",
+        })
+        .catch(() => null);
+
+      if (refreshRes?.success && refreshRes?.data) {
+        const d = refreshRes.data;
+        setMlData({
+          procrastination: d.procrastination || d.predictions?.procrastination || null,
+          productivity: d.productivity || d.predictions?.productivity || null,
+          recommendation: d.recommendation || d.predictions?.recommendation || null,
+        });
+        setIsStaleFallback(false);
+      } else {
+        const [procRes, prodRes, recRes] = await Promise.all([
           mlService.getProcrastinationPrediction().catch(() => null),
           mlService.getProductivityPrediction().catch(() => null),
           mlService.getRecommendationPrediction().catch(() => null),
-          getRecommendationStats().catch(() => null),
         ]);
+        setMlData({
+          procrastination: procRes?.data || null,
+          productivity: prodRes?.data || null,
+          recommendation: recRes?.data || null,
+        });
+      }
 
-        if (isMounted) {
+      const statsRes = await getRecommendationStats().catch(() => null);
+      if (statsRes?.success && statsRes?.data) {
+        setRecStats(statsRes.data);
+      }
+    } catch (err) {
+      console.warn("ML Summary Widget Warning:", err?.message);
+      setIsStaleFallback(true);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    const initialLoad = async () => {
+      try {
+        const refreshRes = await mlService
+          .refreshMLIntelligence({ triggerSource: "dashboard_load" })
+          .catch(() => null);
+
+        if (isMounted && refreshRes?.success && refreshRes?.data) {
+          const d = refreshRes.data;
+          setMlData({
+            procrastination: d.procrastination || d.predictions?.procrastination || null,
+            productivity: d.productivity || d.predictions?.productivity || null,
+            recommendation: d.recommendation || d.predictions?.recommendation || null,
+          });
+          setIsStaleFallback(false);
+        } else if (isMounted) {
+          const [procRes, prodRes, recRes] = await Promise.all([
+            mlService.getProcrastinationPrediction().catch(() => null),
+            mlService.getProductivityPrediction().catch(() => null),
+            mlService.getRecommendationPrediction().catch(() => null),
+          ]);
           setMlData({
             procrastination: procRes?.data || null,
             productivity: prodRes?.data || null,
             recommendation: recRes?.data || null,
           });
-          if (statsRes?.success && statsRes?.data) {
-            setRecStats(statsRes.data);
-          }
+        }
+
+        const statsRes = await getRecommendationStats().catch(() => null);
+        if (isMounted && statsRes?.success && statsRes?.data) {
+          setRecStats(statsRes.data);
         }
       } catch (err) {
-        console.warn("ML Summary Widget Warning:", err?.message);
+        console.warn("ML Summary Widget Initial Load Warning:", err?.message);
+        if (isMounted) setIsStaleFallback(true);
       } finally {
         if (isMounted) setLoading(false);
       }
     };
 
-    fetchMLSummary();
+    initialLoad();
+
     return () => {
       isMounted = false;
     };
@@ -65,15 +126,33 @@ function MLIntelligenceSummaryWidget() {
   return (
     <Card
       title="✨ AI Focus & Productivity Insights"
-      subtitle="Personalized real-time focus evaluation, risk analysis & smart guidance"
+      subtitle={
+        refreshing
+          ? "Updating AI insights..."
+          : "Personalized real-time focus evaluation, risk analysis & smart guidance"
+      }
       headerAction={
         <div className="flex items-center gap-2">
           <Badge variant="success" icon={CheckCircle2} size="sm" className="hidden sm:inline-flex text-[10px]">
             {completionRate}% Follow-Through
           </Badge>
-          <Badge variant="primary" icon={Sparkles} size="sm">
-            AI Active
+          <Badge
+            variant={isStaleFallback ? "warning" : "primary"}
+            icon={Sparkles}
+            size="sm"
+            className="cursor-pointer hover:opacity-90 transition-opacity"
+            onClick={() => performRefresh(true)}
+          >
+            {refreshing ? "Refreshing..." : isStaleFallback ? "Cached AI" : "AI Active"}
           </Badge>
+          <button
+            onClick={() => performRefresh(true)}
+            disabled={refreshing}
+            className="p-1 rounded-lg text-dark-muted hover:text-dark-text hover:bg-dark-border transition-colors disabled:opacity-50"
+            title="Refresh ML Insights"
+          >
+            <RotateCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin text-primary" : ""}`} />
+          </button>
         </div>
       }
       className="w-full bg-linear-to-r from-dark-card via-dark-card to-primary/5 border-primary/20"

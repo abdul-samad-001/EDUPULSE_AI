@@ -1,0 +1,7 @@
+metric,count,percentage,sample_size_n
+total_shown,31,100.00,31
+accepted,7,22.58,31
+dismissed,1,3.23,31
+ignored,2,6.45,31
+completed,6,19.35,31
+completion_among_accepted,6,85.71,7

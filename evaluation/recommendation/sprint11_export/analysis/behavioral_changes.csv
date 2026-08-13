@@ -1,0 +1,5 @@
+group_status,sample_size_n,mean_productive_mins_change_30m,pct_change_vs_baseline,notes
+accepted_or_completed,5,-1.00,N/A (Baseline 0),Observed mean difference in 30-min window after acceptance
+dismissed,1,-14.13,N/A (Baseline 0),Observed mean difference in 30-min window after dismissal
+ignored,1,1.98,N/A (Baseline 0),Observed mean difference in 30-min window after ignore threshold
+all_observations,14,0.00,N/A,Total usable paired telemetry observations

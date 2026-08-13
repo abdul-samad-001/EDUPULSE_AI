@@ -1,0 +1,15 @@
+profile_segment,recommendation_class_id,class_name,count,pct_within_profile
+"Low Productivity",0,"Continue Current Skill",21,91.30
+"Low Productivity",1,"Start Focus Session",2,8.70
+"Medium Productivity",0,"Continue Current Skill",3,60.00
+"Medium Productivity",3,"Practice Coding",2,40.00
+"High Productivity",0,"Continue Current Skill",2,18.18
+"High Productivity",1,"Start Focus Session",2,18.18
+"High Productivity",2,"Take Short Break",4,36.36
+"High Productivity",3,"Practice Coding",2,18.18
+"High Productivity",5,"Watch Learning Video",1,9.09
+"High Focus",0,"Continue Current Skill",26,66.67
+"High Focus",1,"Start Focus Session",4,10.26
+"High Focus",2,"Take Short Break",4,10.26
+"High Focus",3,"Practice Coding",4,10.26
+"High Focus",5,"Watch Learning Video",1,2.56

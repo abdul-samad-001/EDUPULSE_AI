@@ -1,0 +1,9 @@
+class_id,class_name,total_observations_n,descriptive_validity_flag,statistical_test_suitability
+0,"Continue Current Skill",23,"small sample — interpret cautiously","statistical inference not appropriate for this sample size"
+1,"Start Focus Session",3,"very small sample — insufficient for reliable class-level generalization","statistical inference not appropriate for this sample size"
+2,"Take Short Break",3,"very small sample — insufficient for reliable class-level generalization","statistical inference not appropriate for this sample size"
+3,"Practice Coding",4,"very small sample — insufficient for reliable class-level generalization","statistical inference not appropriate for this sample size"
+4,"Revision",0,"no observed data","statistical inference not appropriate for this sample size"
+5,"Watch Learning Video",1,"very small sample — insufficient for reliable class-level generalization","statistical inference not appropriate for this sample size"
+6,"Complete Pending Tasks",0,"no observed data","statistical inference not appropriate for this sample size"
+7,"Attempt Quiz",0,"no observed data","statistical inference not appropriate for this sample size"

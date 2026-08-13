@@ -1,0 +1,19 @@
+field_name,data_type,description,source,role,privacy_classification
+observation_id,string,Anonymized primary key observation identifier (REC_OBS_001 to REC_OBS_034),Generated,Identifier,non-PII
+recommendation_class_id,integer,Model 3 V2 predicted recommendation class (0 to 7),RecommendationEvent,Target Class,non-PII
+class_name,string,Human readable recommendation class label,Model 3 V2 Contract,Metadata,non-PII
+status,string,Lifecycle outcome status (shown accepted dismissed ignored completed),RecommendationEvent,Target Outcome,non-PII
+confidence,float,Random Forest model prediction confidence probability (0.00 to 1.00),Model 3 V2 Output,Predictive Feature,non-PII
+shown_at_utc,timestamp,ISO-8601 UTC timestamp when recommendation was presented to learner,RecommendationEvent,Anchor Timestamp,non-PII
+responded_at_utc,timestamp,ISO-8601 UTC timestamp when learner clicked accept or dismiss CTA,RecommendationEvent,Lifecycle Timestamp,non-PII
+completed_at_utc,timestamp,ISO-8601 UTC timestamp when target learning milestone was fulfilled,RecommendationEvent,Lifecycle Timestamp,non-PII
+pre_productive_mins_30m,float,Sum of active productive domain minutes logged in [shownAt-30m shownAt],TabSession,Baseline Telemetry,non-PII
+post_productive_mins_30m,float,Sum of active productive domain minutes logged in [shownAt shownAt+30m],TabSession,Post Telemetry,non-PII
+productive_change_mins_30m,float,Productive minutes difference (post_productive - pre_productive),TabSession,Observational Metric,non-PII
+pre_distraction_mins_30m,float,Sum of distraction domain minutes logged in [shownAt-30m shownAt],TabSession,Baseline Telemetry,non-PII
+post_distraction_mins_30m,float,Sum of distraction domain minutes logged in [shownAt shownAt+30m],TabSession,Post Telemetry,non-PII
+distraction_change_mins_30m,float,Distraction minutes difference (post_distraction - pre_distraction),TabSession,Observational Metric,non-PII
+post_24h_focus_sessions,integer,Count of completed focus study sessions logged in [shownAt shownAt+24h],FocusSession,Post Telemetry,non-PII
+post_24h_tasks_completed,integer,Count of roadmap tasks marked complete in [shownAt shownAt+24h],Task,Post Telemetry,non-PII
+baseline_productivity_profile,string,Baseline user segment (Low Medium High Productivity) derived from pre-telemetry,Segmentation,Baseline Feature,non-PII
+baseline_focus_profile,string,Baseline focus ratio segment (Low High Focus) derived from pre-telemetry,Segmentation,Baseline Feature,non-PII

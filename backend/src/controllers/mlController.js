@@ -1,5 +1,6 @@
 const mlService = require("../services/mlService");
 const mlFeatureService = require("../services/mlFeatureService");
+const mlRefreshService = require("../services/mlRefreshService");
 const { createRecommendationEvent } = require("./recommendationController");
 
 /**
@@ -33,7 +34,6 @@ const predictProcrastination = async (req, res) => {
   try {
     const userId = req.user._id || req.user.id;
 
-    // Validate request body if features override provided
     const validationError = validateNumericPayload(req.body);
     if (validationError) {
       return res.status(400).json({
@@ -123,7 +123,6 @@ const predictRecommendation = async (req, res) => {
 
     const mlResponse = await mlService.predictRecommendation(features);
 
-    // Record recommendation event with cooldown deduplication
     let recEvent = null;
     try {
       recEvent = await createRecommendationEvent(userId, mlResponse, {
@@ -155,6 +154,43 @@ const predictRecommendation = async (req, res) => {
 };
 
 /**
+ * POST /api/ml/refresh
+ * Real-Time Telemetry-Triggered ML Intelligence Refresh (All 3 Models)
+ */
+const refreshMLIntelligence = async (req, res) => {
+  try {
+    const userId = req.user._id || req.user.id;
+    const triggerSource = req.body.triggerSource || "telemetry_event";
+
+    const validationError = validateNumericPayload(req.body.overridePayload);
+    if (validationError) {
+      return res.status(400).json({
+        success: false,
+        message: validationError,
+      });
+    }
+
+    const result = await mlRefreshService.refreshUserMLIntelligence(
+      userId,
+      triggerSource,
+      req.body.overridePayload || {}
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error("[ML Controller Error - Refresh]:", error.message);
+    const isServiceError = error.message.includes("unavailable") || error.message.includes("failed");
+    return res.status(isServiceError ? 503 : 500).json({
+      success: false,
+      message: isServiceError ? "ML service unavailable" : "ML intelligence refresh failed",
+    });
+  }
+};
+
+/**
  * GET /api/ml/health
  * Get ML Service Health & Model Status
  */
@@ -180,5 +216,6 @@ module.exports = {
   predictProcrastination,
   predictProductivity,
   predictRecommendation,
+  refreshMLIntelligence,
   getMLHealth,
 };
