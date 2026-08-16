@@ -28,8 +28,8 @@ function StudyPerformanceCard({ performanceData = null }) {
 
   return (
     <Card
-      title="📈 Study Performance Audit & Area Trend"
-      subtitle="Detailed audit of productivity consistency, focus rating, and completion rates"
+      title="📈 Study Performance & Area Trend"
+      subtitle="Detailed analysis of productivity consistency, focus rating, and completion rates"
       className="w-full"
     >
       <div className="space-y-5 pt-1">

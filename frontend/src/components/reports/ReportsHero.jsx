@@ -33,7 +33,7 @@ function ReportsHero({
 
           <div>
             <h1 className="text-2xl sm:text-4xl font-extrabold text-dark-text tracking-tight">
-              Learning Audits & Export Center 📄
+              Learning Performance & Export Center 📄
             </h1>
             <p className="text-sm sm:text-base text-dark-muted mt-1.5 leading-relaxed font-medium">
               Generate detailed historical reports, track milestone timelines, and export your learning progress in PDF, CSV, or JSON formats.

@@ -28,7 +28,7 @@ function SkillProgressReportCard({ skillsProgress = [] }) {
 
   return (
     <Card
-      title="📊 Skill Progress Audit Report"
+      title="📊 Skill Mastery & Progress Report"
       subtitle="Comprehensive breakdown of domain mastery levels and milestone remaining counts"
       className="w-full"
     >
