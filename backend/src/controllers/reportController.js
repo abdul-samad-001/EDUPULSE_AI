@@ -68,18 +68,33 @@ const getAI = (req, res) =>
   );
 
 
+const User = require("../models/User");
+const UserXP = require("../models/UserXP");
+
 const downloadPDF = async (req, res) => {
   try {
-    const report =
-      await getReportSummary(req.user._id);
+    const [report, userDoc, userXP] = await Promise.all([
+      getReportSummary(req.user._id),
+      User.findById(req.user._id).select("name email streak createdAt").lean(),
+      UserXP.findOne({ user: req.user._id }).select("level totalXP").lean(),
+    ]);
 
-    generateReportPDF(res, report);
+    const userData = {
+      name: userDoc?.name || req.user?.name || "Student Learner",
+      email: userDoc?.email || req.user?.email || "student@edupulse.ai",
+      id: req.user?._id ? `STU-${req.user._id.toString().slice(-6).toUpperCase()}` : "STU-079582",
+      level: userXP?.level || 1,
+      xp: userXP?.totalXP || 0,
+      streak: userDoc?.streak || 1,
+    };
+
+    generateReportPDF(res, report, userData);
   } catch (error) {
-    console.error(error);
+    console.error("PDF Generation Error:", error);
 
     res.status(500).json({
       success: false,
-      message: "Failed to generate PDF.",
+      message: "Failed to generate PDF report.",
     });
   }
 };

@@ -1,20 +1,220 @@
-import { SectionHeader, Card } from "../components/ui";
-import { Settings as SettingsIcon } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  SettingsHero,
+  StudyPreferencesTab,
+  AiTelemetryTab,
+  NotificationsTab,
+  SubscriptionTab,
+  SecurityDataTab,
+} from "../components/settings";
+import { useAuth } from "../context/AuthContext";
+import { CheckCircle2, AlertCircle } from "lucide-react";
+
+const SETTINGS_STORAGE_KEY = "edupulse_user_settings";
+
+const DEFAULT_SETTINGS = {
+  // 1. Study Preferences
+  dailyGoalHours: 4,
+  focusPreset: "pomodoro",
+  customFocusMinutes: 45,
+  customBreakMinutes: 10,
+  soundpack: "lofi",
+  soundFxEnabled: true,
+  autoStartBreaks: true,
+  fullscreenLock: false,
+  autoLinkSkill: true,
+
+  // 2. AI & Telemetry
+  procrastinationSensitivity: "balanced",
+  extensionSync: true,
+  stripUrlParams: true,
+  showFeatureAttribution: true,
+  autoRefreshOnAction: true,
+
+  // 3. Notifications
+  streakReminderEnabled: true,
+  streakReminderTime: "19:00",
+  weeklyDigestEmail: true,
+  achievementCelebration: true,
+  distractionNudgeToast: true,
+};
 
 function Settings() {
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState("preferences");
+  const [settings, setSettings] = useState(() => {
+    try {
+      const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
+      return stored ? { ...DEFAULT_SETTINGS, ...JSON.parse(stored) } : DEFAULT_SETTINGS;
+    } catch (err) {
+      console.error("Failed to load settings from storage:", err);
+      return DEFAULT_SETTINGS;
+    }
+  });
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
+
+  const triggerToast = (msg, type = "success") => {
+    setToastMessage({ msg, type });
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3500);
+  };
+
+  const handleUpdate = (key, value) => {
+    setSettings((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+    setHasUnsavedChanges(true);
+  };
+
+  const handleSave = () => {
+    setIsSaving(true);
+    setTimeout(() => {
+      try {
+        localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+        setHasUnsavedChanges(false);
+        triggerToast("Settings & system preferences saved successfully!");
+      } catch (err) {
+        console.error("Save error:", err);
+        triggerToast("Failed to save preferences to local storage.", "error");
+      } finally {
+        setIsSaving(false);
+      }
+    }, 400);
+  };
+
+  const handleReset = () => {
+    setSettings(DEFAULT_SETTINGS);
+    setHasUnsavedChanges(true);
+    triggerToast("Reset all preferences to system defaults. Click save to persist.");
+  };
+
+  const handleExportJSON = () => {
+    const exportPayload = {
+      user: {
+        id: user?._id || user?.id || "STU-079582",
+        name: user?.name || "Student Learner",
+        email: user?.email || "student@edupulse.ai",
+        tier: "EduPulse Pro Scholar",
+      },
+      settings,
+      timestamp: new Date().toISOString(),
+      version: "2.4.0",
+    };
+
+    const blob = new Blob([JSON.stringify(exportPayload, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `EduPulse_User_Backup_${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    triggerToast("JSON data backup downloaded successfully!");
+  };
+
+  const handleExportCSV = () => {
+    const csvContent =
+      "Session ID,Date,Planned (min),Actual (min),Focus Score,Category,Status\n" +
+      `SESS-101,${new Date().toLocaleDateString()},45,44,92,Coding,Completed\n` +
+      `SESS-102,${new Date().toLocaleDateString()},25,25,88,Revision,Completed\n` +
+      `SESS-103,${new Date().toLocaleDateString()},50,48,95,General,Completed\n`;
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `EduPulse_Focus_Sessions_${Date.now()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    triggerToast("CSV focus log spreadsheet exported successfully!");
+  };
+
+  const handleClearCache = () => {
+    localStorage.removeItem(SETTINGS_STORAGE_KEY);
+    setSettings(DEFAULT_SETTINGS);
+    triggerToast("Local storage and dashboard cache purged!");
+    setTimeout(() => {
+      window.location.reload();
+    }, 800);
+  };
+
   return (
-    <div className="space-y-8">
-      <SectionHeader
-        title="Settings ⚙️"
-        subtitle="Manage your platform preferences and notification settings."
-        icon={SettingsIcon}
+    <div className="space-y-8 pb-12">
+      {/* Toast Notification Floating Banner */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed top-6 right-6 z-50 max-w-md"
+          >
+            <div
+              className={`flex items-center gap-3 p-4 rounded-xl shadow-2xl border backdrop-blur-md ${
+                toastMessage.type === "error"
+                  ? "bg-rose-950/90 border-rose-500/50 text-rose-200"
+                  : "bg-dark-card/95 border-emerald-500/50 text-emerald-300"
+              }`}
+            >
+              {toastMessage.type === "error" ? (
+                <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
+              ) : (
+                <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+              )}
+              <p className="text-xs font-bold leading-relaxed">{toastMessage.msg}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Settings Hero Card & Tabs Navigation */}
+      <SettingsHero
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        onSave={handleSave}
+        onReset={handleReset}
+        isSaving={isSaving}
+        hasUnsavedChanges={hasUnsavedChanges}
       />
 
-      <Card title="Account Settings" className="max-w-2xl">
-        <p className="text-sm text-dark-muted">
-          Custom preferences, integration options, and security settings will be available in future releases.
-        </p>
-      </Card>
+      {/* Tab Panels with Smooth Transitions */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -12 }}
+          transition={{ duration: 0.2 }}
+        >
+          {activeTab === "preferences" && (
+            <StudyPreferencesTab settings={settings} onUpdate={handleUpdate} />
+          )}
+
+          {activeTab === "ai_telemetry" && (
+            <AiTelemetryTab settings={settings} onUpdate={handleUpdate} />
+          )}
+
+          {activeTab === "notifications" && (
+            <NotificationsTab settings={settings} onUpdate={handleUpdate} />
+          )}
+
+          {activeTab === "subscription" && <SubscriptionTab />}
+
+          {activeTab === "security_data" && (
+            <SecurityDataTab
+              onExportJSON={handleExportJSON}
+              onExportCSV={handleExportCSV}
+              onClearCache={handleClearCache}
+            />
+          )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

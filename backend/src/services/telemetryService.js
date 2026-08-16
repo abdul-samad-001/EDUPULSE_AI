@@ -389,8 +389,8 @@ const getAIInsights = async (userId) => {
   if (bestHour.productiveMinutes > 0) {
     insights.push({
       type: "success",
-      title: "Best Productivity Hour",
-      message: `You are most productive at ${bestHour.hour}:00.`,
+      title: "Peak Performance Timing",
+      message: `Peak concentration and task momentum are consistently observed around ${bestHour.hour}:00.`,
     });
   }
 
@@ -398,10 +398,10 @@ const getAIInsights = async (userId) => {
   if (stats.distractionTime > 30) {
     insights.push({
       type: "warning",
-      title: "High Distraction",
-      message: `You spent ${Math.round(
+      title: "Digital Distraction Review",
+      message: `Digital distraction logged at ${Math.round(
         stats.distractionTime
-      )} minutes on distracting websites.`,
+      )} minutes; recommend activating the focus shield during sprints.`,
     });
   }
 
@@ -409,17 +409,17 @@ const getAIInsights = async (userId) => {
   if (stats.productivePercentage >= 70) {
     insights.push({
       type: "success",
-      title: "Excellent Productivity",
-      message: `Your productivity score is ${Math.round(
+      title: "Study Consistency",
+      message: `Strong study consistency maintained with a ${Math.round(
         stats.productivePercentage
-      )}%.`,
+      )}% productive focus rating.`,
     });
   } else {
     insights.push({
       type: "info",
-      title: "Recommendation",
+      title: "Action Recommendation",
       message:
-        "Try scheduling more focus sessions to improve your productivity.",
+        "Structuring 45-minute focused study blocks with 10-minute active breaks will optimize retention and daily output.",
     });
   }
 
