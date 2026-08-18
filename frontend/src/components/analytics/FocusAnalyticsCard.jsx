@@ -14,11 +14,11 @@ import { Clock, Calendar, BarChart2, Flame, CheckCircle2 } from "lucide-react";
 function FocusAnalyticsCard({ focusData = null }) {
   const [viewMode, setViewMode] = useState("day"); // day | week | month
 
-  const totalHours = focusData?.totalFocusHours || 18.5;
-  const weeklyFocus = focusData?.weeklyFocus || 5.2;
-  const avgSession = focusData?.averageSession || 32;
-  const longestSession = focusData?.longestSession || 60;
-  const sessionsCompleted = focusData?.sessionsCompleted || 24;
+  const totalHours = focusData?.totalFocusHours ?? 0;
+  const weeklyFocus = focusData?.weeklyFocus ?? 0;
+  const avgSession = focusData?.averageSession ?? 0;
+  const longestSession = focusData?.longestSession ?? 0;
+  const sessionsCompleted = focusData?.sessionsCompleted ?? 0;
 
   const chartData = useMemo(() => {
     if (viewMode === "day") {
@@ -26,34 +26,34 @@ function FocusAnalyticsCard({ focusData = null }) {
       if (rawTrend) {
         return rawTrend.map((t) => ({
           label: t.label || t.day || "Day",
-          value: Number(t.minutes > 0 ? t.minutes : 30),
+          value: Number(t.minutes ?? 0),
         }));
       }
       return [
-        { label: "Mon", value: 45 },
-        { label: "Tue", value: 60 },
-        { label: "Wed", value: 90 },
-        { label: "Thu", value: 30 },
-        { label: "Fri", value: 75 },
-        { label: "Sat", value: 40 },
-        { label: "Sun", value: 20 },
+        { label: "Mon", value: 0 },
+        { label: "Tue", value: 0 },
+        { label: "Wed", value: 0 },
+        { label: "Thu", value: 0 },
+        { label: "Fri", value: 0 },
+        { label: "Sat", value: 0 },
+        { label: "Sun", value: 0 },
       ];
     }
 
     if (viewMode === "week") {
       return [
-        { label: "Wk 1", value: 4.5 },
-        { label: "Wk 2", value: 6.2 },
-        { label: "Wk 3", value: 5.8 },
-        { label: "Wk 4", value: Number(weeklyFocus || 5.2) },
+        { label: "Wk 1", value: 0 },
+        { label: "Wk 2", value: 0 },
+        { label: "Wk 3", value: 0 },
+        { label: "Wk 4", value: Number(weeklyFocus || 0) },
       ];
     }
 
     return [
-      { label: "May", value: 18.0 },
-      { label: "Jun", value: 22.5 },
-      { label: "Jul", value: 26.0 },
-      { label: "Aug", value: Number(totalHours || 28.5) },
+      { label: "May", value: 0 },
+      { label: "Jun", value: 0 },
+      { label: "Jul", value: 0 },
+      { label: "Aug", value: Number(totalHours || 0) },
     ];
   }, [focusData, viewMode, weeklyFocus, totalHours]);
 

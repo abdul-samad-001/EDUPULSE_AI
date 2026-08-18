@@ -42,56 +42,56 @@ function ProductivityAnalyticsCard({ productivityData = null }) {
     const rawDaily = productivityData?.daily && productivityData.daily.length > 0
       ? productivityData.daily
       : [
-          { day: "Mon", score: 85 },
-          { day: "Tue", score: 78 },
-          { day: "Wed", score: 92 },
-          { day: "Thu", score: 88 },
-          { day: "Fri", score: 80 },
-          { day: "Sat", score: 70 },
-          { day: "Sun", score: 65 },
+          { day: "Mon", score: 0 },
+          { day: "Tue", score: 0 },
+          { day: "Wed", score: 0 },
+          { day: "Thu", score: 0 },
+          { day: "Fri", score: 0 },
+          { day: "Sat", score: 0 },
+          { day: "Sun", score: 0 },
         ];
 
     const rawWeekly = productivityData?.weekly && productivityData.weekly.length > 0
       ? productivityData.weekly
       : [
-          { week: "Wk 1", score: 76 },
-          { week: "Wk 2", score: 82 },
-          { week: "Wk 3", score: 88 },
-          { week: "Wk 4", score: 84 },
+          { week: "Wk 1", score: 0 },
+          { week: "Wk 2", score: 0 },
+          { week: "Wk 3", score: 0 },
+          { week: "Wk 4", score: 0 },
         ];
 
     const rawMonthly = productivityData?.monthly && productivityData.monthly.length > 0
       ? productivityData.monthly
       : [
-          { month: "May", score: 74 },
-          { month: "Jun", score: 80 },
-          { month: "Jul", score: 85 },
-          { month: "Aug", score: 88 },
+          { month: "May", score: 0 },
+          { month: "Jun", score: 0 },
+          { month: "Jul", score: 0 },
+          { month: "Aug", score: 0 },
         ];
 
     if (viewMode === "day") {
       return rawDaily.map((item) => ({
         label: item.label || item.day || item.name || "Day",
-        score: Number(item.score ?? item.productivity ?? 75),
+        score: Number(item.score ?? item.productivity ?? 0),
       }));
     }
 
     if (viewMode === "week") {
       return rawWeekly.map((item) => ({
         label: item.label || item.week || item.name || "Week",
-        score: Number(item.score ?? item.productivity ?? 80),
+        score: Number(item.score ?? item.productivity ?? 0),
       }));
     }
 
     return rawMonthly.map((item) => ({
       label: item.label || item.month || item.name || "Month",
-      score: Number(item.score ?? item.productivity ?? 82),
+      score: Number(item.score ?? item.productivity ?? 0),
     }));
   }, [productivityData, viewMode]);
 
-  const average = productivityData?.average || 84;
-  const bestDay = productivityData?.bestDay || "Wednesday (92% focus)";
-  const worstDay = productivityData?.worstDay || "Sunday (65% focus)";
+  const average = productivityData?.average ?? 0;
+  const bestDay = productivityData?.bestDay || "No sessions logged";
+  const worstDay = productivityData?.worstDay || "No sessions logged";
 
   return (
     <Card

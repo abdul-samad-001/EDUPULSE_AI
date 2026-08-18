@@ -13,47 +13,56 @@ const getProductivityData = async (userId) => {
   sessions.forEach((s) => {
     const d = new Date(s.startedAt);
     const day = dayNames[d.getDay()];
-    const score = s.focusScore || Math.min(100, Math.max(60, (s.actualDurationMinutes || 0) * 3));
+    const score = s.focusScore || Math.min(100, Math.max(0, (s.actualDurationMinutes || 0) * 3));
     if (dayScores[day]) dayScores[day].push(score);
   });
 
   const orderedDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const daily = orderedDays.map((day) => {
     const scores = dayScores[day];
-    const avg = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 75;
+    const avg = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
     return { day, score: avg, productivity: avg };
   });
 
-  let bestDay = "Wednesday (88% focus)";
-  let worstDay = "Sunday (62% focus)";
-  let maxScore = -1;
-  let minScore = 999;
+  let bestDay = "No sessions logged";
+  let worstDay = "No sessions logged";
+  let maxScore = 0;
+  let minScore = 101;
+  let hasActiveDay = false;
 
   daily.forEach((item) => {
     if (item.score > maxScore) {
       maxScore = item.score;
       bestDay = `${item.day} (${item.score}% score)`;
+      hasActiveDay = true;
     }
-    if (item.score < minScore && item.score > 0) {
+    if (item.score > 0 && item.score < minScore) {
       minScore = item.score;
       worstDay = `${item.day} (${item.score}% score)`;
+      hasActiveDay = true;
     }
   });
 
-  const totalScore = daily.reduce((sum, item) => sum + item.score, 0);
-  const average = Math.round(totalScore / 7);
+  if (!hasActiveDay) {
+    bestDay = "No sessions yet";
+    worstDay = "No sessions yet";
+  }
+
+  const activeDays = daily.filter((item) => item.score > 0);
+  const totalScore = activeDays.reduce((sum, item) => sum + item.score, 0);
+  const average = activeDays.length > 0 ? Math.round(totalScore / activeDays.length) : 0;
 
   const weekly = [
-    { week: "W1", score: 78 },
-    { week: "W2", score: 82 },
-    { week: "W3", score: 85 },
-    { week: "W4", score: average },
+    { week: "Wk 1", score: 0 },
+    { week: "Wk 2", score: 0 },
+    { week: "Wk 3", score: 0 },
+    { week: "Wk 4", score: average },
   ];
 
   const monthly = [
-    { month: "May", score: 75 },
-    { month: "Jun", score: 80 },
-    { month: "Jul", score: 84 },
+    { month: "May", score: 0 },
+    { month: "Jun", score: 0 },
+    { month: "Jul", score: 0 },
     { month: "Aug", score: average },
   ];
 
@@ -124,17 +133,9 @@ const getSkillAnalyticsData = async (userId) => {
 
   const hoursPerSkill = skills.slice(0, 6).map((s) => ({
     skillName: s.skillName,
-    hours: Number(((s.progress || 10) * 0.15).toFixed(1)),
+    hours: Number(((s.progress || 0) * 0.15).toFixed(1)),
     progress: s.progress || 0,
   }));
-
-  if (hoursPerSkill.length === 0) {
-    hoursPerSkill.push(
-      { skillName: "React.js", hours: 14.5, progress: 80 },
-      { skillName: "Node.js", hours: 10.2, progress: 65 },
-      { skillName: "Python", hours: 8.0, progress: 50 }
-    );
-  }
 
   // Task completion grouped by category
   const categoryMap = {};
@@ -150,14 +151,6 @@ const getSkillAnalyticsData = async (userId) => {
     completed: categoryMap[cat].completed,
     total: categoryMap[cat].total,
   }));
-
-  if (taskCompletion.length === 0) {
-    taskCompletion.push(
-      { category: "Web Dev", completed: 12, total: 15 },
-      { category: "Backend", completed: 8, total: 10 },
-      { category: "AI/ML", completed: 4, total: 8 }
-    );
-  }
 
   return {
     skillsStarted,
@@ -181,9 +174,9 @@ const getSummaryData = async (userId) => {
   return {
     studyHours,
     focusSessions: sessions.length,
-    xpEarned: xpDoc?.xp || 450,
+    xpEarned: xpDoc?.xp ?? 0,
     skillsImproved: skills.filter((s) => (s.progress || 0) > 0).length,
-    challengesCompleted: 5,
+    challengesCompleted: 0,
   };
 };
 

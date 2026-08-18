@@ -157,10 +157,10 @@ function Analytics() {
     <div className="space-y-5 max-w-7xl mx-auto pb-8">
       {/* 1. HERO SECTION & TABBED HUB */}
       <AnalyticsHero
-        totalHours={focus?.totalFocusHours || 18.5}
-        avgProductivity={productivity?.average || 84}
-        focusScore={productivity?.average || 85}
-        longestStreak={3}
+        totalHours={focus?.totalFocusHours ?? 0}
+        avgProductivity={productivity?.average ?? 0}
+        focusScore={productivity?.average ?? 0}
+        longestStreak={summary?.streak ?? 0}
         activeTab={activeTab}
         onTabChange={setActiveTab}
         globalRange={globalRange}
