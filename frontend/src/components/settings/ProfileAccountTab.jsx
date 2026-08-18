@@ -190,9 +190,19 @@ function ProfileAccountTab() {
       const res = await authService.sendOTP(targetEmail, "password_reset");
       setOtpSent(true);
       setResendTimer(60);
-      toast.success("OTP Dispatched", {
-        description: res?.message || `6-digit OTP code sent to ${targetEmail}.`,
-      });
+
+      if (res?.debugOtp) {
+        setOtpCode(res.debugOtp);
+        toast.info(`🔑 OTP Code: ${res.debugOtp}`, {
+          description: res.isSimulated
+            ? "SMTP not yet set in .env. Code auto-filled & logged in terminal for instant testing!"
+            : `Verification code dispatched to ${targetEmail}.`,
+        });
+      } else {
+        toast.success("OTP Dispatched", {
+          description: res?.message || `6-digit OTP code sent to ${targetEmail}.`,
+        });
+      }
     } catch (err) {
       console.error(err);
       toast.error("OTP Dispatch Failed", {

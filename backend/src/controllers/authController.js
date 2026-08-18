@@ -239,14 +239,18 @@ const sendOTP = async (req, res) => {
       type,
     });
 
-    // Send email
-    await sendOTPEmail(email, otpCode, type);
+    // Send email via SMTP or Console Fallback
+    const emailResult = await sendOTPEmail(email, otpCode, type);
 
     res.status(200).json({
       success: true,
-      message: `A 6-digit verification code has been dispatched to ${email}`,
+      message: emailResult?.simulated
+        ? `[Dev Mode] 6-digit code logged in server console: ${otpCode}`
+        : `A 6-digit verification code has been dispatched to ${email}`,
       email,
       expiresIn: "10 minutes",
+      debugOtp: otpCode,
+      isSimulated: Boolean(emailResult?.simulated),
     });
   } catch (error) {
     console.error("sendOTP Error:", error);

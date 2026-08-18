@@ -8,7 +8,7 @@ import team1 from "../assets/team1.png";
 import team2 from "../assets/team2.png";
 import team3 from "../assets/team3.png";
 import team4 from "../assets/team4.png";
-import { UserPlus } from "lucide-react";
+import { UserPlus, Eye, EyeOff, AlertCircle, User, Mail, Lock } from "lucide-react";
 
 function Signup() {
   const images = [team1, team2, team3, team4];
@@ -23,9 +23,13 @@ function Signup() {
     confirmPassword: "",
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (e) => {
+    if (errorMessage) setErrorMessage("");
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -34,30 +38,31 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage("");
 
     if (
-      !formData.name ||
-      !formData.email ||
+      !formData.name.trim() ||
+      !formData.email.trim() ||
       !formData.password ||
       !formData.confirmPassword
     ) {
-      toast.warning("Missing Fields", {
-        description: "Please fill in all required fields to register.",
-      });
+      const msg = "Please fill in all required fields to register.";
+      setErrorMessage(msg);
+      toast.warning("Missing Fields", { description: msg });
       return;
     }
 
     if (formData.password.length < 6) {
-      toast.warning("Password Too Short", {
-        description: "Password must be at least 6 characters long.",
-      });
+      const msg = "Password must be at least 6 characters long.";
+      setErrorMessage(msg);
+      toast.warning("Password Too Short", { description: msg });
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      toast.warning("Passwords Do Not Match", {
-        description: "Please ensure your confirmation password matches.",
-      });
+      const msg = "Passwords do not match. Please verify both password entries.";
+      setErrorMessage(msg);
+      toast.warning("Passwords Do Not Match", { description: msg });
       return;
     }
 
@@ -65,8 +70,8 @@ function Signup() {
       setLoading(true);
 
       const data = await signupUser({
-        name: formData.name,
-        email: formData.email,
+        name: formData.name.trim(),
+        email: formData.email.trim(),
         password: formData.password,
       });
 
@@ -85,11 +90,11 @@ function Signup() {
       });
       navigate("/dashboard");
     } catch (error) {
-      toast.error("Signup Failed", {
-        description:
-          error.response?.data?.message ||
-          "Could not create account. Please check your details.",
-      });
+      const msg =
+        error.response?.data?.message ||
+        "Could not create account. Please check your details and try again.";
+      setErrorMessage(msg);
+      toast.error("Signup Failed", { description: msg });
     } finally {
       setLoading(false);
     }
@@ -108,72 +113,133 @@ function Signup() {
         <div className="flex items-center justify-center p-8 sm:p-12 overflow-y-auto">
           <div className="w-full max-w-md">
 
-            <h1 className="text-4xl font-extrabold text-dark-text tracking-tight">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-dark-text tracking-tight">
               Create Account
             </h1>
 
-            <p className="text-dark-muted mt-2 mb-6">
+            <p className="text-dark-muted mt-2 mb-5 text-sm">
               Start your productivity journey on EduPulse AI today.
             </p>
 
+            {/* Error Banner */}
+            {errorMessage && (
+              <div className="mb-4 p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                <span className="font-semibold leading-relaxed">{errorMessage}</span>
+              </div>
+            )}
+
             <form
               onSubmit={handleSubmit}
+              autoComplete="off"
               className="space-y-3.5"
             >
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-dark-muted mb-1.5">
                   Full Name
                 </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="John Doe"
-                  className="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-dark-text text-sm outline-none focus:border-primary/50 transition"
-                />
+                <div className="relative">
+                  <User className="w-4 h-4 text-dark-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    name="name"
+                    autoComplete="off"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="John Doe"
+                    className="w-full bg-dark-bg border border-dark-border rounded-xl pl-10 pr-4 py-2.5 text-dark-text text-sm outline-none focus:border-primary/50 transition"
+                  />
+                </div>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-dark-muted mb-1.5">
                   Email Address
                 </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="name@example.com"
-                  className="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-dark-text text-sm outline-none focus:border-primary/50 transition"
-                />
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-dark-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="email"
+                    name="email"
+                    autoComplete="off"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="name@example.com"
+                    className={`w-full bg-dark-bg rounded-xl pl-10 pr-4 py-2.5 text-dark-text text-sm outline-none transition ${
+                      errorMessage && !formData.email
+                        ? "border-2 border-rose-500/80 bg-rose-500/5 focus:border-rose-500"
+                        : "border border-dark-border focus:border-primary/50"
+                    }`}
+                  />
+                </div>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-dark-muted mb-1.5">
                   Password
                 </label>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                  className="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-dark-text text-sm outline-none focus:border-primary/50 transition"
-                />
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-dark-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    autoComplete="new-password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    className={`w-full bg-dark-bg rounded-xl pl-10 pr-11 py-2.5 text-dark-text text-sm outline-none transition ${
+                      errorMessage && formData.password.length < 6
+                        ? "border-2 border-rose-500/80 bg-rose-500/5 focus:border-rose-500"
+                        : "border border-dark-border focus:border-primary/50"
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-dark-muted hover:text-dark-text p-1 transition-colors"
+                    title={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4 text-primary" />
+                    ) : (
+                      <Eye className="w-4 h-4 text-dark-muted" />
+                    )}
+                  </button>
+                </div>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-dark-muted mb-1.5">
                   Confirm Password
                 </label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                  className="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-dark-text text-sm outline-none focus:border-primary/50 transition"
-                />
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-dark-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    autoComplete="new-password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    className={`w-full bg-dark-bg rounded-xl pl-10 pr-11 py-2.5 text-dark-text text-sm outline-none transition ${
+                      errorMessage && formData.password !== formData.confirmPassword
+                        ? "border-2 border-rose-500/80 bg-rose-500/5 focus:border-rose-500"
+                        : "border border-dark-border focus:border-primary/50"
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-dark-muted hover:text-dark-text p-1 transition-colors"
+                    title={showConfirmPassword ? "Hide password" : "Show password"}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-4 h-4 text-primary" />
+                    ) : (
+                      <Eye className="w-4 h-4 text-dark-muted" />
+                    )}
+                  </button>
+                </div>
               </div>
 
               <Button
