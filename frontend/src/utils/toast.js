@@ -1,5 +1,21 @@
+import soundService from "./soundService";
+
 // Event emitter pattern for calling toast outside of React components
 const toastListeners = new Set();
+
+const playToastSound = (type) => {
+  try {
+    const raw = localStorage.getItem("edupulse_user_settings");
+    const settings = raw ? JSON.parse(raw) : { soundFxEnabled: true, soundpack: "lofi" };
+    if (settings.soundFxEnabled !== false) {
+      if (type === "success") soundService.playSuccess();
+      else if (type === "warning" || type === "error") soundService.playWarning();
+      else soundService.playSoundpack(settings.soundpack || "lofi");
+    }
+  } catch {
+    // Non-blocking audio play
+  }
+};
 
 const emitToast = (event) => {
   toastListeners.forEach((listener) => listener(event));
@@ -33,6 +49,7 @@ export const toast = {
             duration: titleOrOptions.duration ?? 4000,
           };
 
+    playToastSound(toastData.type);
     emitToast({ action: "ADD", toast: toastData });
     return id;
   },

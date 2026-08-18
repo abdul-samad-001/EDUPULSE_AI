@@ -19,6 +19,7 @@ import {
   LogOut,
   ChevronDown,
   Sparkles,
+  Layers,
 } from "lucide-react";
 import { NotificationBell } from "../notifications";
 import xpService from "../../services/xpService";
@@ -32,7 +33,8 @@ const SEARCH_ITEMS = [
   { title: "Learning Milestones", category: "Page", path: "/milestones", icon: Flag, keywords: "milestones checkpoints progress goals badges" },
   { title: "Achievements", category: "Page", path: "/achievements", icon: Award, keywords: "trophies badges xp rewards unlocked list" },
   { title: "Leaderboard", category: "Page", path: "/leaderboard", icon: Trophy, keywords: "rank competition top learners xp points" },
-  { title: "User Profile", category: "Page", path: "/profile", icon: User, keywords: "user info bio level streak account details" },
+  { title: "User Profile & Security", category: "Page", path: "/settings?tab=profile", icon: User, keywords: "user info bio level streak account details name password" },
+  { title: "Browser Extension", category: "Page", path: "/settings?tab=extension", icon: Layers, keywords: "extension chrome edge brave download setup install load unpacked telemetry" },
   { title: "Settings", category: "Page", path: "/settings", icon: Settings, keywords: "preferences notifications theme password security" },
   { title: "Docker", category: "Skill", path: "/skills", icon: BookOpen, keywords: "docker container DevOps virtualization deployment" },
   { title: "Python", category: "Skill", path: "/skills", icon: BookOpen, keywords: "python backend ML machine learning scripting" },
@@ -316,12 +318,21 @@ function TopNavbar({ onMenuToggle }) {
               {/* Profile Menu Links */}
               <div className="p-1.5 space-y-0.5">
                 <Link
-                  to="/profile"
+                  to="/settings?tab=profile"
                   onClick={() => setIsProfileOpen(false)}
                   className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-dark-text hover:bg-primary/10 hover:text-primary transition-colors"
                 >
                   <User className="w-4 h-4 text-dark-muted" />
-                  <span>My Profile</span>
+                  <span>My Profile & Security</span>
+                </Link>
+
+                <Link
+                  to="/settings?tab=extension"
+                  onClick={() => setIsProfileOpen(false)}
+                  className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-dark-text hover:bg-primary/10 hover:text-primary transition-colors"
+                >
+                  <Layers className="w-4 h-4 text-dark-muted" />
+                  <span>Browser Extension</span>
                 </Link>
 
                 <Link

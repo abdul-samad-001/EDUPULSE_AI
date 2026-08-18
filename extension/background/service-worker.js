@@ -162,16 +162,18 @@ const startSessionForTab = async (tab) => {
     return;
   }
 
+  const category = classifyDomain(domain, tab.url || "", tab.title || "");
+
   activeSession = {
     tabId: tab.id,
     domain,
     title: tab.title || domain,
     url: tab.url || "",
-    category: classifyDomain(domain),
+    category,
     startedAt: Date.now(),
   };
 
-  console.log("EduPulse session started:", activeSession.domain);
+  console.log(`EduPulse session started: ${activeSession.domain} [${category}]`);
 };
 
 const startActiveTabSession = async () => {
@@ -208,7 +210,14 @@ chrome.tabs.onActivated.addListener(async ({ tabId }) => {
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status !== "complete" || !tab.active) return;
-  if (activeSession?.tabId === tabId && activeSession?.domain === getDomainFromUrl(tab.url)) return;
+  if (activeSession?.tabId === tabId && activeSession?.domain === getDomainFromUrl(tab.url)) {
+    // Re-check classification on title or URL update (e.g. YouTube video navigation)
+    const updatedCategory = classifyDomain("youtube.com", tab.url, tab.title);
+    if (activeSession.category !== updatedCategory) {
+      await switchActiveSession(tab);
+    }
+    return;
+  }
 
   await switchActiveSession(tab);
 });
@@ -246,6 +255,29 @@ chrome.idle.onStateChanged.addListener(async (newState) => {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (!message) return false;
+
+  if (message.type === "YOUTUBE_VIDEO_METADATA") {
+    const newCategory = classifyDomain("youtube.com", message.url, message.title, message.channel);
+    if (activeSession && (activeSession.domain === "youtube.com" || activeSession.domain.endsWith(".youtube.com"))) {
+      if (activeSession.category !== newCategory) {
+        endActiveSession().then(() => {
+          activeSession = {
+            tabId: sender?.tab?.id || activeSession?.tabId,
+            domain: "youtube.com",
+            title: message.title || "YouTube Video",
+            url: message.url || "",
+            category: newCategory,
+            startedAt: Date.now(),
+          };
+          console.log(`EduPulse YouTube video reclassified: [${newCategory}] -> ${message.title}`);
+        });
+      } else {
+        activeSession.title = message.title || activeSession.title;
+        activeSession.url = message.url || activeSession.url;
+      }
+    }
+    return false;
+  }
 
   if (message.type === "SAVE_AUTH_TOKEN") {
     if (message.token) {

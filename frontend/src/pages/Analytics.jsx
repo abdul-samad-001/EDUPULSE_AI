@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import analyticsService from "../services/analyticsService";
-import focusSessionService from "../services/focusSessionService";
 import { getProcrastinationScore, getStudyVsDistract } from "../services/telemetryService";
 import { getLeaderboard } from "../services/leaderboardService";
 
@@ -17,11 +17,13 @@ import {
   RecommendationPerformanceCard,
 } from "../components/analytics";
 
-import { Heatmap } from "../components/heatmap";
 import { LoadingSpinner, Card, Button } from "../components/ui";
 import { AlertCircle } from "lucide-react";
 
 function Analytics() {
+  const [activeTab, setActiveTab] = useState("overview"); // overview | focus | skills_ai
+  const [globalRange, setGlobalRange] = useState("Week"); // Day | Week | Month
+
   const [productivity, setProductivity] = useState(null);
   const [focus, setFocus] = useState(null);
   const [skills, setSkills] = useState(null);
@@ -29,7 +31,6 @@ function Analytics() {
   const [goals, setGoals] = useState(null);
   const [procrastination, setProcrastination] = useState(null);
   const [studyVsDistract, setStudyVsDistract] = useState(null);
-  const [focusHistory, setFocusHistory] = useState([]);
   const [leaderboardData, setLeaderboardData] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -47,7 +48,6 @@ function Analytics() {
         goalRes,
         procRes,
         svdRes,
-        historyRes,
         leaderboardRes,
       ] = await Promise.all([
         analyticsService.getProductivity().catch(() => ({ data: null })),
@@ -57,7 +57,6 @@ function Analytics() {
         analyticsService.getGoals().catch(() => ({ data: null })),
         getProcrastinationScore().catch(() => ({ data: null })),
         getStudyVsDistract().catch(() => ({ data: null })),
-        focusSessionService.getHistory().catch(() => ({ data: [] })),
         getLeaderboard().catch(() => []),
       ]);
 
@@ -68,7 +67,6 @@ function Analytics() {
       setGoals(goalRes?.data || null);
       setProcrastination(procRes?.data || null);
       setStudyVsDistract(svdRes?.data || null);
-      setFocusHistory(historyRes?.data || []);
       setLeaderboardData(leaderboardRes || []);
     } catch (err) {
       console.error("Analytics Page Error:", err);
@@ -91,7 +89,6 @@ function Analytics() {
           goalRes,
           procRes,
           svdRes,
-          historyRes,
           leaderboardRes,
         ] = await Promise.all([
           analyticsService.getProductivity().catch(() => ({ data: null })),
@@ -101,7 +98,6 @@ function Analytics() {
           analyticsService.getGoals().catch(() => ({ data: null })),
           getProcrastinationScore().catch(() => ({ data: null })),
           getStudyVsDistract().catch(() => ({ data: null })),
-          focusSessionService.getHistory().catch(() => ({ data: [] })),
           getLeaderboard().catch(() => []),
         ]);
 
@@ -113,7 +109,6 @@ function Analytics() {
           setGoals(goalRes?.data || null);
           setProcrastination(procRes?.data || null);
           setStudyVsDistract(svdRes?.data || null);
-          setFocusHistory(historyRes?.data || []);
           setLeaderboardData(leaderboardRes || []);
           setError(null);
         }
@@ -159,47 +154,75 @@ function Analytics() {
   }
 
   return (
-    <div className="space-y-6 sm:space-y-8 max-w-7xl mx-auto pb-10">
-      {/* 1. HERO SECTION */}
+    <div className="space-y-5 max-w-7xl mx-auto pb-8">
+      {/* 1. HERO SECTION & TABBED HUB */}
       <AnalyticsHero
         totalHours={focus?.totalFocusHours || 18.5}
         avgProductivity={productivity?.average || 84}
         focusScore={productivity?.average || 85}
         longestStreak={3}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        globalRange={globalRange}
+        onRangeChange={setGlobalRange}
       />
 
-      {/* 2. PRODUCTIVITY ANALYTICS (LINE CHART) */}
-      <ProductivityAnalyticsCard productivityData={productivity} />
+      {/* 2. TAB CONTENT WITH FRAMER MOTION TRANSITIONS */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.18 }}
+          className="space-y-5"
+        >
+          {/* TAB 1: OVERVIEW & PRODUCTIVITY */}
+          {activeTab === "overview" && (
+            <>
+              {/* Productivity Line Chart */}
+              <ProductivityAnalyticsCard productivityData={productivity} />
 
-      {/* 3. FOCUS ANALYTICS (AREA CHART + STATS) */}
-      <FocusAnalyticsCard focusData={focus} />
+              {/* Focus Area & Rhythm Chart */}
+              <FocusAnalyticsCard focusData={focus} />
 
-      {/* 4. LEARNING ANALYTICS (BAR CHARTS) */}
-      <LearningAnalyticsCard skillData={skills} />
+              {/* Responsive 2-Column Summary + Goal Tracker */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch">
+                <WeeklySummaryCard summary={summary} />
+                <GoalTrackerWidget goals={goals} />
+              </div>
+            </>
+          )}
 
-      {/* 5. STUDY HEATMAP */}
-      <Heatmap sessions={focusHistory} streak={3} />
+          {/* TAB 2: FOCUS & ATTENTION / PROCRASTINATION */}
+          {activeTab === "focus" && (
+            <>
+              {/* Procrastination Signals + Merged Leaderboard in 2-Column Layout */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch">
+                <ProcrastinationAnalyticsCard
+                  procrastinationData={procrastination}
+                  studyVsDistract={studyVsDistract}
+                />
+                <MergedLeaderboardCard leaderboard={leaderboardData} />
+              </div>
 
-      {/* 6. PROCRASTINATION ANALYTICS & MERGED LEADERBOARD */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
-        <ProcrastinationAnalyticsCard
-          procrastinationData={procrastination}
-          studyVsDistract={studyVsDistract}
-        />
-        <MergedLeaderboardCard leaderboard={leaderboardData} />
-      </div>
+              {/* AI Prediction Models Preview */}
+              <AIAnalyticsPreviewCard />
+            </>
+          )}
 
-      {/* 7. COMPREHENSIVE WEEKLY SUMMARY */}
-      <WeeklySummaryCard summary={summary} />
+          {/* TAB 3: SKILL MASTERY & AI OUTCOMES */}
+          {activeTab === "skills_ai" && (
+            <>
+              {/* Skill Mastery Bar Charts */}
+              <LearningAnalyticsCard skillData={skills} />
 
-      {/* 8. AI RECOMMENDATION PERFORMANCE & OUTCOMES */}
-      <RecommendationPerformanceCard />
-
-      {/* 8. GOAL TRACKER & AI ANALYTICS PREVIEW */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
-        <GoalTrackerWidget goals={goals} />
-        <AIAnalyticsPreviewCard />
-      </div>
+              {/* AI Recommendation Performance */}
+              <RecommendationPerformanceCard />
+            </>
+          )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

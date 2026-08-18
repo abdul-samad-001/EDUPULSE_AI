@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "EduPulse AI Focus Tracker",
-  "version": "1.0.0",
-  "description": "Tracks domain-level browsing activity for EduPulse AI focus and procrastination insights.",
+  "version": "1.1.0",
+  "description": "Tracks domain & video-level browsing activity with smart YouTube tutorial vs distraction AI classification.",
 
   "permissions": [
     "tabs",
@@ -13,19 +13,34 @@
   ],
 
   "host_permissions": [
-    "http://localhost:5000/*"
+    "http://localhost:5000/*",
+    "http://127.0.0.1:5000/*",
+    "*://*.youtube.com/*"
   ],
+
   "content_scripts": [
-  {
-    "matches": [
-      "http://localhost:5173/*"
-    ],
-    "js": [
-      "content/content-script.js"
-    ],
-    "run_at": "document_start"
-  }
-],
+    {
+      "matches": [
+        "http://localhost:5173/*",
+        "http://127.0.0.1:5173/*",
+        "http://localhost:*/*",
+        "http://127.0.0.1:*/*"
+      ],
+      "js": [
+        "content/content-script.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "*://*.youtube.com/*"
+      ],
+      "js": [
+        "content/youtube-content-script.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
 
   "background": {
     "service_worker": "background/service-worker.js",
@@ -37,7 +52,10 @@
   },
   "externally_connectable": {
     "matches": [
-      "http://localhost:5173/*"
+      "http://localhost:5173/*",
+      "http://127.0.0.1:5173/*",
+      "http://localhost:*/*",
+      "http://127.0.0.1:*/*"
     ]
   }
 }

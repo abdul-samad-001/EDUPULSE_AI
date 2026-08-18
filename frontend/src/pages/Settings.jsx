@@ -1,14 +1,14 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   SettingsHero,
+  ProfileAccountTab,
+  ExtensionTab,
   StudyPreferencesTab,
-  AiTelemetryTab,
   NotificationsTab,
   SubscriptionTab,
-  SecurityDataTab,
 } from "../components/settings";
-import { useAuth } from "../context/AuthContext";
 import { toast } from "../components/ui";
 
 const SETTINGS_STORAGE_KEY = "edupulse_user_settings";
@@ -25,14 +25,7 @@ const DEFAULT_SETTINGS = {
   fullscreenLock: false,
   autoLinkSkill: true,
 
-  // 2. AI & Telemetry
-  procrastinationSensitivity: "balanced",
-  extensionSync: true,
-  stripUrlParams: true,
-  showFeatureAttribution: true,
-  autoRefreshOnAction: true,
-
-  // 3. Notifications
+  // 2. Notifications
   streakReminderEnabled: true,
   streakReminderTime: "19:00",
   weeklyDigestEmail: true,
@@ -41,8 +34,13 @@ const DEFAULT_SETTINGS = {
 };
 
 function Settings() {
-  const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState("preferences");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "profile";
+
+  const handleTabChange = (newTab) => {
+    setSearchParams({ tab: newTab });
+  };
+
   const [settings, setSettings] = useState(() => {
     try {
       const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
@@ -91,69 +89,12 @@ function Settings() {
     });
   };
 
-  const handleExportJSON = () => {
-    const exportPayload = {
-      user: {
-        id: user?._id || user?.id || "STU-079582",
-        name: user?.name || "Student Learner",
-        email: user?.email || "student@edupulse.ai",
-        tier: "EduPulse Pro Scholar",
-      },
-      settings,
-      timestamp: new Date().toISOString(),
-      version: "2.4.0",
-    };
-
-    const blob = new Blob([JSON.stringify(exportPayload, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `EduPulse_User_Backup_${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success("Backup Downloaded", {
-      description: "JSON user settings backup exported.",
-    });
-  };
-
-  const handleExportCSV = () => {
-    const csvContent =
-      "Session ID,Date,Planned (min),Actual (min),Focus Score,Category,Status\n" +
-      `SESS-101,${new Date().toLocaleDateString()},45,44,92,Coding,Completed\n` +
-      `SESS-102,${new Date().toLocaleDateString()},25,25,88,Revision,Completed\n` +
-      `SESS-103,${new Date().toLocaleDateString()},50,48,95,General,Completed\n`;
-
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `EduPulse_Focus_Sessions_${Date.now()}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success("CSV Exported", {
-      description: "Focus log spreadsheet exported.",
-    });
-  };
-
-  const handleClearCache = () => {
-    localStorage.removeItem(SETTINGS_STORAGE_KEY);
-    setSettings(DEFAULT_SETTINGS);
-    toast.info("Cache Purged", {
-      description: "Local storage and dashboard cache purged. Reloading...",
-    });
-    setTimeout(() => {
-      window.location.reload();
-    }, 800);
-  };
-
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-5 pb-8">
       {/* Settings Hero Card & Tabs Navigation */}
       <SettingsHero
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={handleTabChange}
         onSave={handleSave}
         onReset={handleReset}
         isSaving={isSaving}
@@ -164,17 +105,17 @@ function Settings() {
       <AnimatePresence mode="wait">
         <motion.div
           key={activeTab}
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -12 }}
-          transition={{ duration: 0.2 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.18 }}
         >
+          {activeTab === "profile" && <ProfileAccountTab />}
+
+          {activeTab === "extension" && <ExtensionTab />}
+
           {activeTab === "preferences" && (
             <StudyPreferencesTab settings={settings} onUpdate={handleUpdate} />
-          )}
-
-          {activeTab === "ai_telemetry" && (
-            <AiTelemetryTab settings={settings} onUpdate={handleUpdate} />
           )}
 
           {activeTab === "notifications" && (
@@ -182,14 +123,6 @@ function Settings() {
           )}
 
           {activeTab === "subscription" && <SubscriptionTab />}
-
-          {activeTab === "security_data" && (
-            <SecurityDataTab
-              onExportJSON={handleExportJSON}
-              onExportCSV={handleExportCSV}
-              onClearCache={handleClearCache}
-            />
-          )}
         </motion.div>
       </AnimatePresence>
     </div>

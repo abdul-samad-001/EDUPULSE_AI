@@ -6,7 +6,6 @@ import Dashboard from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
 import Reports from "./pages/Reports";
 import Skills from "./pages/Skills";
-import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Achievements from "./pages/Achievements";
 import AppLayout from "./components/layout/AppLayout";
@@ -94,13 +93,7 @@ function App() {
 
       <Route
         path="/profile"
-        element={
-          <ProtectedRoute>
-            <AppLayout>
-              <Profile />
-            </AppLayout>
-          </ProtectedRoute>
-        }
+        element={<Navigate to="/settings?tab=profile" replace />}
       />
 
       <Route

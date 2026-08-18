@@ -1,7 +1,11 @@
+import { useState } from "react";
 import { Card, Badge, EmptyState, Button } from "../ui";
-import { Timer, Award, FileText, Play } from "lucide-react";
+import { Timer, Award, FileText, Play, ChevronDown, ChevronUp, History } from "lucide-react";
 
 function SessionHistory({ history = [], onStartFirstSession }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const INITIAL_COUNT = 4;
+
   if (!Array.isArray(history) || history.length === 0) {
     return (
       <EmptyState
@@ -17,32 +21,51 @@ function SessionHistory({ history = [], onStartFirstSession }) {
     );
   }
 
+  const visibleSessions = isExpanded ? history : history.slice(0, INITIAL_COUNT);
+  const remainingCount = Math.max(0, history.length - INITIAL_COUNT);
+
   return (
     <Card
       title="📜 Focus Session History"
-      subtitle={`Total ${history.length} focus sessions recorded`}
-      className="p-0 overflow-hidden"
+      subtitle={
+        isExpanded
+          ? `Showing all ${history.length} focus sessions recorded`
+          : `Showing latest ${visibleSessions.length} of ${history.length} focus sessions`
+      }
+      headerAction={
+        history.length > INITIAL_COUNT && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsExpanded(!isExpanded)}
+            icon={isExpanded ? ChevronUp : ChevronDown}
+            className="text-xs font-bold text-primary hover:bg-primary/10 border border-primary/20"
+          >
+            {isExpanded ? "Show Less" : `View More (+${remainingCount})`}
+          </Button>
+        )
+      }
+      className="p-0 overflow-hidden shadow-lg border border-dark-border"
     >
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs sm:text-sm border-collapse">
-          <thead className="bg-dark-bg text-dark-muted border-b border-dark-border uppercase text-[10px] font-semibold tracking-wider">
+      <div className={`overflow-x-auto ${isExpanded && history.length > 8 ? "max-h-96 overflow-y-auto" : ""}`}>
+        <table className="w-full text-left text-xs border-collapse">
+          <thead className="bg-dark-bg text-dark-muted border-b border-dark-border uppercase text-[10px] font-bold tracking-wider sticky top-0 z-10">
             <tr>
-              <th className="p-3.5 sm:p-4">Date & Time</th>
-              <th className="p-3.5 sm:p-4">Skill Track</th>
-              <th className="p-3.5 sm:p-4">Duration</th>
-              <th className="p-3.5 sm:p-4">XP Earned</th>
-              <th className="p-3.5 sm:p-4">Goal / Notes</th>
-              <th className="p-3.5 sm:p-4 text-right">Status</th>
+              <th className="py-2.5 px-3.5 sm:px-4">Date & Time</th>
+              <th className="py-2.5 px-3.5 sm:px-4">Skill Track</th>
+              <th className="py-2.5 px-3.5 sm:px-4">Duration</th>
+              <th className="py-2.5 px-3.5 sm:px-4">XP Earned</th>
+              <th className="py-2.5 px-3.5 sm:px-4">Goal / Notes</th>
+              <th className="py-2.5 px-3.5 sm:px-4 text-right">Status</th>
             </tr>
           </thead>
 
           <tbody className="divide-y divide-dark-border text-dark-text">
-            {history.map((session) => {
+            {visibleSessions.map((session) => {
               const dateStr = session.startedAt
                 ? new Date(session.startedAt).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
-                    year: "numeric",
                     hour: "2-digit",
                     minute: "2-digit",
                   })
@@ -59,34 +82,36 @@ function SessionHistory({ history = [], onStartFirstSession }) {
                   className="hover:bg-dark-border/40 transition-colors duration-150"
                 >
                   {/* Date */}
-                  <td className="p-3.5 sm:p-4 text-dark-muted text-xs whitespace-nowrap">
+                  <td className="py-2.5 px-3.5 sm:px-4 text-dark-muted text-xs whitespace-nowrap font-medium">
                     {dateStr}
                   </td>
 
                   {/* Skill */}
-                  <td className="p-3.5 sm:p-4 font-bold text-dark-text">
+                  <td className="py-2.5 px-3.5 sm:px-4 font-bold text-dark-text">
                     <span className="inline-flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-primary" />
-                      {session.skill?.skillName || "General Learning"}
+                      <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
+                      <span className="truncate max-w-[140px] sm:max-w-none">
+                        {session.skill?.skillName || "General Learning"}
+                      </span>
                     </span>
                   </td>
 
                   {/* Duration */}
-                  <td className="p-3.5 sm:p-4 whitespace-nowrap">
-                    <span className="font-semibold text-primary">{actualMins}m</span>
-                    <span className="text-dark-muted text-xs ml-1">({plannedMins}m planned)</span>
+                  <td className="py-2.5 px-3.5 sm:px-4 whitespace-nowrap">
+                    <span className="font-extrabold text-primary">{actualMins}m</span>
+                    <span className="text-dark-muted text-[10px] ml-1">({plannedMins}m planned)</span>
                   </td>
 
                   {/* XP Earned */}
-                  <td className="p-3.5 sm:p-4 font-bold text-amber-400 whitespace-nowrap">
+                  <td className="py-2.5 px-3.5 sm:px-4 font-black text-amber-400 whitespace-nowrap">
                     <span className="inline-flex items-center gap-1">
-                      <Award className="w-3.5 h-3.5" />
+                      <Award className="w-3 h-3" />
                       +{xpEarned} XP
                     </span>
                   </td>
 
                   {/* Notes */}
-                  <td className="p-3.5 sm:p-4 text-xs text-dark-muted max-w-xs truncate">
+                  <td className="py-2.5 px-3.5 sm:px-4 text-xs text-dark-muted max-w-[160px] truncate">
                     {session.notes ? (
                       <span className="inline-flex items-center gap-1 italic">
                         <FileText className="w-3 h-3 text-sky-400 shrink-0" />
@@ -98,7 +123,7 @@ function SessionHistory({ history = [], onStartFirstSession }) {
                   </td>
 
                   {/* Status */}
-                  <td className="p-3.5 sm:p-4 text-right whitespace-nowrap">
+                  <td className="py-2.5 px-3.5 sm:px-4 text-right whitespace-nowrap">
                     <Badge
                       variant={isCompleted ? "success" : "info"}
                       size="sm"
@@ -112,6 +137,27 @@ function SessionHistory({ history = [], onStartFirstSession }) {
           </tbody>
         </table>
       </div>
+
+      {/* Bottom Collapsible Bar */}
+      {history.length > INITIAL_COUNT && (
+        <div className="p-2.5 bg-dark-bg/60 border-t border-dark-border flex items-center justify-between text-xs">
+          <span className="text-dark-muted text-[11px]">
+            {isExpanded
+              ? `All ${history.length} sessions displayed`
+              : `${remainingCount} older sessions hidden`}
+          </span>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsExpanded(!isExpanded)}
+            icon={isExpanded ? ChevronUp : ChevronDown}
+            className="text-xs font-bold text-primary hover:bg-primary/10 h-7 px-3"
+          >
+            {isExpanded ? "Show Less" : `View More (${remainingCount} more)`}
+          </Button>
+        </div>
+      )}
     </Card>
   );
 }

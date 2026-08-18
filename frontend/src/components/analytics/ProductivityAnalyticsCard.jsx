@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   ResponsiveContainer,
   LineChart,
@@ -13,7 +13,7 @@ import { Zap, Award, AlertTriangle, Sparkles } from "lucide-react";
 import { getProductivityPrediction } from "../../services/mlService";
 
 function ProductivityAnalyticsCard({ productivityData = null }) {
-  const [viewMode, setViewMode] = useState("daily"); // daily | weekly | monthly
+  const [viewMode, setViewMode] = useState("day"); // day | week | month
   const [mlScore, setMlScore] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -38,32 +38,56 @@ function ProductivityAnalyticsCard({ productivityData = null }) {
     };
   }, []);
 
-  const daily = productivityData?.daily || [
-    { day: "Mon", score: 85 },
-    { day: "Tue", score: 78 },
-    { day: "Wed", score: 92 },
-    { day: "Thu", score: 88 },
-    { day: "Fri", score: 80 },
-    { day: "Sat", score: 70 },
-    { day: "Sun", score: 65 },
-  ];
+  const chartData = useMemo(() => {
+    const rawDaily = productivityData?.daily && productivityData.daily.length > 0
+      ? productivityData.daily
+      : [
+          { day: "Mon", score: 85 },
+          { day: "Tue", score: 78 },
+          { day: "Wed", score: 92 },
+          { day: "Thu", score: 88 },
+          { day: "Fri", score: 80 },
+          { day: "Sat", score: 70 },
+          { day: "Sun", score: 65 },
+        ];
 
-  const weekly = productivityData?.weekly || [
-    { week: "Week 1", score: 76 },
-    { week: "Week 2", score: 82 },
-    { week: "Week 3", score: 88 },
-    { week: "Week 4", score: 84 },
-  ];
+    const rawWeekly = productivityData?.weekly && productivityData.weekly.length > 0
+      ? productivityData.weekly
+      : [
+          { week: "Wk 1", score: 76 },
+          { week: "Wk 2", score: 82 },
+          { week: "Wk 3", score: 88 },
+          { week: "Wk 4", score: 84 },
+        ];
 
-  const monthly = productivityData?.monthly || [
-    { month: "May", score: 74 },
-    { month: "Jun", score: 80 },
-    { month: "Jul", score: 85 },
-    { month: "Aug", score: 88 },
-  ];
+    const rawMonthly = productivityData?.monthly && productivityData.monthly.length > 0
+      ? productivityData.monthly
+      : [
+          { month: "May", score: 74 },
+          { month: "Jun", score: 80 },
+          { month: "Jul", score: 85 },
+          { month: "Aug", score: 88 },
+        ];
 
-  const chartData = viewMode === "daily" ? daily : viewMode === "weekly" ? weekly : monthly;
-  const xKey = viewMode === "daily" ? "day" : viewMode === "weekly" ? "week" : "month";
+    if (viewMode === "day") {
+      return rawDaily.map((item) => ({
+        label: item.label || item.day || item.name || "Day",
+        score: Number(item.score ?? item.productivity ?? 75),
+      }));
+    }
+
+    if (viewMode === "week") {
+      return rawWeekly.map((item) => ({
+        label: item.label || item.week || item.name || "Week",
+        score: Number(item.score ?? item.productivity ?? 80),
+      }));
+    }
+
+    return rawMonthly.map((item) => ({
+      label: item.label || item.month || item.name || "Month",
+      score: Number(item.score ?? item.productivity ?? 82),
+    }));
+  }, [productivityData, viewMode]);
 
   const average = productivityData?.average || 84;
   const bestDay = productivityData?.bestDay || "Wednesday (92% focus)";
@@ -71,7 +95,7 @@ function ProductivityAnalyticsCard({ productivityData = null }) {
 
   return (
     <Card
-      title="⚡ AI Productivity Score & Trends"
+      title="⚡ AI Productivity Score & Velocity Trends"
       subtitle="Historical focus trends paired with real-time AI productivity analysis"
       headerAction={
         <div className="flex items-center gap-2">
@@ -81,17 +105,21 @@ function ProductivityAnalyticsCard({ productivityData = null }) {
             </Badge>
           )}
           <div className="flex items-center gap-1 bg-dark-bg p-1 rounded-xl border border-dark-border">
-            {["daily", "weekly", "monthly"].map((mode) => (
+            {[
+              { id: "day", label: "Day" },
+              { id: "week", label: "Week" },
+              { id: "month", label: "Month" },
+            ].map((mode) => (
               <button
-                key={mode}
-                onClick={() => setViewMode(mode)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold capitalize transition-all cursor-pointer ${
-                  viewMode === mode
-                    ? "bg-primary text-dark-bg shadow-sm"
+                key={mode.id}
+                onClick={() => setViewMode(mode.id)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  viewMode === mode.id
+                    ? "bg-primary text-dark-bg shadow-xs"
                     : "text-dark-muted hover:text-dark-text"
                 }`}
               >
-                {mode}
+                {mode.label}
               </button>
             ))}
           </div>
@@ -101,13 +129,13 @@ function ProductivityAnalyticsCard({ productivityData = null }) {
     >
       <div className="space-y-4 pt-1">
         {/* Metric Badges */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
           <div className="p-3 rounded-xl bg-dark-bg border border-dark-border flex items-center gap-3">
             <div className="p-2 rounded-lg bg-sky-500/15 text-sky-400">
               <Zap className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-dark-muted uppercase">
+              <p className="text-[10px] font-bold text-dark-muted uppercase">
                 {mlScore !== null ? "AI Predicted Score" : "Avg Productivity"}
               </p>
               <div className="text-base font-extrabold text-dark-text">
@@ -121,8 +149,8 @@ function ProductivityAnalyticsCard({ productivityData = null }) {
               <Award className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-dark-muted uppercase">Peak Window</p>
-              <p className="text-sm font-extrabold text-emerald-400 truncate">{bestDay}</p>
+              <p className="text-[10px] font-bold text-dark-muted uppercase">Peak Window</p>
+              <p className="text-xs sm:text-sm font-extrabold text-emerald-400 truncate">{bestDay}</p>
             </div>
           </div>
 
@@ -131,26 +159,42 @@ function ProductivityAnalyticsCard({ productivityData = null }) {
               <AlertTriangle className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-dark-muted uppercase">Lowest Window</p>
-              <p className="text-sm font-extrabold text-rose-400 truncate">{worstDay}</p>
+              <p className="text-[10px] font-bold text-dark-muted uppercase">Lowest Window</p>
+              <p className="text-xs sm:text-sm font-extrabold text-rose-400 truncate">{worstDay}</p>
             </div>
           </div>
         </div>
 
         {/* Recharts Line Chart */}
-        <div className="h-64 w-full pt-2">
+        <div className="h-60 w-full pt-1">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <LineChart data={chartData} margin={{ top: 10, right: 15, left: -15, bottom: 5 }}>
               <CartesianGrid stroke="#334155" strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey={xKey} stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
-              <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} domain={[0, 100]} unit="%" />
+              <XAxis
+                dataKey="label"
+                stroke="#94a3b8"
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis
+                stroke="#94a3b8"
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+                domain={[0, 100]}
+                unit="%"
+              />
               <Tooltip
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     return (
                       <div className="bg-dark-card border border-dark-border text-dark-text p-2.5 rounded-lg text-xs font-semibold shadow-xl">
-                        <p className="text-primary font-bold">{payload[0].payload[xKey]}</p>
-                        <p className="text-dark-text">Historical Score: <span className="text-emerald-400 font-extrabold">{payload[0].value}%</span></p>
+                        <p className="text-primary font-bold">{payload[0].payload.label}</p>
+                        <p className="text-dark-text">
+                          Productivity:{" "}
+                          <span className="text-emerald-400 font-extrabold">{payload[0].value}%</span>
+                        </p>
                       </div>
                     );
                   }
@@ -164,6 +208,7 @@ function ProductivityAnalyticsCard({ productivityData = null }) {
                 strokeWidth={3}
                 dot={{ fill: "#2dd4bf", r: 4 }}
                 activeDot={{ r: 6, fill: "#2dd4bf", stroke: "#0f172a", strokeWidth: 2 }}
+                isAnimationActive={true}
               />
             </LineChart>
           </ResponsiveContainer>

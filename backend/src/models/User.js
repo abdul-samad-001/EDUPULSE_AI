@@ -28,6 +28,31 @@ const userSchema = new mongoose.Schema(
       default: "student",
     },
 
+    college: {
+      type: String,
+      default: "",
+    },
+
+    branch: {
+      type: String,
+      default: "",
+    },
+
+    graduationYear: {
+      type: String,
+      default: "",
+    },
+
+    avatar: {
+      type: String,
+      default: "",
+    },
+
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+
     // Day 19 Streak System Additions (PRD Phase 3)
     streak: {
       type: Number,

@@ -8,7 +8,6 @@ import {
   FileText,
   Flag,
   Award,
-  User,
   Settings,
   LogOut,
   X,
@@ -33,7 +32,6 @@ function Sidebar({ isOpen = false, onClose }) {
     { name: "Reports", icon: FileText, path: "/reports" },
     { name: "Milestones", icon: Flag, path: "/milestones" },
     { name: "Achievements", icon: Award, path: "/achievements" },
-    { name: "Profile", icon: User, path: "/profile" },
     { name: "Settings", icon: Settings, path: "/settings" },
   ];
 

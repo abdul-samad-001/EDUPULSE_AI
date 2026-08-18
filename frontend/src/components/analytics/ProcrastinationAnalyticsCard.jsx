@@ -12,6 +12,7 @@ import { AlertCircle, CheckCircle2, ShieldAlert, Sparkles, RefreshCw } from "luc
 import { getProcrastinationPrediction } from "../../services/mlService";
 
 function ProcrastinationAnalyticsCard({ procrastinationData = null, studyVsDistract = null }) {
+  const [viewMode, setViewMode] = useState("day"); // day | week | month
   const [mlData, setMlData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -57,15 +58,42 @@ function ProcrastinationAnalyticsCard({ procrastinationData = null, studyVsDistr
   const score = Math.round(probability * 100);
   const riskLevel = mlData?.risk_level || (score > 65 ? "High Risk" : score > 35 ? "Moderate Risk" : "Low Risk");
 
-  const productiveMins = studyVsDistract?.productiveMinutes || 180;
-  const distractingMins = studyVsDistract?.distractingMinutes || 35;
-  const neutralMins = 25;
+  // Dynamic values based on Day / Week / Month
+  const timeData = {
+    day: {
+      productive: studyVsDistract?.productiveMinutes || 180,
+      distracting: studyVsDistract?.distractingMinutes || 35,
+      neutral: 25,
+      unit: "m",
+    },
+    week: {
+      productive: 1470, // 24.5h
+      distracting: 252,  // 4.2h
+      neutral: 186,      // 3.1h
+      unit: "m",
+    },
+    month: {
+      productive: 5880, // 98h
+      distracting: 990,  // 16.5h
+      neutral: 672,      // 11.2h
+      unit: "m",
+    },
+  };
+
+  const activeTime = timeData[viewMode] || timeData.day;
 
   const pieData = [
-    { name: "Productive Focus", value: productiveMins, color: "#2dd4bf" },
-    { name: "Distraction Time", value: distractingMins, color: "#f43f5e" },
-    { name: "Neutral Browsing", value: neutralMins, color: "#94a3b8" },
+    { name: "Productive Focus", value: activeTime.productive, color: "#2dd4bf" },
+    { name: "Distraction Time", value: activeTime.distracting, color: "#f43f5e" },
+    { name: "Neutral Browsing", value: activeTime.neutral, color: "#94a3b8" },
   ];
+
+  const formatMins = (mins) => {
+    if (mins >= 60) {
+      return `${(mins / 60).toFixed(1)}h`;
+    }
+    return `${mins}m`;
+  };
 
   const riskVariant = riskLevel === "High" ? "danger" : riskLevel === "Moderate" ? "warning" : "success";
   const RiskIcon = riskLevel === "High" ? ShieldAlert : riskLevel === "Moderate" ? AlertCircle : CheckCircle2;
@@ -75,13 +103,29 @@ function ProcrastinationAnalyticsCard({ procrastinationData = null, studyVsDistr
       title="🧠 AI Procrastination & Attention Analytics"
       subtitle="Real-time behavioral signals analyzing focus sustainability vs distraction triggers"
       headerAction={
-        <div className="flex items-center gap-2">
-          <Badge variant="primary" icon={Sparkles} size="sm">
-            AI Risk Analysis
-          </Badge>
+        <div className="flex flex-wrap items-center gap-2">
           <Badge variant={riskVariant} icon={RiskIcon} size="sm">
             {riskLevel}
           </Badge>
+          <div className="flex items-center gap-1 bg-dark-bg p-1 rounded-xl border border-dark-border">
+            {[
+              { id: "day", label: "Day" },
+              { id: "week", label: "Week" },
+              { id: "month", label: "Month" },
+            ].map((mode) => (
+              <button
+                key={mode.id}
+                onClick={() => setViewMode(mode.id)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  viewMode === mode.id
+                    ? "bg-primary text-dark-bg shadow-xs"
+                    : "text-dark-muted hover:text-dark-text"
+                }`}
+              >
+                {mode.label}
+              </button>
+            ))}
+          </div>
         </div>
       }
       className="w-full"
@@ -91,7 +135,7 @@ function ProcrastinationAnalyticsCard({ procrastinationData = null, studyVsDistr
           <LoadingSpinner size="md" label="Evaluating attention telemetry signals..." />
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 pt-1 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-1 items-center">
           {/* Left Column: Metric Overview */}
           <div className="space-y-3">
             {error && (
@@ -101,7 +145,7 @@ function ProcrastinationAnalyticsCard({ procrastinationData = null, studyVsDistr
               </div>
             )}
 
-            <div className="p-4 rounded-xl bg-dark-bg border border-dark-border space-y-2">
+            <div className="p-3.5 rounded-xl bg-dark-bg border border-dark-border space-y-1.5">
               <div className="flex justify-between items-center text-xs font-semibold">
                 <span className="text-dark-muted flex items-center gap-1">
                   <Sparkles className="w-3.5 h-3.5 text-primary" />
@@ -111,15 +155,15 @@ function ProcrastinationAnalyticsCard({ procrastinationData = null, studyVsDistr
                   {score}%
                 </span>
               </div>
-              <div className="w-full bg-dark-card h-2.5 rounded-full overflow-hidden">
+              <div className="w-full bg-dark-card h-2 rounded-full overflow-hidden">
                 <div
                   className={`h-full transition-all duration-500 ${score > 65 ? "bg-rose-400" : score > 35 ? "bg-amber-400" : "bg-emerald-400"}`}
                   style={{ width: `${Math.min(100, score)}%` }}
                 />
               </div>
-              <p className="text-[11px] text-dark-muted mt-1 leading-relaxed">
+              <p className="text-[10px] text-dark-muted leading-tight">
                 {riskLevel === "Low"
-                  ? "Excellent attention control! Low distraction interference detected by AI analysis."
+                  ? "Excellent attention control! Low distraction interference detected."
                   : riskLevel === "Moderate"
                   ? "Moderate distraction risk. Consider using site-blockers during deep work."
                   : "High distraction signals detected. Recommend switching to 25m Pomodoro cycles."}
@@ -127,32 +171,32 @@ function ProcrastinationAnalyticsCard({ procrastinationData = null, studyVsDistr
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="p-3 rounded-xl bg-dark-bg border border-dark-border">
-                <span className="text-[10px] font-bold text-dark-muted uppercase block">Productive Time</span>
-                <span className="text-sm font-extrabold text-emerald-400">{productiveMins} mins</span>
+              <div className="p-2.5 rounded-xl bg-dark-bg border border-dark-border">
+                <span className="text-[10px] font-bold text-dark-muted uppercase block">Productive</span>
+                <span className="text-sm font-extrabold text-emerald-400">{formatMins(activeTime.productive)}</span>
               </div>
-              <div className="p-3 rounded-xl bg-dark-bg border border-dark-border">
-                <span className="text-[10px] font-bold text-dark-muted uppercase block">Distraction Time</span>
-                <span className="text-sm font-extrabold text-rose-400">{distractingMins} mins</span>
+              <div className="p-2.5 rounded-xl bg-dark-bg border border-dark-border">
+                <span className="text-[10px] font-bold text-dark-muted uppercase block">Distraction</span>
+                <span className="text-sm font-extrabold text-rose-400">{formatMins(activeTime.distracting)}</span>
               </div>
             </div>
           </div>
 
           {/* Right Column: Recharts Pie Chart */}
-          <div className="bg-dark-bg p-4 rounded-xl border border-dark-border flex flex-col items-center justify-center">
-            <h4 className="text-xs font-extrabold uppercase text-dark-muted tracking-wider mb-1">
-              Time Distribution Breakdown
+          <div className="bg-dark-bg p-3 rounded-xl border border-dark-border flex flex-col items-center justify-center">
+            <h4 className="text-[10px] font-extrabold uppercase text-dark-muted tracking-wider mb-1">
+              Time Distribution ({viewMode.toUpperCase()})
             </h4>
-            <div className="h-52 w-full">
+            <div className="h-44 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={pieData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={50}
-                    outerRadius={75}
-                    paddingAngle={4}
+                    innerRadius={42}
+                    outerRadius={65}
+                    paddingAngle={3}
                     dataKey="value"
                   >
                     {pieData.map((entry, index) => (
@@ -167,14 +211,14 @@ function ProcrastinationAnalyticsCard({ procrastinationData = null, studyVsDistr
                             <p className="font-bold" style={{ color: payload[0].payload.color }}>
                               {payload[0].name}
                             </p>
-                            <p>{payload[0].value} mins</p>
+                            <p>{formatMins(payload[0].value)}</p>
                           </div>
                         );
                       }
                       return null;
                     }}
                   />
-                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  <Legend wrapperStyle={{ fontSize: 10 }} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
