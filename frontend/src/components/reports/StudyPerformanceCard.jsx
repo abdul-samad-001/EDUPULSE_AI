@@ -11,20 +11,22 @@ import { Card } from "../ui";
 import { Zap, Target, CheckCircle2, Flame } from "lucide-react";
 
 function StudyPerformanceCard({ performanceData = null }) {
-  const productivity = performanceData?.productivity || 84;
-  const focusScore = performanceData?.focusScore || 88;
-  const completionRate = performanceData?.completionRate || 76;
-  const consistency = performanceData?.consistency || "92%";
+  const productivity = performanceData?.productivity ?? (performanceData?.stats?.productivePercentage ? Math.round(performanceData.stats.productivePercentage) : 0);
+  const focusScore = performanceData?.focusScore ?? (performanceData?.stats?.productivePercentage ? Math.round(performanceData.stats.productivePercentage) : 0);
+  const completionRate = performanceData?.completionRate ?? 0;
+  const consistency = performanceData?.consistency ?? (productivity > 0 ? "Active" : "No sessions");
 
-  const chartData = performanceData?.trend || [
-    { day: "Mon", score: 80, focus: 45 },
-    { day: "Tue", score: 85, focus: 60 },
-    { day: "Wed", score: 92, focus: 90 },
-    { day: "Thu", score: 88, focus: 30 },
-    { day: "Fri", score: 84, focus: 75 },
-    { day: "Sat", score: 75, focus: 40 },
-    { day: "Sun", score: 70, focus: 20 },
-  ];
+  const chartData = performanceData?.trend && performanceData.trend.length > 0
+    ? performanceData.trend
+    : [
+        { day: "Mon", score: 0, focus: 0 },
+        { day: "Tue", score: 0, focus: 0 },
+        { day: "Wed", score: 0, focus: 0 },
+        { day: "Thu", score: 0, focus: 0 },
+        { day: "Fri", score: 0, focus: 0 },
+        { day: "Sat", score: 0, focus: 0 },
+        { day: "Sun", score: 0, focus: 0 },
+      ];
 
   return (
     <Card

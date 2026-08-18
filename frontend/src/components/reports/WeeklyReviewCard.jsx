@@ -2,11 +2,12 @@ import { Card } from "../ui";
 import { Clock, Zap, Award, CheckCircle2, Flame, Award as AwardIcon } from "lucide-react";
 
 function WeeklyReviewCard({ weekly = null }) {
-  const hours = weekly?.studyHours || 14.5;
-  const productivity = weekly?.productivity || 85;
-  const xp = weekly?.xp || 450;
-  const achievements = weekly?.achievements || 2;
-  const challenges = weekly?.challenges || 5;
+  const hours = weekly?.studyHours ?? 0;
+  const productivity = weekly?.productivity ?? 0;
+  const xp = weekly?.xp ?? 0;
+  const achievements = weekly?.achievements ?? 0;
+  const challenges = weekly?.challenges ?? 0;
+  const focusRate = productivity > 0 ? `${productivity}%` : "0%";
 
   return (
     <Card
@@ -18,12 +19,14 @@ function WeeklyReviewCard({ weekly = null }) {
         {/* Highlight Callouts */}
         <div className="grid grid-cols-2 gap-2 text-xs">
           <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-            <span className="text-[10px] font-bold uppercase text-emerald-400 block">Best Day</span>
-            <span className="text-sm font-extrabold text-dark-text">Wednesday (92% Focus)</span>
+            <span className="text-[10px] font-bold uppercase text-emerald-400 block">Weekly Status</span>
+            <span className="text-sm font-extrabold text-dark-text">
+              {productivity > 0 ? `${productivity}% Focus Rating` : "No sessions logged"}
+            </span>
           </div>
-          <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20">
-            <span className="text-[10px] font-bold uppercase text-rose-400 block">Lowest Day</span>
-            <span className="text-sm font-extrabold text-dark-text">Sunday (65% Focus)</span>
+          <div className="p-3 rounded-xl bg-sky-500/10 border border-sky-500/20">
+            <span className="text-[10px] font-bold uppercase text-sky-400 block">Logged Hours</span>
+            <span className="text-sm font-extrabold text-dark-text">{hours}h Tracked</span>
           </div>
         </div>
 
@@ -62,7 +65,7 @@ function WeeklyReviewCard({ weekly = null }) {
           <div className="p-3 rounded-xl bg-dark-bg border border-dark-border">
             <Flame className="w-4 h-4 text-rose-400 mx-auto mb-1" />
             <span className="text-dark-muted block text-[10px]">Focus Rate</span>
-            <span className="font-extrabold text-dark-text">88%</span>
+            <span className="font-extrabold text-dark-text">{focusRate}</span>
           </div>
         </div>
       </div>

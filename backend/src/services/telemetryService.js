@@ -240,7 +240,7 @@ const getWeeklyTrend = async (userId) => {
   return await TabSession.aggregate([
     {
       $match: {
-        user: userId,
+        user: new mongoose.Types.ObjectId(userId),
         category: "productive",
         startedAt: {
           $gte: sevenDaysAgo,
@@ -282,7 +282,7 @@ const getHourlyProductivity = async (userId) => {
   const hourlyData = await TabSession.aggregate([
     {
       $match: {
-        user: userId,
+        user: new mongoose.Types.ObjectId(userId),
         category: "productive",
       },
     },
@@ -335,7 +335,7 @@ const getStudyVsDistract = async (userId) => {
   const result = await TabSession.aggregate([
     {
       $match: {
-        user: userId,
+        user: new mongoose.Types.ObjectId(userId),
         category: {
           $in: ["productive", "distraction"],
         },

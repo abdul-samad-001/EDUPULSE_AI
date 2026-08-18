@@ -2,13 +2,13 @@ import { StatCard } from "../ui";
 import { Clock, Timer, CheckCircle2, TrendingUp, Award, Zap, ShieldCheck } from "lucide-react";
 
 function ReportSummaryCards({ summary = null }) {
-  const studyHours = summary?.studyHours || 18.5;
-  const sessions = summary?.sessions || summary?.focusSessions || 24;
-  const tasks = summary?.tasks || 28;
-  const skills = summary?.skills || summary?.skillsImproved || 5;
-  const achievements = summary?.achievements || 6;
-  const xp = summary?.xp || summary?.xpEarned || 750;
-  const productivity = summary?.productivity || 84;
+  const studyHours = summary?.studyHours ?? (summary?.stats?.productiveTime ? Math.round(summary.stats.productiveTime / 3600) : 0);
+  const sessions = summary?.sessions ?? summary?.focusSessions ?? (summary?.stats?.totalSessions ?? 0);
+  const tasks = summary?.tasks ?? 0;
+  const skills = summary?.skills ?? summary?.skillsImproved ?? (summary?.topSkills?.length ?? 0);
+  const achievements = summary?.achievements ?? 0;
+  const xp = summary?.xp ?? summary?.xpEarned ?? (summary?.stats?.xpEarned ?? 0);
+  const productivity = summary?.productivity ?? (Math.round(summary?.stats?.productivePercentage ?? 0));
 
   const cards = [
     {

@@ -2,12 +2,12 @@ import { Card } from "../ui";
 import { TrendingUp, Zap, BookOpen, Flame, CheckCircle2, Award } from "lucide-react";
 
 function MonthlyReviewCard({ monthly = null }) {
-  const growth = monthly?.growth || "+24%";
-  const productivity = monthly?.productivity || 88;
-  const learningHours = monthly?.learningHours || 62.5;
-  const consistency = monthly?.consistency || "94%";
-  const completionRate = monthly?.completionRate || "82%";
-  const mostImprovedSkill = monthly?.mostImprovedSkill || "React.js & State Management (+35%)";
+  const growth = monthly?.growth ?? "0%";
+  const productivity = monthly?.productivity ?? 0;
+  const learningHours = monthly?.learningHours ?? 0;
+  const consistency = monthly?.consistency ?? (productivity > 0 ? "Active" : "No sessions");
+  const completionRate = monthly?.completionRate ?? "0%";
+  const mostImprovedSkill = monthly?.mostImprovedSkill ?? "No skills created yet";
 
   return (
     <Card

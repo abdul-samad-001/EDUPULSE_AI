@@ -176,10 +176,10 @@ function Reports() {
     <div className="space-y-6 max-w-7xl mx-auto pb-8">
       {/* 1. HERO SECTION WITH TAB NAVIGATION */}
       <ReportsHero
-        totalReports={history?.length || 3}
-        studyHours={Math.round((summary?.stats?.productiveTime || 1110) / 60)}
-        skillsCompleted={skills?.filter((s) => s.progress === 100)?.length || 4}
-        xpEarned={750}
+        totalReports={history?.length ?? 0}
+        studyHours={Math.round((summary?.stats?.productiveTime ?? 0) / 3600)}
+        skillsCompleted={skills?.filter((s) => s.progress === 100)?.length ?? 0}
+        xpEarned={summary?.stats?.xpEarned ?? 0}
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />

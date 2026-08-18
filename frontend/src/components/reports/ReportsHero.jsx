@@ -13,10 +13,10 @@ import {
 } from "lucide-react";
 
 function ReportsHero({
-  totalReports = 3,
-  studyHours = 18.5,
-  skillsCompleted = 4,
-  xpEarned = 750,
+  totalReports = 0,
+  studyHours = 0,
+  skillsCompleted = 0,
+  xpEarned = 0,
   onDateRangeChange,
   activeTab = "overview",
   onTabChange,
