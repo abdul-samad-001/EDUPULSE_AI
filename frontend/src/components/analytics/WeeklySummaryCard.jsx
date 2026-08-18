@@ -2,11 +2,11 @@ import { Card, StatCard } from "../ui";
 import { Clock, Timer, Award, TrendingUp, CheckCircle2 } from "lucide-react";
 
 function WeeklySummaryCard({ summary = null }) {
-  const studyHours = summary?.studyHours || 14.5;
-  const focusSessions = summary?.focusSessions || 18;
-  const xpEarned = summary?.xpEarned || 450;
-  const skillsImproved = summary?.skillsImproved || 4;
-  const challengesCompleted = summary?.challengesCompleted || 5;
+  const studyHours = summary?.studyHours ?? 0;
+  const focusSessions = summary?.focusSessions ?? 0;
+  const xpEarned = summary?.xpEarned ?? 0;
+  const skillsImproved = summary?.skillsImproved ?? 0;
+  const challengesCompleted = summary?.challengesCompleted ?? 0;
 
   return (
     <Card
@@ -14,7 +14,7 @@ function WeeklySummaryCard({ summary = null }) {
       subtitle="Summary of aggregate achievements, focus intervals, and skill progress"
       className="w-full"
     >
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 pt-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 pt-1">
         <StatCard
           title="Study Hours"
           value={`${studyHours}h`}

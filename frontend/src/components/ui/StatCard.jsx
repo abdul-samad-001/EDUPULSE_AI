@@ -57,29 +57,29 @@ export function StatCard({
 
   return (
     <Card
-      className={`relative overflow-hidden p-3.5 sm:p-4 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 ${className}`}
+      className={`relative overflow-hidden p-3 sm:p-3.5 transition-all duration-300 hover:border-primary/30 hover:shadow-md ${className}`}
     >
-      <div className="flex items-start justify-between gap-2">
+      <div className="flex items-start justify-between gap-1.5">
         <div className="min-w-0 flex-1">
-          <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-dark-muted leading-tight block line-clamp-2 min-h-[1.75rem] flex items-center">
+          <span className="text-[10px] sm:text-[11px] font-bold uppercase text-dark-muted leading-tight truncate block">
             {title}
           </span>
-          <h4 className="text-lg sm:text-xl font-extrabold text-dark-text tracking-tight mt-1 whitespace-nowrap overflow-hidden text-ellipsis">
+          <h4 className="text-base sm:text-lg font-extrabold text-dark-text tracking-tight mt-1 whitespace-nowrap truncate">
             {value}
           </h4>
         </div>
 
         {Icon && (
           <div
-            className={`w-8 h-8 rounded-lg ${theme.bg} ${theme.border} border ${theme.text} flex items-center justify-center shrink-0 mt-0.5`}
+            className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg ${theme.bg} ${theme.border} border ${theme.text} flex items-center justify-center shrink-0 mt-0.5`}
           >
-            <Icon className="w-4 h-4" />
+            <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         )}
       </div>
 
       {(trend !== undefined || subtext || trendLabel) && (
-        <div className="mt-2.5 pt-2 border-t border-dark-border/60 flex items-center gap-1.5 text-[11px] leading-tight">
+        <div className="mt-2 pt-1.5 border-t border-dark-border/60 flex items-center gap-1 text-[10px] sm:text-[11px] leading-tight">
           {trend !== undefined && (
             <span
               className={`font-semibold ${
