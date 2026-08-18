@@ -642,15 +642,22 @@ function ProfileAccountTab() {
             {/* METHOD 1: EMAIL OTP RESET (USER REQUESTED) */}
             {securityMethod === "otp" && (
               <div className="space-y-3 pt-0.5">
-                <div className="p-3 rounded-xl bg-dark-card border border-dark-border text-xs space-y-2">
+                <div className="p-3.5 rounded-xl bg-dark-card border border-dark-border text-xs space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-dark-muted">Registered Account Email:</span>
+                    <span className="text-[11px] text-dark-muted font-medium">Registered Account Email:</span>
                     <span className="font-bold text-primary text-xs">{personalForm.email || profile?.email}</span>
+                  </div>
+
+                  <div className="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px] flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                    <span>
+                      <strong>Notice:</strong> Verification emails may occasionally be filtered. If you do not see the code in your main inbox, please <strong>check your Spam / Junk folder</strong>.
+                    </span>
                   </div>
 
                   <div className="flex items-center justify-between gap-2 pt-1 border-t border-dark-border/60">
                     <p className="text-[10px] text-dark-muted leading-tight">
-                      Click below to receive a secure 6-digit reset code in your inbox.
+                      Click to receive a secure 6-digit verification code.
                     </p>
                     <Button
                       type="button"
@@ -669,11 +676,14 @@ function ProfileAccountTab() {
 
                 {otpSent && (
                   <form onSubmit={handleVerifyOTPAndResetPassword} className="space-y-3 pt-1 animate-in fade-in duration-200">
-                    <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px] flex items-center gap-2">
-                      <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
-                      <span>
-                        Can't find the email in your primary inbox? Please check your <strong>Spam / Junk folder</strong>.
-                      </span>
+                    <div className="p-3 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-200 text-xs flex items-start gap-2.5 shadow-xs">
+                      <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-bold text-amber-300">Didn't receive the email?</p>
+                        <p className="text-[11px] text-amber-200/90 mt-0.5">
+                          Please check your <strong>Spam / Junk folder</strong> or search your inbox for <strong>EduPulse.AI</strong>.
+                        </p>
+                      </div>
                     </div>
 
                     <div>
