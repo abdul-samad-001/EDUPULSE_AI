@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { signupUser } from "../services/authService";
 import AuthSlider from "../components/AuthSlider";
-import { Button } from "../components/ui";
+import { Button, toast } from "../components/ui";
 import team1 from "../assets/team1.png";
 import team2 from "../assets/team2.png";
 import team3 from "../assets/team3.png";
@@ -41,17 +41,23 @@ function Signup() {
       !formData.password ||
       !formData.confirmPassword
     ) {
-      alert("All fields are required");
+      toast.warning("Missing Fields", {
+        description: "Please fill in all required fields to register.",
+      });
       return;
     }
 
     if (formData.password.length < 6) {
-      alert("Password must be at least 6 characters");
+      toast.warning("Password Too Short", {
+        description: "Password must be at least 6 characters long.",
+      });
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
+      toast.warning("Passwords Do Not Match", {
+        description: "Please ensure your confirmation password matches.",
+      });
       return;
     }
 
@@ -74,13 +80,16 @@ function Signup() {
         "*"
       );
 
-      alert("Signup Successful");
+      toast.success("Account Created!", {
+        description: `Welcome to EduPulse AI, ${data.user?.name || formData.name}!`,
+      });
       navigate("/dashboard");
     } catch (error) {
-      alert(
-        error.response?.data?.message ||
-          "Signup Failed"
-      );
+      toast.error("Signup Failed", {
+        description:
+          error.response?.data?.message ||
+          "Could not create account. Please check your details.",
+      });
     } finally {
       setLoading(false);
     }

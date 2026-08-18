@@ -1,4 +1,5 @@
 import api from "./axiosInstance";
+import { toast } from "../utils/toast";
 
 export const getReportSummary = async () => {
   const { data } = await api.get("/reports/summary");
@@ -55,9 +56,15 @@ export const downloadPDF = async () => {
     link.click();
     link.remove();
     window.URL.revokeObjectURL(url);
+
+    toast.success("PDF Downloaded", {
+      description: "EduPulse_Report.pdf has been saved to your downloads.",
+    });
   } catch (error) {
     console.error("PDF Download Error:", error);
-    alert("Failed to download PDF.");
+    toast.error("Download Failed", {
+      description: "Failed to download PDF report. Please try again.",
+    });
   }
 };
 
@@ -73,9 +80,15 @@ export const exportReportCSV = async () => {
     link.click();
     link.remove();
     window.URL.revokeObjectURL(url);
+
+    toast.success("CSV Exported", {
+      description: "EduPulse_Report.csv spreadsheet ready.",
+    });
   } catch (error) {
     console.error("CSV Download Error:", error);
-    alert("Failed to export CSV.");
+    toast.error("Export Failed", {
+      description: "Failed to export CSV report.",
+    });
   }
 };
 
@@ -91,9 +104,15 @@ export const exportReportJSON = async () => {
     link.click();
     link.remove();
     window.URL.revokeObjectURL(url);
+
+    toast.success("JSON Exported", {
+      description: "EduPulse_Report.json schema data downloaded.",
+    });
   } catch (error) {
     console.error("JSON Download Error:", error);
-    alert("Failed to export JSON.");
+    toast.error("Export Failed", {
+      description: "Failed to export JSON report.",
+    });
   }
 };
 

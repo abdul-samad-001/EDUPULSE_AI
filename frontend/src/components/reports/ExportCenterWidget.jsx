@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, Button } from "../ui";
+import { Card, Button, toast } from "../ui";
 import { FileText, FileSpreadsheet, FileCode, Share2, Download, Check } from "lucide-react";
 import { downloadPDF, exportReportCSV, exportReportJSON } from "../../services/reportService";
 
@@ -21,6 +21,9 @@ function ExportCenterWidget() {
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
     setCopied(true);
+    toast.success("Link Copied!", {
+      description: "Report link has been copied to your clipboard.",
+    });
     setTimeout(() => setCopied(false), 2000);
   };
 

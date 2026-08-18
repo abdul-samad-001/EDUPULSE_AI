@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { Badge } from "../ui";
-import { Sparkles, FileText, Clock, Award, CheckCircle2, Calendar } from "lucide-react";
+import {
+  Sparkles,
+  FileText,
+  Clock,
+  Award,
+  CheckCircle2,
+  Calendar,
+  BarChart3,
+  Brain,
+  Download,
+} from "lucide-react";
 
 function ReportsHero({
   totalReports = 3,
@@ -8,6 +18,8 @@ function ReportsHero({
   skillsCompleted = 4,
   xpEarned = 750,
   onDateRangeChange,
+  activeTab = "overview",
+  onTabChange,
 }) {
   const [range, setRange] = useState("Month");
 
@@ -18,8 +30,15 @@ function ReportsHero({
 
   const RANGES = ["Today", "Week", "Month", "Custom"];
 
+  const TABS = [
+    { id: "overview", label: "Overview & Performance", icon: BarChart3, badge: "Live KPIs" },
+    { id: "periodic", label: "Periodic Reviews", icon: Calendar, badge: "Weekly / Monthly" },
+    { id: "skills_ai", label: "Skills & AI Insights", icon: Brain, badge: "AI Audit" },
+    { id: "export_history", label: "Export & Archive", icon: Download, badge: "PDF / CSV" },
+  ];
+
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-dark-card via-dark-card to-dark-bg border border-dark-border p-6 sm:p-8 shadow-xl transition-all duration-300 hover:border-primary/30">
+    <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-dark-card via-dark-card to-dark-bg border border-dark-border p-6 sm:p-8 shadow-xl transition-all duration-300 hover:border-primary/30 space-y-6">
       {/* Decorative Glow */}
       <div className="absolute -top-24 -right-24 w-72 h-72 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -106,6 +125,43 @@ function ReportsHero({
           </div>
         </div>
       </div>
+
+      {/* Tab Navigation Pill Bar */}
+      {onTabChange && (
+        <div className="pt-2 border-t border-dark-border/60">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            {TABS.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => onTabChange(tab.id)}
+                  className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${
+                    isActive
+                      ? "bg-primary text-dark-bg shadow-lg shadow-primary/25 scale-[1.02]"
+                      : "bg-dark-bg/80 text-dark-muted hover:text-dark-text hover:bg-dark-border/40 border border-dark-border"
+                  }`}
+                >
+                  <Icon className={`w-4 h-4 ${isActive ? "text-dark-bg" : "text-primary"}`} />
+                  <span>{tab.label}</span>
+                  <span
+                    className={`hidden sm:inline-block text-[10px] px-1.5 py-0.5 rounded-md font-mono ${
+                      isActive
+                        ? "bg-dark-bg/20 text-dark-bg"
+                        : "bg-dark-card text-dark-muted border border-dark-border"
+                    }`}
+                  >
+                    {tab.badge}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

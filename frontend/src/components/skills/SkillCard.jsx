@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import skillService from "../../services/skillService";
 import CategoryBadge from "./CategoryBadge";
-import { Card, Button, Badge, Progress, LoadingSpinner } from "../ui";
+import { Card, Button, Badge, Progress, LoadingSpinner, toast } from "../ui";
 import { Flame, Edit, Trash2, ChevronDown, ChevronUp, Plus, RefreshCw, Clock, Calendar } from "lucide-react";
 
 const DIFFICULTY_STYLES = {
@@ -90,23 +90,29 @@ function SkillCard({ skill, onProgressUpdate, onEditTrigger, onDeleteTrigger }) 
       const added = await skillService.createTask(skill._id, newTaskName.trim());
       setTasks(prev => [...prev, added]);
       setNewTaskName("");
+      toast.success("Milestone Added", {
+        description: `Added "${added.taskName || newTaskName.trim()}" to roadmap.`,
+      });
     } catch (err) {
       console.error(err);
+      toast.error("Failed to add milestone.");
     }
   };
 
   const handleManualRegenerate = async () => {
-    if (!window.confirm("Regenerating will replace all existing tasks with a fresh AI roadmap. Continue?")) {
-      return;
-    }
     setGenerating(true);
     try {
       const newTasks = await skillService.generateRoadmap(skill._id);
       setTasks(newTasks);
       onProgressUpdate(skill._id, 0, { currentDay: 1, streakCount: 0 });
+      toast.success("Roadmap Regenerated", {
+        description: `Fresh AI learning roadmap generated for "${skill.skillName || "skill"}".`,
+      });
     } catch (err) {
       console.error(err);
-      alert("Failed to regenerate AI roadmap. Please try again shortly.");
+      toast.error("Generation Failed", {
+        description: "Failed to regenerate AI roadmap. Please try again shortly.",
+      });
     } finally {
       setGenerating(false);
     }

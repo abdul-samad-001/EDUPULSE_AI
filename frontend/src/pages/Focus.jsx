@@ -16,7 +16,7 @@ import {
   SessionHistory,
 } from "../components/focus";
 
-import { LoadingSpinner, Card, Button } from "../components/ui";
+import { LoadingSpinner, Card, Button, toast } from "../components/ui";
 import { AlertCircle } from "lucide-react";
 
 function Focus() {
@@ -48,7 +48,7 @@ function Focus() {
       ] = await Promise.all([
         focusSessionService.getActiveSession().catch(() => ({ data: null })),
         focusSessionService.getHistory().catch(() => ({ data: [] })),
-        skillService.getAllSkills().catch(() => []),
+        skillService.getSkills().catch(() => []),
         focusSessionService.getStatistics().catch(() => ({ data: null })),
         focusSessionService.getWeekly().catch(() => ({ data: { weekly: [] } })),
         focusSessionService.getInsights().catch(() => ({ data: null })),
@@ -85,7 +85,7 @@ function Focus() {
         ] = await Promise.all([
           focusSessionService.getActiveSession().catch(() => ({ data: null })),
           focusSessionService.getHistory().catch(() => ({ data: [] })),
-          skillService.getAllSkills().catch(() => []),
+          skillService.getSkills().catch(() => []),
           focusSessionService.getStatistics().catch(() => ({ data: null })),
           focusSessionService.getWeekly().catch(() => ({ data: { weekly: [] } })),
           focusSessionService.getInsights().catch(() => ({ data: null })),
@@ -130,10 +130,15 @@ function Focus() {
   const handleStopActiveSession = async () => {
     try {
       await focusSessionService.stopSession();
+      toast.info("Focus Session Stopped", {
+        description: "Your session log has been recorded and XP awarded.",
+      });
       await loadData();
     } catch (err) {
       console.error(err);
-      alert("Failed to stop focus session.");
+      toast.error("Session Error", {
+        description: "Failed to stop focus session.",
+      });
     }
   };
 
@@ -169,7 +174,7 @@ function Focus() {
         onStartFocusClick={handleScrollToControls}
       />
 
-      {/* 2. TODAY'S FOCUS STATS */}
+      {/* 2. TODAY'S PRODUCTIVITY STATS */}
       <div className="space-y-3">
         <h2 className="text-xs font-extrabold uppercase tracking-wider text-dark-muted px-1">
           Today's Productivity Stats

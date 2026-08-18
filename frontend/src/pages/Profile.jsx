@@ -6,7 +6,7 @@ import dashboardService from "../services/dashboardService";
 import Avatar from "../components/profile/Avatar";
 import ProfileForm from "../components/profile/ProfileForm";
 
-import { SectionHeader, Card, LoadingSpinner } from "../components/ui";
+import { SectionHeader, Card, LoadingSpinner, toast } from "../components/ui";
 import { User, Trophy, Sparkles, Flame } from "lucide-react";
 
 function Profile() {
@@ -14,7 +14,6 @@ function Profile() {
   const [xpData, setXPData] = useState(null);
   const [dashStats, setDashStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -50,19 +49,16 @@ function Profile() {
 
   const handleProfileSave = async (updatedFields) => {
     try {
-      setMessage(null);
       const data = await profileService.updateProfile(updatedFields);
       setProfile(data);
       localStorage.setItem("user", JSON.stringify(data));
-      setMessage({
-        type: "success",
-        text: "Profile updated successfully.",
+      toast.success("Profile Updated", {
+        description: "Your personal details have been saved.",
       });
     } catch (err) {
       console.error(err);
-      setMessage({
-        type: "error",
-        text: "Failed to update profile.",
+      toast.error("Update Failed", {
+        description: "Failed to update profile details.",
       });
     }
   };
@@ -129,18 +125,6 @@ function Profile() {
             </div>
           </div>
         </div>
-
-        {message && (
-          <div
-            className={`mt-6 p-4 rounded-xl text-sm font-medium border ${
-              message.type === "success"
-                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                : "bg-rose-500/10 border-rose-500/30 text-rose-400"
-            }`}
-          >
-            {message.text}
-          </div>
-        )}
 
         <div className="mt-8">
           <ProfileForm initialData={profile} onSave={handleProfileSave} />

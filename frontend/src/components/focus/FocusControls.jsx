@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import focusSessionService from "../../services/focusSessionService";
-import { Card, Button } from "../ui";
+import { Card, Button, toast } from "../ui";
 import { Play, Square, FileText, Target, Clock, Code, Coffee, BookOpen } from "lucide-react";
 
 function FocusControls({ session, skills = [], onSessionChange }) {
@@ -38,7 +38,9 @@ function FocusControls({ session, skills = [], onSessionChange }) {
 
   const startSession = async () => {
     if (!activeSkillId) {
-      alert("Please select a skill.");
+      toast.warning("Select a Skill", {
+        description: "Please choose a skill track before starting your focus session.",
+      });
       return;
     }
 
@@ -55,12 +57,18 @@ function FocusControls({ session, skills = [], onSessionChange }) {
 
       setNotes("");
 
+      toast.success("Focus Session Started!", {
+        description: `Timer set for ${duration} minutes. Stay locked in!`,
+      });
+
       if (onSessionChange) {
         onSessionChange();
       }
     } catch (error) {
       console.error(error);
-      alert(error.response?.data?.message || "Failed to start session.");
+      toast.error("Session Error", {
+        description: error.response?.data?.message || "Failed to start session.",
+      });
     } finally {
       setLoading(false);
     }
@@ -72,12 +80,18 @@ function FocusControls({ session, skills = [], onSessionChange }) {
 
       await focusSessionService.stopSession({ recommendationId });
 
+      toast.info("Session Concluded", {
+        description: "Great work! Session saved to your history.",
+      });
+
       if (onSessionChange) {
         onSessionChange();
       }
     } catch (error) {
       console.error(error);
-      alert(error.response?.data?.message || "Failed to stop session.");
+      toast.error("Session Error", {
+        description: error.response?.data?.message || "Failed to stop session.",
+      });
     } finally {
       setLoading(false);
     }

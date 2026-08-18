@@ -69,7 +69,7 @@ function LearningTimelineWidget({ timelineEvents = [] }) {
       subtitle="Chronological feed of your completed focus sessions, skills, and achievements"
       className="w-full"
     >
-      <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-dark-border py-2">
+      <div className="relative pl-6 space-y-5 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-dark-border py-2 max-h-85 overflow-y-auto pr-2">
         {events.map((ev) => {
           const IconComponent = getEventIcon(ev.type);
           const dateFormatted = ev.timestamp
@@ -84,7 +84,7 @@ function LearningTimelineWidget({ timelineEvents = [] }) {
           return (
             <div key={ev.id} className="relative group flex items-start justify-between gap-4">
               {/* Timeline Bullet */}
-              <div className="absolute -left-[29px] top-1 p-1.5 rounded-full bg-dark-card border border-primary/50 text-primary shadow-md">
+              <div className="absolute -left-7.25 top-1 p-1.5 rounded-full bg-dark-card border border-primary/50 text-primary shadow-md">
                 <IconComponent className="w-3.5 h-3.5" />
               </div>
 

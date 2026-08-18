@@ -1,6 +1,11 @@
 import axiosInstance from "./axiosInstance";
 
 const skillService = {
+  getSkills: async () => {
+    const res = await axiosInstance.get("/skills");
+    return res.data.skills || res.data || [];
+  },
+
   getAllSkills: async () => {
     // Changed from "/api/skills" to just "/skills"
     const res = await axiosInstance.get("/skills");

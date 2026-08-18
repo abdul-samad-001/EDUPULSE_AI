@@ -37,7 +37,7 @@ function ReportHistoryWidget({ history = [] }) {
       }
       className="w-full p-0 overflow-hidden"
     >
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto max-h-72 overflow-y-auto">
         <table className="w-full text-left text-xs sm:text-sm border-collapse">
           <thead className="bg-dark-bg text-dark-muted border-b border-dark-border uppercase text-[10px] font-semibold tracking-wider">
             <tr>

@@ -9,7 +9,7 @@ import {
   SecurityDataTab,
 } from "../components/settings";
 import { useAuth } from "../context/AuthContext";
-import { CheckCircle2, AlertCircle } from "lucide-react";
+import { toast } from "../components/ui";
 
 const SETTINGS_STORAGE_KEY = "edupulse_user_settings";
 
@@ -54,14 +54,6 @@ function Settings() {
   });
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [toastMessage, setToastMessage] = useState(null);
-
-  const triggerToast = (msg, type = "success") => {
-    setToastMessage({ msg, type });
-    setTimeout(() => {
-      setToastMessage(null);
-    }, 3500);
-  };
 
   const handleUpdate = (key, value) => {
     setSettings((prev) => ({
@@ -77,10 +69,14 @@ function Settings() {
       try {
         localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
         setHasUnsavedChanges(false);
-        triggerToast("Settings & system preferences saved successfully!");
+        toast.success("Preferences Saved", {
+          description: "Your study configurations and preferences have been persisted.",
+        });
       } catch (err) {
         console.error("Save error:", err);
-        triggerToast("Failed to save preferences to local storage.", "error");
+        toast.error("Save Failed", {
+          description: "Failed to save preferences to local storage.",
+        });
       } finally {
         setIsSaving(false);
       }
@@ -90,7 +86,9 @@ function Settings() {
   const handleReset = () => {
     setSettings(DEFAULT_SETTINGS);
     setHasUnsavedChanges(true);
-    triggerToast("Reset all preferences to system defaults. Click save to persist.");
+    toast.warning("Preferences Reset", {
+      description: "Restored system defaults. Click Save to persist.",
+    });
   };
 
   const handleExportJSON = () => {
@@ -115,7 +113,9 @@ function Settings() {
     a.download = `EduPulse_User_Backup_${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    triggerToast("JSON data backup downloaded successfully!");
+    toast.success("Backup Downloaded", {
+      description: "JSON user settings backup exported.",
+    });
   };
 
   const handleExportCSV = () => {
@@ -132,13 +132,17 @@ function Settings() {
     a.download = `EduPulse_Focus_Sessions_${Date.now()}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    triggerToast("CSV focus log spreadsheet exported successfully!");
+    toast.success("CSV Exported", {
+      description: "Focus log spreadsheet exported.",
+    });
   };
 
   const handleClearCache = () => {
     localStorage.removeItem(SETTINGS_STORAGE_KEY);
     setSettings(DEFAULT_SETTINGS);
-    triggerToast("Local storage and dashboard cache purged!");
+    toast.info("Cache Purged", {
+      description: "Local storage and dashboard cache purged. Reloading...",
+    });
     setTimeout(() => {
       window.location.reload();
     }, 800);
@@ -146,33 +150,6 @@ function Settings() {
 
   return (
     <div className="space-y-8 pb-12">
-      {/* Toast Notification Floating Banner */}
-      <AnimatePresence>
-        {toastMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed top-6 right-6 z-50 max-w-md"
-          >
-            <div
-              className={`flex items-center gap-3 p-4 rounded-xl shadow-2xl border backdrop-blur-md ${
-                toastMessage.type === "error"
-                  ? "bg-rose-950/90 border-rose-500/50 text-rose-200"
-                  : "bg-dark-card/95 border-emerald-500/50 text-emerald-300"
-              }`}
-            >
-              {toastMessage.type === "error" ? (
-                <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
-              ) : (
-                <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-              )}
-              <p className="text-xs font-bold leading-relaxed">{toastMessage.msg}</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Settings Hero Card & Tabs Navigation */}
       <SettingsHero
         activeTab={activeTab}

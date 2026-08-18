@@ -11,7 +11,7 @@ import EditSkillModal from "../components/skills/EditSkillModal";
 import DeleteSkillModal from "../components/skills/DeleteSkillModal";
 import SkillDetailsModal from "../components/skills/SkillDetailsModal";
 
-import { LoadingSpinner, Card, Button } from "../components/ui";
+import { LoadingSpinner, Card, Button, toast } from "../components/ui";
 import { AlertCircle } from "lucide-react";
 
 function Skills() {
@@ -36,7 +36,7 @@ function Skills() {
       setLoading(true);
       setError(null);
 
-      const data = await skillService.getAllSkills();
+      const data = await skillService.getSkills();
       setSkills(data || []);
     } catch (err) {
       console.error(err);
@@ -50,7 +50,7 @@ function Skills() {
     let isMounted = true;
     const fetchSkills = async () => {
       try {
-        const data = await skillService.getAllSkills();
+        const data = await skillService.getSkills();
         if (isMounted) {
           setSkills(data || []);
           setError(null);
@@ -78,9 +78,14 @@ function Skills() {
     try {
       const added = await skillService.createSkill(name, category);
       setSkills((prev) => [...prev, added]);
+      toast.success("Skill Added", {
+        description: `Successfully added "${added.name || name}". AI Roadmap is ready!`,
+      });
     } catch (err) {
       console.error(err);
-      alert("Unable to create skill.");
+      toast.error("Skill Creation Failed", {
+        description: "Unable to create skill. Please try again.",
+      });
     }
   };
 
@@ -90,9 +95,14 @@ function Skills() {
       setSkills((prev) =>
         prev.map((s) => (s._id === id ? updated : s))
       );
+      toast.success("Skill Updated", {
+        description: "Skill details updated successfully.",
+      });
     } catch (err) {
       console.error(err);
-      alert("Unable to update skill.");
+      toast.error("Update Failed", {
+        description: "Unable to update skill.",
+      });
     }
   };
 
@@ -100,9 +110,14 @@ function Skills() {
     try {
       await skillService.deleteSkill(id);
       setSkills((prev) => prev.filter((s) => s._id !== id));
+      toast.info("Skill Removed", {
+        description: "Skill track has been removed.",
+      });
     } catch (err) {
       console.error(err);
-      alert("Unable to delete skill.");
+      toast.error("Delete Failed", {
+        description: "Unable to delete skill.",
+      });
     }
   };
 

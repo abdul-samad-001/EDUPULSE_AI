@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { loginUser } from "../services/authService";
 import AuthSlider from "../components/AuthSlider";
-import { Button } from "../components/ui";
+import { Button, toast } from "../components/ui";
 import team1 from "../assets/team1.png";
 import team2 from "../assets/team2.png";
 import team3 from "../assets/team3.png";
@@ -34,7 +34,9 @@ function Login() {
     e.preventDefault();
 
     if (!formData.email || !formData.password) {
-      alert("Please fill all fields");
+      toast.warning("Missing Fields", {
+        description: "Please enter both your email address and password.",
+      });
       return;
     }
 
@@ -57,13 +59,16 @@ function Login() {
         "*"
       );
 
-      alert("Login Successful");
+      toast.success("Welcome back!", {
+        description: `Logged in as ${data.user?.name || formData.email}. Redirecting...`,
+      });
       navigate("/dashboard");
     } catch (error) {
-      alert(
-        error.response?.data?.message ||
-          "Login Failed"
-      );
+      toast.error("Login Failed", {
+        description:
+          error.response?.data?.message ||
+          "Invalid email or password. Please try again.",
+      });
     } finally {
       setLoading(false);
     }

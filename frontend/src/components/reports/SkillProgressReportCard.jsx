@@ -32,13 +32,13 @@ function SkillProgressReportCard({ skillsProgress = [] }) {
       subtitle="Comprehensive breakdown of domain mastery levels and milestone remaining counts"
       className="w-full"
     >
-      <div className="space-y-5 pt-1">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start pt-1">
         {/* Recharts Bar Chart */}
-        <div className="bg-dark-bg p-3.5 sm:p-4 rounded-xl border border-dark-border space-y-2">
+        <div className="bg-dark-bg p-3.5 sm:p-4 rounded-xl border border-dark-border space-y-2 h-full flex flex-col justify-between">
           <h4 className="text-xs font-extrabold uppercase text-dark-muted tracking-wider">
             Domain Progress (%) Chart
           </h4>
-          <div className="h-52 w-full">
+          <div className="h-56 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
@@ -63,14 +63,14 @@ function SkillProgressReportCard({ skillsProgress = [] }) {
         </div>
 
         {/* Detailed Skill Rows */}
-        <div className="space-y-3">
+        <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
           {data.map((sk) => {
             const prog = sk.progress || 0;
             const isDone = prog === 100;
             return (
               <div
                 key={sk._id || sk.skillName}
-                className="p-4 rounded-xl bg-dark-bg border border-dark-border space-y-2"
+                className="p-3.5 rounded-xl bg-dark-bg border border-dark-border space-y-2"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -87,7 +87,7 @@ function SkillProgressReportCard({ skillsProgress = [] }) {
 
                 <Progress value={prog} max={100} size="sm" color={isDone ? "success" : "primary"} />
 
-                <div className="grid grid-cols-3 gap-2 text-center text-xs text-dark-muted pt-1">
+                <div className="grid grid-cols-3 gap-2 text-center text-xs text-dark-muted pt-0.5">
                   <span>Hours: <strong className="text-dark-text">{sk.hours || (prog * 0.15).toFixed(1)}h</strong></span>
                   <span>Done: <strong className="text-emerald-400">{sk.completedTasks || Math.round(prog * 0.15)}</strong></span>
                   <span>Est Finish: <strong className="text-amber-400">{sk.estFinish || "~2 wks"}</strong></span>
