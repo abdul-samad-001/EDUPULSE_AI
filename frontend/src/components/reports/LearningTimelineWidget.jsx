@@ -1,4 +1,4 @@
-import { Card, Badge, EmptyState } from "../ui";
+import { Card, Badge } from "../ui";
 import { BookOpen, CheckCircle2, Timer, Award, Sparkles, Zap, Flame } from "lucide-react";
 
 function LearningTimelineWidget({ timelineEvents = [] }) {

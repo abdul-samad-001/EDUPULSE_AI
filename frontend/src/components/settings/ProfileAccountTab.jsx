@@ -669,6 +669,13 @@ function ProfileAccountTab() {
 
                 {otpSent && (
                   <form onSubmit={handleVerifyOTPAndResetPassword} className="space-y-3 pt-1 animate-in fade-in duration-200">
+                    <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px] flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+                      <span>
+                        Can't find the email in your primary inbox? Please check your <strong>Spam / Junk folder</strong>.
+                      </span>
+                    </div>
+
                     <div>
                       <label className="block text-[11px] font-bold uppercase tracking-wider text-primary mb-1">
                         Enter 6-Digit Email OTP Code <span className="text-rose-400">*</span>
