@@ -19,6 +19,8 @@ const DISTRACTION_DOMAINS = [
   "wynk.in",
   "music.apple.com",
   "bandcamp.com",
+  "whatsapp.com",
+  "web.whatsapp.com"
 ];
 
 const PRODUCTIVE_DOMAINS = [

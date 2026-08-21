@@ -66,7 +66,9 @@ function StudyPerformanceCard({ performanceData = null }) {
               <Flame className="w-4 h-4 shrink-0" />
               <span>Study Consistency</span>
             </div>
-            <p className="text-lg font-extrabold text-dark-text">{consistency}</p>
+            <p className="text-lg font-extrabold text-dark-text">
+              {typeof consistency === "number" ? `${consistency}%` : consistency}
+            </p>
           </div>
         </div>
 
@@ -86,10 +88,26 @@ function StudyPerformanceCard({ performanceData = null }) {
               <Tooltip
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
+                    const data = payload[0].payload;
                     return (
-                      <div className="bg-dark-card border border-dark-border text-dark-text p-2.5 rounded-lg text-xs font-semibold shadow-xl">
-                        <p className="text-primary font-bold">{payload[0].payload.day}</p>
-                        <p>Productivity Score: <span className="text-sky-400 font-extrabold">{payload[0].value}%</span></p>
+                      <div className="bg-dark-card border border-dark-border text-dark-text p-2.5 rounded-lg text-xs font-semibold shadow-xl space-y-1">
+                        <p className="text-primary font-bold">
+                          {data.day} {data.date ? `(${data.date})` : ""}
+                        </p>
+                        <p>
+                          Productivity Score:{" "}
+                          <span className="text-sky-400 font-extrabold">{payload[0].value}%</span>
+                        </p>
+                        {data.productiveMinutes !== undefined && (
+                          <p className="text-dark-muted text-[11px]">
+                            Productive Time: <span className="text-emerald-400 font-bold">{data.productiveMinutes}m</span>
+                          </p>
+                        )}
+                        {data.distractionMinutes !== undefined && data.distractionMinutes > 0 && (
+                          <p className="text-dark-muted text-[11px]">
+                            Distraction Time: <span className="text-rose-400 font-bold">{data.distractionMinutes}m</span>
+                          </p>
+                        )}
                       </div>
                     );
                   }

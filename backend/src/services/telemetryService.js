@@ -233,15 +233,15 @@ const getTopVisitedWebsites = async (
   ]);
 };
 const getWeeklyTrend = async (userId) => {
+  const userObjectId = new mongoose.Types.ObjectId(userId);
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
   sevenDaysAgo.setHours(0, 0, 0, 0);
 
-  return await TabSession.aggregate([
+  const rawData = await TabSession.aggregate([
     {
       $match: {
-        user: new mongoose.Types.ObjectId(userId),
-        category: "productive",
+        user: userObjectId,
         startedAt: {
           $gte: sevenDaysAgo,
         },
@@ -255,10 +255,18 @@ const getWeeklyTrend = async (userId) => {
             date: "$startedAt",
           },
         },
-        productiveMinutes: {
+        productiveSeconds: {
           $sum: {
-            $divide: ["$durationSeconds", 60],
+            $cond: [{ $eq: ["$category", "productive"] }, "$durationSeconds", 0],
           },
+        },
+        distractionSeconds: {
+          $sum: {
+            $cond: [{ $eq: ["$category", "distraction"] }, "$durationSeconds", 0],
+          },
+        },
+        totalSeconds: {
+          $sum: "$durationSeconds",
         },
       },
     },
@@ -267,16 +275,36 @@ const getWeeklyTrend = async (userId) => {
         _id: 1,
       },
     },
-    {
-      $project: {
-        _id: 0,
-        date: "$_id",
-        productiveMinutes: {
-          $round: ["$productiveMinutes", 0],
-        },
-      },
-    },
   ]);
+
+  const fullTrend = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split("T")[0];
+    const dayName = d.toLocaleDateString("en-US", { weekday: "short" });
+
+    const match = rawData.find((r) => r._id === dateStr);
+    const prodSec = match ? match.productiveSeconds : 0;
+    const distSec = match ? match.distractionSeconds : 0;
+    const totalSec = match ? match.totalSeconds : 0;
+
+    const prodMins = Math.round(prodSec / 60);
+    const distMins = Math.round(distSec / 60);
+    const score = totalSec > 0 ? Number(((prodSec / totalSec) * 100).toFixed(1)) : 0;
+
+    fullTrend.push({
+      date: dateStr,
+      day: dayName,
+      score,
+      focus: score,
+      productiveMinutes: prodMins,
+      distractionMinutes: distMins,
+      totalMinutes: Math.round(totalSec / 60),
+    });
+  }
+
+  return fullTrend;
 };
 const getHourlyProductivity = async (userId) => {
   const hourlyData = await TabSession.aggregate([

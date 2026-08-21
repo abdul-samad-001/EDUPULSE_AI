@@ -198,25 +198,30 @@ function Reports() {
             {/* KPI STAT CARDS */}
             <ReportSummaryCards
               summary={{
-                studyHours: Math.round((summary?.stats?.productiveTime || 1110) / 60),
-                sessions: summary?.stats?.totalSessions || 24,
-                tasks: 28,
-                skills: skills?.length || 5,
-                achievements: 6,
-                xp: 750,
-                productivity: summary?.stats?.productivePercentage || 84,
+                studyHours: summary?.userMetrics?.studyHours ?? Number(((summary?.stats?.productiveTime || 0) / 3600).toFixed(1)),
+                sessions: summary?.userMetrics?.sessions ?? summary?.stats?.totalSessions ?? 0,
+                tasks: summary?.userMetrics?.tasks ?? 0,
+                skills: skills?.length || summary?.topSkills?.length || 0,
+                achievements: summary?.userMetrics?.achievements ?? 0,
+                xp: summary?.userMetrics?.xp ?? summary?.stats?.xpEarned ?? 0,
+                productivity: Math.round(summary?.stats?.productivePercentage || 0),
               }}
             />
 
             {/* PERFORMANCE & TIMELINE */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
               <StudyPerformanceCard
-                performanceData={{
-                  productivity: summary?.stats?.productivePercentage || 84,
-                  focusScore: 88,
-                  completionRate: 76,
-                  consistency: "92%",
-                }}
+                performanceData={
+                  summary?.performance || {
+                    productivity: Math.round(summary?.stats?.productivePercentage || 0),
+                    focusScore: Math.round(summary?.stats?.productivePercentage || 0),
+                    completionRate: summary?.userMetrics?.totalTasks > 0
+                      ? Math.round(((summary.userMetrics.tasks || 0) / summary.userMetrics.totalTasks) * 100)
+                      : (skills?.length > 0 ? Math.round((skills.filter((s) => s.progress === 100).length / skills.length) * 100) : 0),
+                    consistency: summary?.stats?.productiveTime > 0 ? "Active" : "No sessions",
+                    trend: summary?.weeklyTrend || [],
+                  }
+                }
               />
               <LearningTimelineWidget timelineEvents={timeline} />
             </div>

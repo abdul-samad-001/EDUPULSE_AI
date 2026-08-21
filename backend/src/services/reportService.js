@@ -12,17 +12,49 @@ const FocusSession = require("../models/FocusSession");
 const UserXP = require("../models/UserXP");
 
 const getReportSummary = async (userId) => {
+  const userObjectId = new mongoose.Types.ObjectId(userId);
   const stats = await getTelemetryStats(userId);
   const websites = await getTopVisitedWebsites(userId);
   const weeklyTrend = await getWeeklyTrend(userId);
   const insights = await getAIInsights(userId);
 
-  const topSkills = await Skill.find({
-    user: userId,
-  })
-    .sort({ progress: -1 })
-    .limit(5)
-    .select("skillName category progress");
+  const [topSkills, userSkills, xpDoc, userDoc, focusSessions] = await Promise.all([
+    Skill.find({ user: userObjectId })
+      .sort({ progress: -1 })
+      .limit(5)
+      .select("skillName category progress"),
+    Skill.find({ user: userObjectId }),
+    UserXP.findOne({ user: userObjectId }),
+    mongoose.model("User").findById(userObjectId).select("streak").lean(),
+    FocusSession.find({ user: userObjectId }),
+  ]);
+
+  const skillIds = userSkills.map((s) => s._id);
+  const [totalTasks, completedTasks] = await Promise.all([
+    Task.countDocuments({ skill: { $in: skillIds } }),
+    Task.countDocuments({ skill: { $in: skillIds }, completed: true }),
+  ]);
+
+  const taskCompletionRate = totalTasks > 0
+    ? Math.round((completedTasks / totalTasks) * 100)
+    : (userSkills.length > 0 ? Math.round((userSkills.filter((s) => s.progress === 100).length / userSkills.length) * 100) : 0);
+
+  const completedSessions = focusSessions.filter((s) => s.status === "completed");
+  const focusScore = completedSessions.length > 0
+    ? Math.round(completedSessions.reduce((sum, s) => sum + (s.focusScore || 0), 0) / completedSessions.length)
+    : Math.round(stats.productivePercentage || 0);
+
+  const consistency = userDoc?.streak
+    ? `${userDoc.streak} Day Streak`
+    : (stats.productiveTime > 0 ? "Active" : "No sessions");
+
+  const performance = {
+    productivity: Math.round(stats.productivePercentage || 0),
+    focusScore: focusScore || Math.round(stats.productivePercentage || 0),
+    completionRate: taskCompletionRate,
+    consistency: consistency,
+    trend: weeklyTrend,
+  };
 
   return {
     stats,
@@ -30,6 +62,16 @@ const getReportSummary = async (userId) => {
     weeklyTrend,
     insights,
     topSkills,
+    performance,
+    userMetrics: {
+      studyHours: Number(((stats.productiveTime || 0) / 3600).toFixed(1)),
+      sessions: stats.totalSessions || focusSessions.length || 0,
+      tasks: completedTasks,
+      totalTasks,
+      skills: userSkills.length,
+      xp: xpDoc?.totalXP || xpDoc?.xp || 0,
+      streak: userDoc?.streak || 0,
+    },
   };
 };
 

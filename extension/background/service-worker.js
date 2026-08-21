@@ -93,13 +93,13 @@ const uploadTelemetry = async () => {
     const telemetryResult = await chrome.storage.local.get(TELEMETRY_STORAGE_KEY);
     const telemetry = telemetryResult[TELEMETRY_STORAGE_KEY] || [];
 
-    if (telemetry.length === 0) return;
+    if (telemetry.length === 0) return { success: true, count: 0 };
 
     const { edupulseToken: token } = await chrome.storage.local.get("edupulseToken");
 
     if (!token) {
       console.log("No auth token present. Telemetry queued offline.");
-      return;
+      return { success: false, error: "NO_TOKEN" };
     }
 
     const response = await fetch(TELEMETRY_ENDPOINT, {
@@ -117,11 +117,17 @@ const uploadTelemetry = async () => {
         [TELEMETRY_STORAGE_KEY]: [],
         lastSyncTimestamp: new Date().toISOString(),
       });
+      return { success: true, count: telemetry.length };
     } else {
       console.warn("Upload failed with status:", response.status, ". Kept in offline queue.");
+      if (response.status === 401) {
+        await chrome.storage.local.remove("edupulseToken");
+      }
+      return { success: false, status: response.status };
     }
   } catch (error) {
     console.error("Telemetry upload network error:", error);
+    return { success: false, error: error.message };
   }
 };
 
@@ -210,9 +216,12 @@ chrome.tabs.onActivated.addListener(async ({ tabId }) => {
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status !== "complete" || !tab.active) return;
-  if (activeSession?.tabId === tabId && activeSession?.domain === getDomainFromUrl(tab.url)) {
+  const currentDomain = getDomainFromUrl(tab.url);
+  if (!currentDomain) return;
+
+  if (activeSession?.tabId === tabId && activeSession?.domain === currentDomain) {
     // Re-check classification on title or URL update (e.g. YouTube video navigation)
-    const updatedCategory = classifyDomain("youtube.com", tab.url, tab.title);
+    const updatedCategory = classifyDomain(currentDomain, tab.url, tab.title);
     if (activeSession.category !== updatedCategory) {
       await switchActiveSession(tab);
     }
@@ -316,8 +325,39 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           backendAlive = false;
         }
 
-        const hasToken = !!res.edupulseToken;
-        const isConnected = backendAlive && hasToken;
+        let tokenValid = false;
+        let apiProdMins = 0;
+        let apiDistMins = 0;
+
+        if (backendAlive && res.edupulseToken) {
+          try {
+            const summaryReq = await fetch(`${API_BASE_URL}/telemetry/summary`, {
+              headers: { Authorization: `Bearer ${res.edupulseToken}` },
+            });
+            if (summaryReq.ok) {
+              tokenValid = true;
+              const summaryJson = await summaryReq.json();
+              if (summaryJson.data) {
+                apiProdMins = Number(summaryJson.data.productiveTime || 0);
+                apiDistMins = Number(summaryJson.data.distractionTime || 0);
+              }
+            } else if (summaryReq.status === 401) {
+              tokenValid = false;
+              await chrome.storage.local.remove("edupulseToken");
+            }
+          } catch (e) {
+            // ignore network error
+          }
+        }
+
+        const isConnected = backendAlive && tokenValid;
+        let statusLabel = "Connected";
+
+        if (!backendAlive) {
+          statusLabel = "Backend Offline";
+        } else if (!tokenValid) {
+          statusLabel = "Login Required";
+        }
 
         let domain = activeSession?.domain;
         let category = activeSession?.category || "neutral";
@@ -330,7 +370,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             const tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
             if (tabs[0]?.url) {
               domain = getDomainFromUrl(tabs[0].url);
-              if (domain) category = classifyDomain(domain);
+              if (domain) category = classifyDomain(domain, tabs[0].url, tabs[0].title);
             }
           } catch (e) {
             // ignore
@@ -338,14 +378,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
 
         let displayDomain = domain || "Active Browsing";
-        let statusLabel = "Connected";
-
-        if (!backendAlive) {
-          statusLabel = "Backend Offline";
-          displayDomain = "Backend Server Down";
-        } else if (!hasToken) {
-          statusLabel = "Login Required";
-        }
 
         // Combine offline queue + active session + backend summary
         const localSessions = res[TELEMETRY_STORAGE_KEY] || [];
@@ -362,26 +394,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           if (activeSession.category === "distraction") localDistSecs += duration;
         }
 
-        let apiProdMins = 0;
-        let apiDistMins = 0;
-
-        if (isConnected) {
-          try {
-            const summaryReq = await fetch(`${API_BASE_URL}/telemetry/summary`, {
-              headers: { Authorization: `Bearer ${res.edupulseToken}` },
-            });
-            if (summaryReq.ok) {
-              const summaryJson = await summaryReq.json();
-              if (summaryJson.data) {
-                apiProdMins = Number(summaryJson.data.productiveTime || 0);
-                apiDistMins = Number(summaryJson.data.distractionTime || 0);
-              }
-            }
-          } catch (e) {
-            // ignore
-          }
-        }
-
         const productiveMins = apiProdMins + Math.floor(localProdSecs / 60);
         const distractionMins = apiDistMins + Math.floor(localDistSecs / 60);
 
@@ -390,10 +402,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             connected: isConnected,
             statusLabel,
             backendAlive,
-            hasToken,
+            hasToken: tokenValid,
             user: isConnected
               ? "Active Student"
-              : hasToken
+              : tokenValid
               ? "Student Account"
               : "Please Log In",
             lastSync: res.lastSyncTimestamp || "Never",
