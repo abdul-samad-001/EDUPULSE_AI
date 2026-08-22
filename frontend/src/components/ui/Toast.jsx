@@ -114,10 +114,10 @@ export function ToastItem({ toastItem, onDismiss }) {
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`pointer-events-auto relative w-full sm:w-[380px] rounded-2xl border ${style.border} ${style.accentLight} bg-[#141720]/95 backdrop-blur-2xl text-slate-100 p-4 transition-all duration-300 select-none cursor-grab active:cursor-grabbing overflow-hidden group`}
+      className={`pointer-events-auto relative w-full sm:w-95 rounded-2xl border ${style.border} ${style.accentLight} bg-[#141720]/95 backdrop-blur-2xl text-slate-100 p-4 transition-all duration-300 select-none cursor-grab active:cursor-grabbing overflow-hidden group`}
     >
       {/* Dynamic Ambient Background Glow */}
-      <div className={`absolute top-0 right-0 -mr-16 -mt-16 w-36 h-36 rounded-full bg-gradient-to-br ${style.bgGlow} blur-2xl pointer-events-none`} />
+      <div className={`absolute top-0 right-0 -mr-16 -mt-16 w-36 h-36 rounded-full bg-linear-to-br ${style.bgGlow} blur-2xl pointer-events-none`} />
 
       <div className="relative z-10 flex items-start gap-3.5">
         {/* Icon with Glowing Ring */}
@@ -128,12 +128,12 @@ export function ToastItem({ toastItem, onDismiss }) {
         {/* Text Content */}
         <div className="flex-1 min-w-0 pt-0.5">
           {title && (
-            <h4 className="text-sm font-semibold text-white tracking-tight leading-snug break-words">
+            <h4 className="text-sm font-semibold text-white tracking-tight leading-snug wrap-break-word">
               {title}
             </h4>
           )}
           {description && (
-            <p className="text-xs text-slate-400 mt-1 leading-relaxed break-words font-normal">
+            <p className="text-xs text-slate-400 mt-1 leading-relaxed wrap-break-word font-normal">
               {description}
             </p>
           )}
@@ -168,7 +168,7 @@ export function ToastItem({ toastItem, onDismiss }) {
 
       {/* Animated Countdown Progress Bar */}
       {duration > 0 && (
-        <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-white/5 overflow-hidden">
+        <div className="absolute bottom-0 left-0 right-0 h-0.75 bg-white/5 overflow-hidden">
           <div
             className={`h-full ${style.progressBar} transition-[width] duration-75 ease-linear`}
             style={{ width: `${progress}%` }}
@@ -186,7 +186,7 @@ export function ToastContainer() {
 
   return (
     <div
-      className="fixed top-5 right-5 z-[99999] flex flex-col items-end gap-3 pointer-events-none max-w-full px-4 sm:px-0"
+      className="fixed top-5 right-5 z-99999 flex flex-col items-end gap-3 pointer-events-none max-w-full px-4 sm:px-0"
       aria-live="polite"
       aria-atomic="true"
     >

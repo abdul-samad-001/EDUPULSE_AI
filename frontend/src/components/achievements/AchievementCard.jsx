@@ -1,5 +1,5 @@
 import { Card, Badge, Progress } from "../ui";
-import { Award, Lock, CheckCircle2, Sparkles } from "lucide-react";
+import { Lock, CheckCircle2, Sparkles } from "lucide-react";
 
 function AchievementCard({ achievement }) {
   const isUnlocked = Boolean(achievement.unlocked);

@@ -1,5 +1,5 @@
 import { Card, Progress } from "../ui";
-import { Trophy, CheckCircle2, Lock, Award, Search } from "lucide-react";
+import { CheckCircle2, Lock, Award, Search } from "lucide-react";
 
 function AchievementStats({
   achievements = [],

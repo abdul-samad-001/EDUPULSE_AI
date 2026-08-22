@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Card, Badge, EmptyState, Button } from "../ui";
-import { Timer, Award, FileText, Play, ChevronDown, ChevronUp, History } from "lucide-react";
+import { Timer, Award, FileText, Play, ChevronDown, ChevronUp } from "lucide-react";
 
 function SessionHistory({ history = [], onStartFirstSession }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -90,7 +90,7 @@ function SessionHistory({ history = [], onStartFirstSession }) {
                   <td className="py-2.5 px-3.5 sm:px-4 font-bold text-dark-text">
                     <span className="inline-flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
-                      <span className="truncate max-w-[140px] sm:max-w-none">
+                      <span className="truncate max-w-35 sm:max-w-none">
                         {session.skill?.skillName || "General Learning"}
                       </span>
                     </span>
@@ -111,7 +111,7 @@ function SessionHistory({ history = [], onStartFirstSession }) {
                   </td>
 
                   {/* Notes */}
-                  <td className="py-2.5 px-3.5 sm:px-4 text-xs text-dark-muted max-w-[160px] truncate">
+                  <td className="py-2.5 px-3.5 sm:px-4 text-xs text-dark-muted max-w-40 truncate">
                     {session.notes ? (
                       <span className="inline-flex items-center gap-1 italic">
                         <FileText className="w-3 h-3 text-sky-400 shrink-0" />

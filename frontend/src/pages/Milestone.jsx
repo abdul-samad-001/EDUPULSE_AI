@@ -29,39 +29,48 @@ function Milestones() {
     }
   };
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      const skillsList = await skillService.getSkills();
-      const safeSkills = Array.isArray(skillsList) ? skillsList : [];
-      setSkills(safeSkills);
-
-      // Fetch tasks for all skills concurrently
-      const taskPromises = safeSkills.map(async (skill) => {
-        try {
-          const tasks = await skillService.getTasks(skill._id);
-          return (tasks || []).map((t) => ({
-            ...t,
-            skillName: skill.skillName,
-            skillCategory: skill.category,
-          }));
-        } catch {
-          return [];
-        }
-      });
-
-      const taskResults = await Promise.all(taskPromises);
-      const flattened = taskResults.flat();
-      setAllTasks(flattened);
-    } catch (err) {
-      console.error("Milestones load error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    loadData();
+    let isMounted = true;
+
+    const fetchData = async () => {
+      try {
+        const skillsList = await skillService.getSkills();
+        const safeSkills = Array.isArray(skillsList) ? skillsList : [];
+        if (!isMounted) return;
+        setSkills(safeSkills);
+
+        // Fetch tasks for all skills concurrently
+        const taskPromises = safeSkills.map(async (skill) => {
+          try {
+            const tasks = await skillService.getTasks(skill._id);
+            return (tasks || []).map((t) => ({
+              ...t,
+              skillName: skill.skillName,
+              skillCategory: skill.category,
+            }));
+          } catch {
+            return [];
+          }
+        });
+
+        const taskResults = await Promise.all(taskPromises);
+        const flattened = taskResults.flat();
+        if (!isMounted) return;
+        setAllTasks(flattened);
+      } catch (err) {
+        console.error("Milestones load error:", err);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleToggleTask = async (task) => {
@@ -317,7 +326,7 @@ function Milestones() {
                   <div className="space-y-2">
                     {/* Header Row: Skill Tag, Day & Difficulty */}
                     <div className="flex items-center justify-between gap-1.5">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-primary truncate max-w-[130px]">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-primary truncate max-w-32.5">
                         {task.skillName}
                       </span>
                       <div className="flex items-center gap-1">
