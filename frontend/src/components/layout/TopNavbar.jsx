@@ -1,5 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { useTheme } from "../../context/ThemeContext";
 import {
   Search,
   Menu,
@@ -51,8 +53,9 @@ function TopNavbar({ onMenuToggle }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [theme, setTheme] = useState(() => localStorage.getItem("edupulse_theme") || "dark");
+  const { theme, toggleTheme } = useTheme();
   const [userXP, setUserXP] = useState(null);
+  const { logout: authLogout } = useAuth();
 
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const initials = user.name
@@ -94,16 +97,6 @@ function TopNavbar({ onMenuToggle }) {
     }
   }, [isProfileOpen]);
 
-  // Theme Syncing Effect
-  useEffect(() => {
-    if (theme === "light") {
-      document.documentElement.classList.add("light-mode");
-    } else {
-      document.documentElement.classList.remove("light-mode");
-    }
-    localStorage.setItem("edupulse_theme", theme);
-  }, [theme]);
-
   // Click Outside Handler for Dropdowns
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -118,15 +111,15 @@ function TopNavbar({ onMenuToggle }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
-
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    if (authLogout) {
+      authLogout();
+    } else {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    }
     setIsProfileOpen(false);
-    navigate("/login");
+    navigate("/");
   };
 
   const filteredSearchResults = searchQuery.trim()

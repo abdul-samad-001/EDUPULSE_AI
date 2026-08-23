@@ -1,0 +1,34 @@
+check_id,category,target_file,description,expected_result,actual_result,status,notes
+A1.1,Repository Integrity,root,Verify essential directory structure,All core directories exist,frontend backend ml-service evaluation extension documentation present,PASS,Clean separation maintained
+A1.2,Repository Integrity,root,Git status working tree check,No corrupt or untracked temporary files,Clean working tree with no unauthorized changes,PASS,Zero accidental files
+A2.1,Frontend Static,frontend/package.json,Dependency manifest resolution,All frontend packages resolve,React 19 Vite Axios Tailwind packages resolve,PASS,Manifest valid
+A2.2,Frontend Static,frontend/src/,ESLint code quality check,0 lint errors and 0 warnings,0 errors and 0 warnings,PASS,Clean codebase
+A2.3,Frontend Static,frontend/dist/,Vite production build verification,Successful build output in dist/,Built dist/index.html and JS/CSS in 5.08s,PASS,0 compilation errors
+A3.1,Backend Static,backend/package.json,Backend package resolution,All backend dependencies resolve,Express Mongoose JWT GenerativeAI resolve,PASS,Manifest valid
+A3.2,Backend Static,backend/src/,Backend JS syntax check,All backend files pass node check,72/72 JS files passed syntax validation,PASS,0 syntax errors
+A3.3,Backend Static,backend/server.js,Express server routing check,17 modular route handlers mount,All 17 route files mount cleanly,PASS,Clean routing tree
+A3.4,Backend Static,backend/src/services/mlService.js,ML Gateway configuration,Points to ML_SERVICE_URL or Port 8000,Communicates via http://127.0.0.1:8000,PASS,Environment configurable
+A4.1,Python ML Service,ml-service/app.py,Python syntax validation,0 syntax errors in Flask app,Syntax compiled with py_compile cleanly,PASS,0 syntax errors
+A4.2,Python ML Service,ml-service/requirements.txt,ML library imports check,Imports load successfully,Flask sklearn numpy pandas joblib load,PASS,Python 3.12 environment active
+A5.1,Model 1 Integrity,ml-service/models/procrastination/best_model.pkl,Model 1 artifact existence and loading,Model loads as LogisticRegression,Loaded LogisticRegression (959 bytes),PASS,Trained weights intact
+A5.2,Model 1 Integrity,ml-service/models/procrastination/scaler.pkl,Model 1 scaler existence and loading,Scaler loads as StandardScaler,Loaded StandardScaler (1359 bytes),PASS,Scaler intact
+A5.3,Model 1 Integrity,ml-service/models/procrastination/model_metadata.json,Model 1 11-feature contract check,Exact 11 features defined,Exact 11 features validated,PASS,Contract confirmed
+A6.1,Model 2 Integrity,ml-service/models/productivity/best_model.pkl,Model 2 artifact existence and loading,Model loads as GradientBoostingRegressor,Loaded GradientBoostingRegressor (143576 bytes),PASS,Trained weights intact
+A6.2,Model 2 Integrity,ml-service/models/productivity/scaler.pkl,Model 2 scaler existence and loading,Scaler loads as StandardScaler,Loaded StandardScaler (1703 bytes),PASS,Scaler intact
+A6.3,Model 2 Integrity,ml-service/models/productivity/model_metadata.json,Model 2 feature contract check,Exact 20 features defined,Exact 20 features validated,PASS,Contract confirmed
+A7.1,Model 3 V2 Integrity,ml-service/models/recommendation/v2/best_model_v2.pkl,Model 3 V2 artifact existence and loading,Model loads as RandomForestClassifier,Loaded RandomForestClassifier (57.69 MB),PASS,Trained weights intact
+A7.2,Model 3 V2 Integrity,ml-service/models/recommendation/v2/v2_scaler.pkl,Model 3 V2 scaler existence and loading,Scaler loads as StandardScaler,Loaded StandardScaler (1671 bytes),PASS,Scaler intact
+A7.3,Model 3 V2 Integrity,ml-service/models/recommendation/v2/model_metadata_v2.json,Model 3 V2 20-feature contract check,Exact 20 features in exact order,Exact 20 features in exact order confirmed,PASS,Contract confirmed
+A7.4,Model 3 V2 Integrity,ml-service/app.py,Model 3 V2 8-class recommendation mapping,All 8 classes mapped (0 to 7),All 8 discrete classes mapped 1:1,PASS,Pedagogical actions verified
+A8.1,Model Artifacts,ml-service/models/,All production model artifacts verification,Unmodified and loadable from disk,6/6 production artifacts load and execute,PASS,Zero corruption
+A9.1,Database Schemas,backend/src/models/,Mongoose document schema registration,All 12 Mongoose models register cleanly,12/12 Mongoose schemas registered with 0 errors,PASS,MongoDB Atlas models valid
+A10.1,Feature Extraction,backend/src/services/mlFeatureService.js,End-to-end feature pipeline tracing,Extracts telemetry and builds payloads,Telemetry maps to 11 and 20 feature vectors,PASS,Closed-loop verified
+A11.1,Configuration,backend/.env,Backend environment configuration,All required env vars present with secrets hidden,PORT MONGODB_URI JWT_SECRET ML_SERVICE_URL present,PASS,Secrets secured
+A11.2,Configuration,frontend/src/services/axiosInstance.js,Frontend API client endpoint configuration,Points to backend API on Port 5000,Configured for http://localhost:5000/api,PASS,JWT interceptor active
+A11.3,Configuration,extension/manifest.json,Extension MV3 configuration,Manifest V3 valid with required permissions,MV3 background worker and content scripts valid,PASS,Port 5000 configured
+A12.1,Dependency Integrity,backend/ and frontend/,Lockfile and package consistency,Package manifests internally consistent,Dependencies match source imports,PASS,No broken imports
+A13.1,Test Infrastructure,backend/tests/,Automated integration test suites,5 reusable integration test scripts present,5 integration tests verified,PASS,Ready for Phase B execution
+A14.1,Build Artifacts,frontend/dist/,Frontend build artifact verification,Valid distribution bundles exist,Compiled assets and index.html verified,PASS,Production ready
+A15.1,Research Integrity,evaluation/ and ml-service/data/,Research datasets and reports integrity,Zero modification to N=34 data or reports,Canonical N=34 CSV and 100k data intact,PASS,Reproducibility preserved
+A16.1,Git Difference,root,Working tree audit modification check,0 existing files modified by audit,0 source files modified,PASS,Non-destructive verification
+A17.1,Phase B Readiness,system,End-to-end static readiness assessment,System ready for live service testing,All static checks passed (0 errors),PASS,System ready for Phase B

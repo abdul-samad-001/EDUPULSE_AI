@@ -1,51 +1,53 @@
 @import "tailwindcss";
 
-@theme {
-  --color-primary: #7CE7D0;
-  --color-primary-hover: #65d6bd;
-  --color-dark-bg: #0F1115;
-  --color-dark-card: #181A20;
-  --color-dark-border: #262A33;
-  --color-dark-text: #F5F5F5;
-  --color-dark-muted: #9CA3AF;
-  --color-danger: #EF4444;
-  --color-success: #10B981;
-  --color-warning: #F59E0B;
-
-  --radius-card: 20px;
-}
-
 :root {
-  --primary: #7CE7D0;
-  --bg-main: #0F1115;
-  --bg-card: #181A20;
-  --border-color: #262A33;
-  --text-main: #F5F5F5;
-  --text-muted: #9CA3AF;
+  --primary: #10B981;
+  --bg-main: #07080C;
+  --bg-surface: #0C0E15;
+  --bg-card: #0F121C;
+  --bg-card-hover: #151926;
+  --bg-card-subtle: rgba(255, 255, 255, 0.03);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  --text-main: #F8FAFC;
+  --text-muted: #94A3B8;
+  --text-dim: #64748B;
   color-scheme: dark;
 }
 
-/* Light Theme Variable Overrides */
 html.light-mode {
-  --color-primary: #0D9488;
-  --color-primary-hover: #0F766E;
-  --color-dark-bg: #F8FAFC;
-  --color-dark-card: #FFFFFF;
-  --color-dark-border: #E2E8F0;
-  --color-dark-text: #0F172A;
-  --color-dark-muted: #64748B;
   --primary: #0D9488;
   --bg-main: #F8FAFC;
+  --bg-surface: #F1F5F9;
   --bg-card: #FFFFFF;
+  --bg-card-hover: #F8FAFC;
+  --bg-card-subtle: rgba(0, 0, 0, 0.03);
   --border-color: #E2E8F0;
+  --border-subtle: rgba(0, 0, 0, 0.05);
   --text-main: #0F172A;
-  --text-muted: #64748B;
+  --text-muted: #475569;
+  --text-dim: #64748B;
   color-scheme: light;
 }
 
-html.light-mode body {
-  background-color: #F8FAFC;
-  color: #0F172A;
+@theme {
+  --color-primary: var(--primary);
+  --color-dark-bg: var(--bg-main);
+  --color-dark-surface: var(--bg-surface);
+  --color-dark-card: var(--bg-card);
+  --color-dark-card-hover: var(--bg-card-hover);
+  --color-dark-border: var(--border-color);
+  --color-dark-border-subtle: var(--border-subtle);
+  --color-dark-text: var(--text-main);
+  --color-dark-muted: var(--text-muted);
+  --color-accent-purple: #8B5CF6;
+  --color-accent-violet: #A855F7;
+  --color-accent-cyan: #06B6D4;
+  --color-accent-teal: #14B8A6;
+  --color-danger: #EF4444;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --radius-card: 16px;
 }
 
 * {
@@ -53,49 +55,101 @@ html.light-mode body {
 }
 
 html, body {
-  background-color: #0F1115;
-  color: #F5F5F5;
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   margin: 0;
   padding: 0;
   min-height: 100vh;
   overflow-x: hidden;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0F1115;
+  background: var(--bg-main);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #262A33;
-  border-radius: 4px;
+  background: var(--border-color);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #373d4a;
-}
-
-html.light-mode ::-webkit-scrollbar-track {
-  background: #F8FAFC;
-}
-
-html.light-mode ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
-}
-
-html.light-mode ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: var(--text-dim);
 }
 
 /* Selection */
 ::selection {
-  background-color: rgba(124, 231, 208, 0.25);
-  color: #7CE7D0;
+  background-color: rgba(139, 92, 246, 0.25);
+  color: inherit;
+}
+
+/* Linear / Raycast Style Gradients & Cards */
+.bg-ambient-hero {
+  background: 
+    radial-gradient(circle at 50% -10%, rgba(139, 92, 246, 0.1) 0%, rgba(20, 184, 166, 0.05) 35%, transparent 70%),
+    radial-gradient(circle at 100% 30%, rgba(99, 102, 241, 0.04) 0%, transparent 50%);
+}
+
+html.light-mode .bg-ambient-hero {
+  background: 
+    radial-gradient(circle at 50% -10%, rgba(139, 92, 246, 0.06) 0%, rgba(20, 184, 166, 0.04) 35%, transparent 70%),
+    radial-gradient(circle at 100% 30%, rgba(99, 102, 241, 0.03) 0%, transparent 50%);
+}
+
+.subtle-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, var(--border-subtle) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--border-subtle) 1px, transparent 1px);
+}
+
+.theme-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.light-mode .theme-card {
+  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.06);
+}
+
+.theme-card:hover {
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+html.light-mode .theme-card:hover {
+  border-color: rgba(13, 148, 136, 0.3);
+}
+
+.text-gradient-hero {
+  background: linear-gradient(180deg, var(--text-main) 0%, var(--text-muted) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-accent {
+  background: linear-gradient(135deg, #C084FC 0%, #818CF8 50%, #2DD4BF 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+html.light-mode .text-gradient-accent {
+  background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 50%, #0D9488 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }

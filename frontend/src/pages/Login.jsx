@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { loginUser } from "../services/authService";
@@ -15,6 +15,12 @@ function Login() {
 
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [navigate]);
 
   const [formData, setFormData] = useState({
     email: "",

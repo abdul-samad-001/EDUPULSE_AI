@@ -1,0 +1,30 @@
+test_id,category,service_layer,endpoint,method,http_status,latency_ms,result,status,notes
+B1.1,Startup Verification,Python ML,http://127.0.0.1:8000/,GET,200,10.2,Service identification payload,PASS,Process listening on Port 8000
+B1.2,Startup Verification,Express Backend,http://localhost:5000/,GET,200,5.1,Express server online,PASS,Process listening on Port 5000
+B1.3,Startup Verification,MongoDB Atlas,ac-y3kin58-shard-00-00.ennwd4a.mongodb.net,N/A,N/A,N/A,Connected to remote Atlas shard,PASS,Mongoose connection active
+B1.4,Startup Verification,Frontend SPA,http://localhost:5173/,GET,200,12.0,Vite dev server serving index.html,PASS,Vite v8.0.16 active
+B2.1,Python Health,Python ML,http://127.0.0.1:8000/health,GET,200,101.5,All 3 models loaded and healthy,PASS,Multi-model health verified
+B3.1,Python Model 1,Python ML,http://127.0.0.1:8000/predict,POST,200,77.4,is_procrastinator: false prob: 0.163,PASS,11-feature contract validated
+B4.1,Python Model 2,Python ML,http://127.0.0.1:8000/predict/productivity,POST,200,95.0,productivity_score: 27.15,PASS,20-feature continuous score
+B5.1,Python Model 3 V2,Python ML,http://127.0.0.1:8000/predict/recommendation,POST,200,54.2,recommendation: Practice Coding class: 3,PASS,20-feature exact contract
+B6.1,Express ML Health,Express Gateway,http://localhost:5000/api/ml/health,GET,200,26.7,Express proxy connects to Python ML,PASS,No ECONNREFUSED
+B7.1,Express Model 1,Express Gateway,http://localhost:5000/api/ml/procrastination,POST,200,349.2,Express to Python Model 1 response,PASS,Authenticated inference
+B8.1,Express Model 2,Express Gateway,http://localhost:5000/api/ml/productivity,POST,200,319.0,Express to Python Model 2 response,PASS,Authenticated inference
+B9.1,Express Model 3 V2,Express Gateway,http://localhost:5000/api/ml/recommendation,POST,200,390.8,Take Short Break class: 2 event logged,PASS,Closed-loop event recorded
+B10.1,Authentication,Express Security,http://localhost:5000/api/ml/procrastination,POST,401,2.1,Not authorized no token,PASS,Missing token rejected
+B10.2,Authentication,Express Security,http://localhost:5000/api/ml/procrastination,POST,401,3.4,Not authorized token failed,PASS,Malformed token rejected
+B10.3,Authentication,Express Security,http://localhost:5000/api/ml/procrastination,POST,200,315.0,Authorized valid JWT,PASS,User isolation enforced
+B11.1,Database,MongoDB Atlas,http://localhost:5000/api/ml/refresh,POST,200,541.0,Aggregated telemetry metrics from 5 collections,PASS,Full user context resolved
+B12.1,Error Handling,Python ML,http://127.0.0.1:8000/predict,POST,400,2.0,Missing required features error JSON,PASS,Handled without crash
+B12.2,Error Handling,Python ML,http://127.0.0.1:8000/predict/recommendation,POST,400,1.8,Missing required features error JSON,PASS,Handled without crash
+B13.1,Failure Simulation,Express Gateway,http://localhost:5000/api/ml/health,GET,503,4.2,ML service unavailable,PASS,Controlled error response
+B13.2,Service Recovery,Express Gateway,http://localhost:5000/api/ml/health,GET,200,12.5,Recovered healthy status,PASS,Immediate post-restart recovery
+B14.1,Response Contracts,System,All ML endpoints,POST,200,N/A,Response keys match frontend services,PASS,Contract compatibility 100%
+B15.1,Performance Baseline,Python ML,Model 1,POST,200,4.4,Min: 2ms Max: 11ms Avg: 4.4ms,PASS,Sub-10ms microservice latency
+B15.2,Performance Baseline,Python ML,Model 2,POST,200,4.4,Min: 4ms Max: 5ms Avg: 4.4ms,PASS,Sub-10ms microservice latency
+B15.3,Performance Baseline,Python ML,Model 3 V2,POST,200,35.8,Min: 34ms Max: 38ms Avg: 35.8ms,PASS,Sub-50ms random forest latency
+B15.4,Performance Baseline,Express Gateway,Model 1,POST,200,349.2,Min: 310ms Max: 480ms Avg: 349.2ms,PASS,DB aggregation + inference
+B15.5,Performance Baseline,Express Gateway,Model 2,POST,200,319.0,Min: 311ms Max: 326ms Avg: 319.0ms,PASS,DB aggregation + inference
+B15.6,Performance Baseline,Express Gateway,Model 3 V2,POST,200,390.8,Min: 386ms Max: 397ms Avg: 390.8ms,PASS,DB aggregation + event creation
+B16.1,Runtime Security,System,stdout/stderr,N/A,N/A,N/A,Zero secret credential exposure in logs,PASS,Secrets secured
+B17.1,Final Service State,System,All 4 services,N/A,200,N/A,Python Express MongoDB Frontend active,PASS,Ready for Phase C

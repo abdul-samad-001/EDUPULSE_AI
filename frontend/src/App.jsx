@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
+import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
@@ -18,14 +19,14 @@ function App() {
   return (
     <Routes>
 
-      {/* Public Routes */}
+      {/* Public Landing Page */}
+      <Route path="/" element={<Home />} />
 
+      {/* Public Auth Routes */}
       <Route path="/login" element={<Login />} />
-
       <Route path="/signup" element={<Signup />} />
 
-      {/* Protected Layout */}
-
+      {/* Protected Dashboard & App Routes */}
       <Route
         path="/dashboard"
         element={
@@ -133,7 +134,7 @@ function App() {
             to={
               localStorage.getItem("token")
                 ? "/dashboard"
-                : "/login"
+                : "/"
             }
             replace
           />

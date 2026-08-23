@@ -1,0 +1,25 @@
+test_id,journey_stage,feature,method,endpoint,http_status,result,status,notes
+C1.1,Authentication,JWT Generation,POST,/api/auth/login,200,Valid JWT signed for test user,PASS,Bcrypt auth validated
+C1.2,Authentication,Route Protection,GET,/api/dashboard/stats,401,Unauthorized access rejected,PASS,JWT middleware active
+C2.1,Dashboard,Stats Retrieval,GET,/api/dashboard/stats,200,Dashboard stats and metrics rendered,PASS,0 null/NaN values
+C3.1,Skills,Skill Creation,POST,/api/skills,201,TypeScript Mastery skill created,PASS,Progress initialized 0%
+C3.2,Skills,Skill Progress Update,PUT,/api/skills/:id,200,Skill progress updated to 55%,PASS,ML trigger hook fired
+C4.1,Tasks,Task Creation,POST,/api/tasks/:skillId,201,Milestone task created,PASS,Pending state verified
+C4.2,Tasks,Task Completion,PUT,/api/tasks/:id,200,Task marked completed,PASS,+50 XP and streak hook
+C5.1,Focus Sessions,General Focus Session,POST,/api/focus/start,201,25m general focus started and stopped,PASS,Duration and score saved
+C6.1,Coding Focus,Coding Mode Session,POST,/api/focus/start,201,45m coding mode session logged,PASS,category=coding verified
+C7.1,Telemetry,Chrome Telemetry Ingestion,POST,/api/telemetry/sessions,201,1800s github.com telemetry logged,PASS,Active seconds captured
+C8.1,Model 1,Procrastination Prediction,POST,/api/ml/procrastination,200,Risk level Low prob 0.3221,PASS,11-feature contract
+C9.1,Model 2,Productivity Prediction,POST,/api/ml/productivity,200,Productivity score 27.15,PASS,20-feature continuous
+C10.1,Model 3 V2,Recommendation Inference,POST,/api/ml/recommendation,200,Continue Current Skill (Class 0),PASS,20-feature exact contract
+C11.1,AI Coach,Recommendation Accept,POST,/api/recommendations/:id/respond,200,Status transitioned to accepted,PASS,State machine step 1
+C11.2,AI Coach,Recommendation Complete,POST,/api/recommendations/:id/complete,200,Status transitioned to completed,PASS,State machine step 2
+C13.1,ML Refresh,Automatic Closed-Loop Refresh,POST,/api/ml/refresh,200,Parallel multi-model refresh in 292ms,PASS,Debounced background trigger
+C14.1,Debounce,Multi-Event Coalescing,POST,/api/ml/refresh,200,Rapid events coalesced into 1 refresh,PASS,500ms sliding window
+C15.1,Cooldown,Recommendation Cooldown,POST,/api/ml/refresh,200,30m cooldown enforced against duplicate events,PASS,Memory cache returned
+C16.1,User Isolation,Tenant Data Isolation,GET,/api/skills,200,User B saw 0 of User A records,PASS,req.user._id scoping
+C17.1,Error Handling,Malformed ID Handling,GET,/api/skills/:invalidId,404,Handled cleanly without server crash,PASS,Zero 500 errors
+C18.1,Browser Console,Network Traffic Integrity,ALL,ALL,200,Standard HTTP codes with 0 unhandled errors,PASS,Clean network traffic
+C19.1,Database,Schema Consistency Check,N/A,N/A,N/A,Zero orphan events or corrupt foreign keys,PASS,Mongoose integrity
+C20.1,Research Integrity,Canonical Data Check,N/A,N/A,N/A,Canonical N=34 dataset untouched,PASS,Zero research mutation
+C21.1,Complete Journey,End-to-End User Flow,ALL,ALL,200,All 14 journey timeline steps completed,PASS,Full lifecycle validated

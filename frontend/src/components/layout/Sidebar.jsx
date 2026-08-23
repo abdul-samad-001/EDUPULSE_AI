@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import {
   LayoutDashboard,
   BarChart3,
@@ -16,11 +17,16 @@ import {
 
 function Sidebar({ isOpen = false, onClose }) {
   const navigate = useNavigate();
+  const { logout: authLogout } = useAuth();
 
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/login");
+    if (authLogout) {
+      authLogout();
+    } else {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    }
+    navigate("/");
   };
 
   const menu = [

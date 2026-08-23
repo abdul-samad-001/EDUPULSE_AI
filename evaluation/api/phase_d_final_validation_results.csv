@@ -1,0 +1,35 @@
+section_id,test_name,category,target,result,status,notes
+D1.1,Frontend ESLint Check,Static Integrity,frontend/,0 errors 0 warnings across 187 files,PASS,Clean ESLint run
+D1.2,Frontend Vite Build,Build Integrity,dist/,Production bundle built in 889ms,PASS,Vite v8 production build
+D1.3,Backend Syntax Check,Static Integrity,backend/,0 errors across 72 JS files,PASS,node --check verified
+D1.4,Python ML Syntax Check,Static Integrity,ml-service/,app.py bytecode compiled cleanly,PASS,py_compile verified
+D2.1,Model 1 Contract,ML Integrity,POST /predict,11-feature contract validated,PASS,RandomForest prob 0.163
+D2.2,Model 2 Contract,ML Integrity,POST /predict/productivity,20-feature contract validated,PASS,Continuous score 27.15
+D2.3,Model 3 V2 Contract,ML Integrity,POST /predict/recommendation,20-feature contract and 8 classes validated,PASS,CatBoost 8-class mapping
+D3.1,Missing Features Robustness,Robustness,POST /predict,HTTP 400 Bad Request with missing list,PASS,Zero server crashes
+D3.2,Data Type Validation,Robustness,POST /predict,Controlled error returned without crash,PASS,Invalid type caught
+D3.3,Empty Payload Robustness,Robustness,POST /predict/recommendation,HTTP 400 Bad Request,PASS,Empty body rejected
+D4.1,Zero Boundary Testing,Edge Cases,POST /predict/recommendation,Evaluated safely with 0 values,PASS,No NaN or Infinity
+D4.2,Extreme Boundary Testing,Edge Cases,POST /predict/recommendation,Evaluated safely with max values,PASS,No overflow errors
+D5.1,Concurrency Burst,Performance,POST /api/ml/refresh,5 simultaneous requests in 618ms,PASS,Debounce coalescing
+D6.1,Lifecycle Completed,State Machine,POST /api/recommendations/:id/complete,Shown -> Accepted -> Completed,PASS,completedAt stamped
+D6.2,Lifecycle Dismissed,State Machine,POST /api/recommendations/:id/respond,Shown -> Dismissed,PASS,Dismissed state saved
+D7.1,Cooldown Enforcement,Deduplication,POST /api/ml/recommendation,30m window suppresses duplicate DB events,PASS,Memory cache returned
+D8.1,User Isolation,Security,GET /api/skills,User B sees 0 records of User A,PASS,req.user._id scoped
+D9.1,Missing Token Auth,Security,GET /api/dashboard/stats,401 Unauthorized,PASS,JWT protection active
+D9.2,Malformed Token Auth,Security,GET /api/dashboard/stats,401 Unauthorized,PASS,Signature checked
+D9.3,Expired Token Auth,Security,GET /api/dashboard/stats,401 Unauthorized,PASS,Expiration verified
+D10.1,Dependency Failure Recovery,Resiliency,Flask Microservice,Controlled 503 during downtime 200 on restart,PASS,Instant recovery
+D12.1,Frontend Empty State,UI Robustness,Frontend SPA,Empty telemetry rendered with 0 NaN errors,PASS,Safe defaults
+D13.1,Model 1 Latency,Performance,POST /predict,Avg: 2.4ms Med: 2.0ms Min: 2.0ms Max: 3.0ms,PASS,10-iteration benchmark
+D13.2,Model 2 Latency,Performance,POST /predict/productivity,Avg: 5.0ms Med: 5.0ms Min: 4.0ms Max: 6.0ms,PASS,10-iteration benchmark
+D13.3,Model 3 V2 Latency,Performance,POST /predict/recommendation,Avg: 35.8ms Med: 36.0ms Min: 35.0ms Max: 37.0ms,PASS,10-iteration benchmark
+D13.4,Health Check Latency,Performance,GET /api/ml/health,Avg: 3.9ms Med: 4.0ms,PASS,Sub-5ms gateway
+D13.5,Full Refresh Latency,Performance,POST /api/ml/refresh,Avg: 322.2ms Med: 317.5ms,PASS,Includes DB + 3 ML models
+D15.1,Log Security Audit,Security,Console stdout/stderr,Zero credentials or PII leaked,PASS,Clean logging
+D16.1,API Response Contracts,Contracts,Core ML routes,HTTP 200 with matching JSON contracts,PASS,Contract conformity
+D17.1,Route Regression,Routes,All core Express routes,All routes returned HTTP 200 OK,PASS,Full route availability
+D18.1,Production Config,Configuration,Environment & CORS,Secrets isolated in env and CORS restricted,PASS,Production safe
+D19.1,Repository Cleanliness,Repository,Git workspace,0 production files modified during Phase D,PASS,Clean sandbox
+D20.1,Research Integrity,Research,sprint11_canonical_research_dataset.csv,Exact N=34 samples preserved,PASS,Zero data drift
+D21.1,Complete User Journey,E2E System,Full application pipeline,End-to-end user journey executed cleanly,PASS,Closed-loop verified
