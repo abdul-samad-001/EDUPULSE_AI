@@ -6,7 +6,7 @@
 [![Flask](https://img.shields.io/badge/Flask-ML%20Microservice-black?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 [![Google Gemini](https://img.shields.io/badge/Google%20Gemini-2.5%20Flash-4285F4?logo=googlegemini&logoColor=white)](https://ai.google.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#license)
- 
+  
 EduPulse AI is a full-stack, AI-powered platform that helps students track academic skill acquisition and detect procrastination behavior using machine learning. It connects a **React frontend**, a **Node.js/Express backend** (with Google Gemini for AI-generated roadmaps), and a **Python Flask ML service** (scikit-learn, for procrastination risk detection).
      
 ---
