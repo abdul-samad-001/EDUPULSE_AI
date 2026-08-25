@@ -121,10 +121,11 @@ const getFocusAnalyticsData = async (userId) => {
 
 const getSkillAnalyticsData = async (userId) => {
   const skills = await Skill.find({ user: userId });
-  const tasks = await Task.find({ user: userId });
+  const skillIds = skills.map((s) => s._id);
+  const tasks = await Task.find({ skill: { $in: skillIds } });
 
   const skillsStarted = skills.length;
-  const skillsCompleted = skills.filter((s) => s.progress === 100).length;
+  const skillsCompleted = skills.filter((s) => s.progress === 100 || s.completed).length;
   const tasksCompleted = tasks.filter((t) => t.completed).length;
 
   const totalProgress = skills.reduce((sum, s) => sum + (s.progress || 0), 0);
@@ -139,12 +140,18 @@ const getSkillAnalyticsData = async (userId) => {
 
   // Task completion grouped by category
   const categoryMap = {};
-  skills.forEach((s) => {
+  for (const s of skills) {
     const cat = s.category || "General";
     categoryMap[cat] = categoryMap[cat] || { completed: 0, total: 0 };
-    categoryMap[cat].total += 1;
-    if (s.progress === 100) categoryMap[cat].completed += 1;
-  });
+    const skillTasks = tasks.filter((t) => t.skill && t.skill.toString() === s._id.toString());
+    if (skillTasks.length > 0) {
+      categoryMap[cat].total += skillTasks.length;
+      categoryMap[cat].completed += skillTasks.filter((t) => t.completed).length;
+    } else {
+      categoryMap[cat].total += 1;
+      if (s.progress === 100 || s.completed) categoryMap[cat].completed += 1;
+    }
+  }
 
   const taskCompletion = Object.keys(categoryMap).map((cat) => ({
     category: cat,
@@ -174,7 +181,7 @@ const getSummaryData = async (userId) => {
   return {
     studyHours,
     focusSessions: sessions.length,
-    xpEarned: xpDoc?.xp ?? 0,
+    xpEarned: xpDoc?.totalXP ?? xpDoc?.xp ?? 0,
     skillsImproved: skills.filter((s) => (s.progress || 0) > 0).length,
     challengesCompleted: 0,
   };

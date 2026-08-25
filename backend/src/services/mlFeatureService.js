@@ -67,7 +67,8 @@ const getUserAggregatedMetrics = async (userId) => {
       : 50.0;
 
   // 3. Tasks
-  const tasks = await Task.find({ user: userId });
+  const skillIds = skills.map((s) => s._id);
+  const tasks = await Task.find({ skill: { $in: skillIds } });
   const completedTasks = tasks.filter((t) => t.completed).length;
   const pendingTasks = tasks.filter((t) => !t.completed).length;
   const totalTasks = tasks.length;

@@ -61,7 +61,10 @@ export function StatCard({
     >
       <div className="flex items-start justify-between gap-1.5">
         <div className="min-w-0 flex-1">
-          <span className="text-[10px] sm:text-[11px] font-bold uppercase text-dark-muted leading-tight truncate block">
+          <span
+            title={typeof title === "string" ? title : undefined}
+            className="text-[9.5px] sm:text-[10.5px] font-extrabold uppercase text-dark-muted leading-tight tracking-tight line-clamp-1 break-words block"
+          >
             {title}
           </span>
           <h4 className="text-base sm:text-lg font-extrabold text-dark-text tracking-tight mt-1 whitespace-nowrap truncate">

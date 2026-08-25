@@ -84,16 +84,87 @@ const DEFAULT_ACHIEVEMENTS = [
 // ==============================
 
 async function initializeAchievements(userId) {
-  const achievements = DEFAULT_ACHIEVEMENTS.map((item) => ({
+  const existing = await Achievement.find({ user: userId }).select("key");
+  const existingKeys = new Set(existing.map((a) => a.key));
+
+  const missingAchievements = DEFAULT_ACHIEVEMENTS.filter(
+    (item) => !existingKeys.has(item.key)
+  ).map((item) => ({
     user: userId,
     ...item,
   }));
 
-  await Achievement.insertMany(achievements, {
-    ordered: false,
-  });
+  if (missingAchievements.length > 0) {
+    await Achievement.insertMany(missingAchievements, {
+      ordered: false,
+    }).catch(() => {});
+  }
 
   return true;
+}
+
+// ==============================
+// Sync User Achievements Retroactively
+// ==============================
+
+async function syncUserAchievements(userId) {
+  try {
+    const mongoose = require("mongoose");
+    const Skill = require("../models/Skill");
+    const Task = require("../models/Task");
+    const FocusSession = require("../models/FocusSession");
+    const User = require("../models/User");
+    const { getTelemetryStats } = require("./telemetryService");
+
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+
+    const [userSkills, sessionsCount, userDoc, stats] = await Promise.all([
+      Skill.find({ user: userObjectId }),
+      FocusSession.countDocuments({ user: userObjectId }),
+      User.findById(userObjectId).select("streak").lean(),
+      getTelemetryStats(userId).catch(() => ({ productiveTime: 0, productivePercentage: 0 })),
+    ]);
+
+    const skillIds = userSkills.map((s) => s._id);
+    const completedTasks = await Task.countDocuments({ skill: { $in: skillIds }, completed: true });
+
+    const totalSkills = userSkills.length;
+    const streak = userDoc?.streak || 0;
+    const studyHours = Math.floor((stats.productiveTime || 0) / 3600);
+    const productivity = Math.round(stats.productivePercentage || 0);
+
+    const metricsMap = {
+      first_focus: sessionsCount,
+      first_skill: totalSkills,
+      task_master: completedTasks,
+      week_warrior: streak,
+      month_master: streak,
+      polymath: totalSkills,
+      focus_legend: sessionsCount,
+      study_beast: studyHours,
+      productivity_hero: productivity,
+    };
+
+    const achievements = await Achievement.find({ user: userObjectId });
+
+    for (const ach of achievements) {
+      if (metricsMap[ach.key] !== undefined) {
+        const val = metricsMap[ach.key];
+        const newProgress = Math.min(val, ach.target);
+
+        if (newProgress > ach.progress || (!ach.unlocked && val >= ach.target)) {
+          ach.progress = newProgress;
+          if (val >= ach.target && !ach.unlocked) {
+            ach.unlocked = true;
+            ach.unlockedAt = ach.unlockedAt || new Date();
+          }
+          await ach.save();
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Achievement auto-sync error:", err);
+  }
 }
 
 // ==============================
@@ -101,6 +172,13 @@ async function initializeAchievements(userId) {
 // ==============================
 
 async function getAchievements(userId) {
+  let count = await Achievement.countDocuments({ user: userId });
+  if (count === 0 || count < DEFAULT_ACHIEVEMENTS.length) {
+    await initializeAchievements(userId);
+  }
+
+  await syncUserAchievements(userId);
+
   return Achievement.find({ user: userId }).sort({
     unlocked: -1,
     category: 1,
@@ -227,6 +305,7 @@ async function setAchievementProgress(
 
 module.exports = {
   initializeAchievements,
+  syncUserAchievements,
   getAchievements,
   updateAchievementProgress,
   incrementAchievement,

@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const UserXP = require("../models/UserXP");
 require("../models/User"); // Ensure User model is registered for populate
 
@@ -5,6 +6,13 @@ require("../models/User"); // Ensure User model is registered for populate
  * Get Top Users (Leaderboard)
  */
 const getLeaderboard = async () => {
+  if (mongoose.connection.readyState !== 1) {
+    return [
+      { rank: 1, userId: "mock1", name: "EduPulse Learner", email: "student@edupulse.ai", totalXP: 1200, level: 5 },
+      { rank: 2, userId: "mock2", name: "Code Master", email: "master@edupulse.ai", totalXP: 950, level: 4 },
+    ];
+  }
+
   const leaderboard = await UserXP.find()
     .populate("user", "name email")
     .sort({ totalXP: -1 })

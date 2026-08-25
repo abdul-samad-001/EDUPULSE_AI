@@ -177,9 +177,9 @@ function Reports() {
       {/* 1. HERO SECTION WITH TAB NAVIGATION */}
       <ReportsHero
         totalReports={history?.length ?? 0}
-        studyHours={Math.round((summary?.stats?.productiveTime ?? 0) / 3600)}
-        skillsCompleted={skills?.filter((s) => s.progress === 100)?.length ?? 0}
-        xpEarned={summary?.stats?.xpEarned ?? 0}
+        studyHours={summary?.userMetrics?.studyHours ?? Math.round((summary?.stats?.productiveTime ?? 0) / 3600)}
+        skillsCompleted={summary?.userMetrics?.skills ?? skills?.length ?? 0}
+        xpEarned={summary?.userMetrics?.xp ?? summary?.stats?.xpEarned ?? 0}
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />
@@ -201,7 +201,7 @@ function Reports() {
                 studyHours: summary?.userMetrics?.studyHours ?? Number(((summary?.stats?.productiveTime || 0) / 3600).toFixed(1)),
                 sessions: summary?.userMetrics?.sessions ?? summary?.stats?.totalSessions ?? 0,
                 tasks: summary?.userMetrics?.tasks ?? 0,
-                skills: skills?.length || summary?.topSkills?.length || 0,
+                skills: summary?.userMetrics?.skills ?? skills?.length ?? summary?.topSkills?.length ?? 0,
                 achievements: summary?.userMetrics?.achievements ?? 0,
                 xp: summary?.userMetrics?.xp ?? summary?.stats?.xpEarned ?? 0,
                 productivity: Math.round(summary?.stats?.productivePercentage || 0),
@@ -276,7 +276,14 @@ function Reports() {
             <ExportCenterWidget />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
               <ReportHistoryWidget history={history} />
-              <AchievementSummaryWidget />
+              <AchievementSummaryWidget
+                achievements={{
+                  earned: summary?.userMetrics?.achievements ?? 0,
+                  milestones: summary?.userMetrics?.tasks ?? 0,
+                  xp: summary?.userMetrics?.xp ?? summary?.stats?.xpEarned ?? 0,
+                  awards: summary?.userMetrics?.streak ?? 0,
+                }}
+              />
             </div>
           </motion.div>
         )}

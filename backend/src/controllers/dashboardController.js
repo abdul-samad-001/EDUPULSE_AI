@@ -1,8 +1,22 @@
+const mongoose = require("mongoose");
 const Skill = require("../models/Skill");
 const User = require("../models/User");
 
 const getDashboardStats = async (req, res) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.json({
+        streak: 0,
+        totalSkills: 0,
+        completedSkills: 0,
+        overallProgress: 0,
+        weeklyStudyHours: 0,
+        weeklyGoalProgress: 0,
+        todayStudyMinutes: 0,
+        skills: [],
+      });
+    }
+
     const skills = await Skill.find({
       user: req.user._id,
     });

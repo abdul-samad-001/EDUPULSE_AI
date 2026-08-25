@@ -2,10 +2,10 @@ import { Card, StatCard } from "../ui";
 import { Award, ShieldCheck, Star, Trophy } from "lucide-react";
 
 function AchievementSummaryWidget({ achievements = null }) {
-  const earned = achievements?.earned || 6;
-  const milestones = achievements?.milestones || 14;
-  const xp = achievements?.xp || 750;
-  const awards = achievements?.awards || 4;
+  const earned = achievements?.earned ?? 0;
+  const milestones = achievements?.milestones ?? 0;
+  const xp = achievements?.xp ?? 0;
+  const awards = achievements?.awards ?? 0;
 
   return (
     <Card

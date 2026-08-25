@@ -124,7 +124,14 @@ const exportCSV = async (req, res) => {
     const summary = await getReportSummary(req.user._id);
     const csvContent = [
       "Metric,Value",
-      `Total Sessions,${summary.stats?.totalSessions || 0}`,
+      `Total XP,${summary.userMetrics?.xp || 0}`,
+      `Current Level,${summary.userMetrics?.level || 1}`,
+      `Study Streak (days),${summary.userMetrics?.streak || 0}`,
+      `Study Hours (hrs),${summary.userMetrics?.studyHours || 0}`,
+      `Total Focus Sessions,${summary.userMetrics?.sessions || summary.stats?.totalSessions || 0}`,
+      `Skills Tracked,${summary.userMetrics?.skills || 0}`,
+      `Tasks Completed,${summary.userMetrics?.tasks || 0}`,
+      `Achievements Unlocked,${summary.userMetrics?.achievements || 0}`,
       `Productive Time (mins),${Math.round((summary.stats?.productiveTime || 0) / 60)}`,
       `Distraction Time (mins),${Math.round((summary.stats?.distractionTime || 0) / 60)}`,
       `Productivity Score,${summary.stats?.productivePercentage || 0}%`,
