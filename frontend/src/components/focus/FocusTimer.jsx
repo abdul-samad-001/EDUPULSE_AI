@@ -1,21 +1,64 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Card, Badge, Button } from "../ui";
 import { Target, Pause, Play, Square, Clock, Sparkles } from "lucide-react";
+
+// Web Audio API chime on timer completion
+const playCompletionChime = () => {
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+    const audioCtx = new AudioContextClass();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+    osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.15); // A5
+
+    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.9);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.9);
+  } catch {
+    // Audio Context not allowed without prior user gesture
+  }
+};
 
 function FocusTimer({ session, onStopSession }) {
   const [now, setNow] = useState(() => Date.now());
   const [isPaused, setIsPaused] = useState(false);
   const [pausedTimeOffset] = useState(0);
+  const lastFinishedSessionIdRef = useRef(null);
 
   useEffect(() => {
     if (!session || isPaused) return;
 
     const interval = setInterval(() => {
-      setNow(Date.now());
+      const currentTimestamp = Date.now();
+      setNow(currentTimestamp);
+
+      // Check if timer elapsed
+      if (session?.startedAt && session?.plannedDurationMinutes) {
+        const started = new Date(session.startedAt).getTime();
+        const plannedSecs = session.plannedDurationMinutes * 60;
+        const elapsedSecs = Math.floor((currentTimestamp - started - pausedTimeOffset) / 1000);
+
+        if (elapsedSecs >= plannedSecs && lastFinishedSessionIdRef.current !== session._id) {
+          lastFinishedSessionIdRef.current = session._id;
+          playCompletionChime();
+          if (onStopSession) {
+            onStopSession();
+          }
+        }
+      }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [session, isPaused]);
+  }, [session, isPaused, pausedTimeOffset, onStopSession]);
 
   const { remainingSeconds, progressPercent, estimatedFinish } = (() => {
     if (!session?.startedAt || !session?.plannedDurationMinutes) {
@@ -105,7 +148,7 @@ function FocusTimer({ session, onStopSession }) {
               {session ? formatTime() : "25:00"}
             </span>
             <span className="text-[10px] uppercase font-bold text-dark-muted mt-1 tracking-wider">
-              {session ? (isPaused ? "Paused" : "Focusing") : "Ready to Start"}
+              {session ? (remainingSeconds === 0 ? "Completed!" : (isPaused ? "Paused" : "Focusing")) : "Ready to Start"}
             </span>
           </div>
         </div>
@@ -117,8 +160,8 @@ function FocusTimer({ session, onStopSession }) {
               <Badge variant="primary" icon={Target} size="sm">
                 {session.skill?.skillName || "Active Skill"}
               </Badge>
-              <Badge variant={isPaused ? "warning" : "success"} size="sm">
-                {isPaused ? "Paused" : "Active Session"}
+              <Badge variant={remainingSeconds === 0 ? "success" : (isPaused ? "warning" : "success")} size="sm">
+                {remainingSeconds === 0 ? "Completed" : (isPaused ? "Paused" : "Active Session")}
               </Badge>
             </div>
 

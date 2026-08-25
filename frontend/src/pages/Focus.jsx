@@ -130,8 +130,8 @@ function Focus() {
   const handleStopActiveSession = async () => {
     try {
       await focusSessionService.stopSession();
-      toast.info("Focus Session Stopped", {
-        description: "Your session log has been recorded and XP awarded.",
+      toast.success("🎉 Focus Session Completed!", {
+        description: "Great focus! Your session log has been saved and XP awarded.",
       });
       await loadData();
     } catch (err) {
