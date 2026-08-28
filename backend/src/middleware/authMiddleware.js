@@ -16,8 +16,16 @@ const protect = async (req, res, next) => {
       let user = null;
       if (mongoose.connection.readyState === 1) {
         user = await User.findById(decoded.id).select("-password");
+        if (!user) {
+          return res.status(401).json({
+            message: "Not authorized, user not found",
+          });
+        }
+      } else {
+        // Fallback for offline mock testing environments
+        user = { _id: decoded.id, id: decoded.id, role: decoded.role || "student" };
       }
-      req.user = user || { _id: decoded.id, id: decoded.id, role: decoded.role || "student" };
+      req.user = user;
       next();
     } else {
       return res.status(401).json({

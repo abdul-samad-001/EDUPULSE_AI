@@ -8,6 +8,7 @@ import team1 from "../assets/team1.png";
 import team2 from "../assets/team2.png";
 import team3 from "../assets/team3.png";
 import team4 from "../assets/team4.png";
+import logoImg from "../assets/logo.png";
 import { UserPlus, Eye, EyeOff, AlertCircle, User, Mail, Lock } from "lucide-react";
 
 function Signup() {
@@ -83,14 +84,6 @@ function Signup() {
 
       login(data.user, data.token);
 
-      window.postMessage(
-        {
-          type: "EDUPULSE_AUTH_TOKEN",
-          token: data.token,
-        },
-        "*"
-      );
-
       toast.success("Account Created!", {
         description: `Welcome to EduPulse AI, ${data.user?.name || formData.name}!`,
       });
@@ -118,6 +111,18 @@ function Signup() {
         {/* RIGHT SIDE */}
         <div className="flex items-center justify-center p-8 sm:p-12 overflow-y-auto">
           <div className="w-full max-w-md">
+
+            {/* Brand Logo Link */}
+            <Link to="/" className="inline-flex items-center gap-2.5 mb-5 group">
+              <img
+                src={logoImg}
+                alt="EduPulse AI Logo"
+                className="w-8 h-8 rounded-full object-cover shadow-md border border-primary/30 group-hover:scale-105 transition-transform"
+              />
+              <span className="text-lg font-bold text-dark-text tracking-tight">
+                EduPulse<span className="text-primary">.AI</span>
+              </span>
+            </Link>
 
             <h1 className="text-3xl sm:text-4xl font-extrabold text-dark-text tracking-tight">
               Create Account

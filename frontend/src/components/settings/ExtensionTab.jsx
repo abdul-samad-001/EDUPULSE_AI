@@ -47,10 +47,6 @@ function ExtensionTab() {
 
   const handleTestConnection = () => {
     setTestStatus("testing");
-    const token = localStorage.getItem("token");
-    if (token) {
-      window.postMessage({ type: "EDUPULSE_AUTH_TOKEN", token }, "*");
-    }
 
     setTimeout(() => {
       setTestStatus("success");

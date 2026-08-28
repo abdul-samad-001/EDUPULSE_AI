@@ -4,7 +4,41 @@ const SETTINGS_STORAGE_KEY = "edupulseSettings";
 let timerInterval = null;
 let currentSeconds = 0;
 
-const updatePopupUI = () => {
+const syncTokenFromActiveTab = async () => {
+  try {
+    const tabs = await chrome.tabs.query({
+      url: ["http://localhost:5173/*", "http://127.0.0.1:5173/*"],
+    });
+
+    for (const tab of tabs) {
+      if (tab?.id) {
+        const results = await chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          func: () => ({
+            token: localStorage.getItem("token"),
+            user: localStorage.getItem("user"),
+          }),
+        });
+
+        const authData = results?.[0]?.result;
+        if (authData?.token) {
+          await chrome.storage.local.set({
+            edupulseToken: authData.token,
+            edupulseUser: authData.user ? JSON.parse(authData.user) : null,
+          });
+          return authData.token;
+        }
+      }
+    }
+  } catch (err) {
+    // Ignore permissions or inactive tab warnings
+  }
+  return null;
+};
+
+const updatePopupUI = async () => {
+  await syncTokenFromActiveTab();
+
   chrome.runtime.sendMessage({ type: "GET_STATUS" }, (response) => {
     if (chrome.runtime.lastError || !response) {
       document.getElementById("statusBadge").classList.add("disconnected");

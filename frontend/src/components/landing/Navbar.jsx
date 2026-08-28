@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Menu, X, ArrowRight, LayoutDashboard, Sun, Moon } from "lucide-react";
+import { Menu, X, ArrowRight, LayoutDashboard, Sun, Moon } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
+import logoImg from "../../assets/logo.png";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -39,12 +40,16 @@ export default function Navbar() {
         <div className="flex items-center justify-between">
           
           {/* Brand Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500/20 to-teal-500/20 border border-dark-border flex items-center justify-center transition-transform duration-200 group-hover:scale-105">
-              <Sparkles className="w-3.5 h-3.5 text-teal-400" />
+          <Link to="/" className="flex items-center gap-2.5 group">
+            <div className="relative w-8 h-8 rounded-full p-0.5 bg-linear-to-tr from-purple-500 via-indigo-500 to-teal-400 shadow-md shadow-purple-500/20 group-hover:scale-105 transition-transform duration-200 shrink-0">
+              <img
+                src={logoImg}
+                alt="EduPulse AI Logo"
+                className="w-full h-full object-cover rounded-full bg-dark-bg"
+              />
             </div>
             <span className="text-sm font-bold tracking-tight text-dark-text flex items-center gap-1">
-              EduPulse <span className="text-[10px] font-mono font-medium px-1.5 py-0.2 rounded bg-dark-border text-dark-muted">AI</span>
+              EduPulse <span className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-dark-border text-teal-400">AI</span>
             </span>
           </Link>
 
@@ -96,7 +101,7 @@ export default function Navbar() {
                 </Link>
                 <Link
                   to="/signup"
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-white bg-gradient-to-r from-purple-600 to-teal-500 hover:opacity-90 px-3.5 py-1.5 rounded-lg transition-all shadow-xs group"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-white bg-linear-to-r from-purple-600 to-teal-500 hover:opacity-90 px-3.5 py-1.5 rounded-lg transition-all shadow-xs group"
                 >
                   <span>Get Started</span>
                   <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
@@ -171,7 +176,7 @@ export default function Navbar() {
                   <Link
                     to="/signup"
                     onClick={() => setMobileOpen(false)}
-                    className="w-full text-center py-1.5 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-purple-600 to-teal-500"
+                    className="w-full text-center py-1.5 rounded-lg text-xs font-semibold text-white bg-linear-to-r from-purple-600 to-teal-500"
                   >
                     Get Started Free
                   </Link>

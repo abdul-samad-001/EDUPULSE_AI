@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import logoImg from "../../assets/logo.png";
 import {
   LayoutDashboard,
   BarChart3,
@@ -12,7 +13,6 @@ import {
   Settings,
   LogOut,
   X,
-  Zap,
 } from "lucide-react";
 
 function Sidebar({ isOpen = false, onClose }) {
@@ -63,9 +63,11 @@ function Sidebar({ isOpen = false, onClose }) {
           {/* Brand Header */}
           <div className="flex items-center justify-between px-2 py-2 mb-4 sm:mb-6">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center text-primary shadow-md shadow-primary/10">
-                <Zap className="w-4 h-4 fill-primary" />
-              </div>
+              <img
+                src={logoImg}
+                alt="EduPulse AI Logo"
+                className="w-8 h-8 rounded-full object-cover shadow-md border border-primary/30 shrink-0"
+              />
               <span className="text-lg font-bold text-dark-text tracking-tight">
                 EduPulse<span className="text-primary">.AI</span>
               </span>

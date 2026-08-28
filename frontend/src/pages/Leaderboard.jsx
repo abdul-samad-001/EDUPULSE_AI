@@ -1,5 +1,6 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import leaderboardService from "../services/leaderboardService";
+import { useAuth } from "../context/AuthContext";
 import { Card, Badge, LoadingSpinner } from "../components/ui";
 import {
   Trophy,
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 
 function Leaderboard() {
+  const { user: authUser } = useAuth();
   const [leaderboard, setLeaderboard] = useState([]);
   const [myRank, setMyRank] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -46,6 +48,32 @@ function Leaderboard() {
     };
   }, []);
 
+  // Robust Current User Identifier Helper
+  const isCurrentUser = useCallback(
+    (item) => {
+      if (!item) return false;
+      const itemId = item.userId ? String(item.userId) : item._id ? String(item._id) : null;
+      const itemEmail = item.email ? item.email.toLowerCase().trim() : null;
+
+      if (authUser) {
+        const authId = authUser._id ? String(authUser._id) : authUser.id ? String(authUser.id) : null;
+        const authEmail = authUser.email ? authUser.email.toLowerCase().trim() : null;
+
+        if (itemId && authId && itemId === authId) return true;
+        if (itemEmail && authEmail && itemEmail === authEmail) return true;
+      }
+
+      if (myRank) {
+        const myRankId = myRank.userId ? String(myRank.userId) : null;
+        if (itemId && myRankId && itemId === myRankId) return true;
+        if (itemEmail && myRank.email && itemEmail === myRank.email.toLowerCase().trim()) return true;
+      }
+
+      return false;
+    },
+    [authUser, myRank]
+  );
+
   // Filter & Search
   const filteredLeaderboard = useMemo(() => {
     let list = [...leaderboard];
@@ -61,8 +89,10 @@ function Leaderboard() {
 
     if (filterMode === "top10") {
       list = list.slice(0, 10);
-    } else if (filterMode === "nearby" && myRank?.rank) {
-      const myIdx = list.findIndex((u) => u.rank === myRank.rank);
+    } else if (filterMode === "nearby") {
+      const myIdx = list.findIndex(
+        (u) => isCurrentUser(u) || (myRank?.rank && u.rank === myRank.rank)
+      );
       if (myIdx !== -1) {
         const start = Math.max(0, myIdx - 3);
         const end = Math.min(list.length, myIdx + 4);
@@ -71,7 +101,7 @@ function Leaderboard() {
     }
 
     return list;
-  }, [leaderboard, searchQuery, filterMode, myRank]);
+  }, [leaderboard, searchQuery, filterMode, myRank, isCurrentUser]);
 
   // Pagination
   const totalPages = Math.ceil(filteredLeaderboard.length / PAGE_SIZE) || 1;
@@ -91,6 +121,12 @@ function Leaderboard() {
       </div>
     );
   }
+
+  // Display user stats from either myRank or authUser + top3
+  const userRankNumber = myRank?.rank || (leaderboard.findIndex((u) => isCurrentUser(u)) !== -1 ? leaderboard.findIndex((u) => isCurrentUser(u)) + 1 : "-");
+  const userTotalXP = myRank?.totalXP ?? 0;
+  const userLevel = myRank?.level ?? 1;
+  const userNextXP = myRank?.nextLevelXP ?? 100;
 
   return (
     <div className="space-y-4 max-w-7xl mx-auto pb-6">
@@ -124,15 +160,15 @@ function Leaderboard() {
           {myRank && (
             <div className="flex items-center gap-2.5 bg-dark-bg/90 border border-primary/30 p-2.5 sm:p-3 rounded-xl w-full lg:w-auto shrink-0 shadow-inner">
               <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-primary/15 text-primary font-black text-base border border-primary/30 shrink-0">
-                #{myRank.rank}
+                #{userRankNumber}
               </div>
 
               <div className="space-y-1 min-w-36 flex-1">
                 <div className="flex justify-between items-center text-xs">
                   <span className="font-extrabold text-dark-text flex items-center gap-1">
-                    <UserCheck className="w-3.5 h-3.5 text-primary" /> You (Lvl {myRank.level})
+                    <UserCheck className="w-3.5 h-3.5 text-primary" /> You (Lvl {userLevel})
                   </span>
-                  <span className="font-black text-amber-400">{myRank.totalXP} XP</span>
+                  <span className="font-black text-amber-400">{userTotalXP.toLocaleString()} XP</span>
                 </div>
 
                 {/* Progress bar to next level */}
@@ -142,9 +178,11 @@ function Leaderboard() {
                     style={{
                       width: `${Math.min(
                         100,
-                        Math.round(
-                          ((myRank.totalXP % 1000) / ((myRank.nextLevelXP || 1000) % 1000 || 1000)) *
-                            100
+                        Math.max(
+                          5,
+                          Math.round(
+                            ((myRank.currentLevelXP || (userTotalXP % 100)) / (userLevel * 100 || 100)) * 100
+                          )
                         )
                       )}%`,
                     }}
@@ -153,7 +191,7 @@ function Leaderboard() {
 
                 <div className="flex justify-between text-[10px] text-dark-muted">
                   <span>Tier Progress</span>
-                  <span>Next: {myRank.nextLevelXP} XP</span>
+                  <span>Next: {userNextXP.toLocaleString()} XP</span>
                 </div>
               </div>
             </div>
@@ -170,11 +208,18 @@ function Leaderboard() {
               🥈 #2
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold text-dark-text truncate">{top3[1]?.name}</p>
+              <p className="text-xs font-bold text-dark-text truncate flex items-center gap-1">
+                {top3[1]?.name}
+                {isCurrentUser(top3[1]) && (
+                  <span className="text-[9px] px-1 py-0.2 rounded-sm bg-primary text-dark-bg font-black uppercase">
+                    You
+                  </span>
+                )}
+              </p>
               <div className="flex items-center gap-2 text-[10px] text-dark-muted">
                 <span>Lvl {top3[1]?.level}</span>
                 <span>•</span>
-                <span className="font-bold text-slate-300">{top3[1]?.totalXP} XP</span>
+                <span className="font-bold text-slate-300">{top3[1]?.totalXP?.toLocaleString()} XP</span>
               </div>
             </div>
           </div>
@@ -187,12 +232,19 @@ function Leaderboard() {
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1">
                 <Crown className="w-3.5 h-3.5 text-amber-400" />
-                <p className="text-xs font-black text-amber-300 truncate">{top3[0]?.name}</p>
+                <p className="text-xs font-black text-amber-300 truncate flex items-center gap-1">
+                  {top3[0]?.name}
+                  {isCurrentUser(top3[0]) && (
+                    <span className="text-[9px] px-1 py-0.2 rounded-sm bg-primary text-dark-bg font-black uppercase">
+                      You
+                    </span>
+                  )}
+                </p>
               </div>
               <div className="flex items-center gap-2 text-[10px] text-dark-muted">
                 <span>Lvl {top3[0]?.level}</span>
                 <span>•</span>
-                <span className="font-extrabold text-amber-400">{top3[0]?.totalXP} XP</span>
+                <span className="font-extrabold text-amber-400">{top3[0]?.totalXP?.toLocaleString()} XP</span>
               </div>
             </div>
           </div>
@@ -203,11 +255,18 @@ function Leaderboard() {
               🥉 #3
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold text-dark-text truncate">{top3[2]?.name}</p>
+              <p className="text-xs font-bold text-dark-text truncate flex items-center gap-1">
+                {top3[2]?.name}
+                {isCurrentUser(top3[2]) && (
+                  <span className="text-[9px] px-1 py-0.2 rounded-sm bg-primary text-dark-bg font-black uppercase">
+                    You
+                  </span>
+                )}
+              </p>
               <div className="flex items-center gap-2 text-[10px] text-dark-muted">
                 <span>Lvl {top3[2]?.level}</span>
                 <span>•</span>
-                <span className="font-bold text-amber-600">{top3[2]?.totalXP} XP</span>
+                <span className="font-bold text-amber-600">{top3[2]?.totalXP?.toLocaleString()} XP</span>
               </div>
             </div>
           </div>
@@ -280,7 +339,7 @@ function Leaderboard() {
                 </tr>
               ) : (
                 paginatedList.map((user) => {
-                  const isMe = myRank && user.rank === myRank.rank;
+                  const isMe = isCurrentUser(user);
 
                   return (
                     <tr

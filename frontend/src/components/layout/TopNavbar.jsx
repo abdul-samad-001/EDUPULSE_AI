@@ -62,13 +62,9 @@ function TopNavbar({ onMenuToggle }) {
     ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
     : "U";
 
-  // Broadcast token to extension on mount & fetch real XP/Level
+  // Fetch real XP/Level on mount
   useEffect(() => {
     let isMounted = true;
-    const token = localStorage.getItem("token");
-    if (token) {
-      window.postMessage({ type: "EDUPULSE_AUTH_TOKEN", token }, "*");
-    }
 
     const loadXP = async () => {
       try {

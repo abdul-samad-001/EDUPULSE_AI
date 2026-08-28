@@ -41,7 +41,7 @@ function MergedLeaderboardCard({ leaderboard = [] }) {
             {data.map((item, idx) => {
               const rank = item.rank || idx + 1;
               const name = item.user?.name || item.name || `Learner #${rank}`;
-              const xp = item.xp || (1500 - rank * 120);
+              const xp = item.totalXP ?? item.xp ?? (1500 - rank * 120);
               const hours = item.focusHours || (35 - rank * 3).toFixed(1);
               const score = item.score || (95 - rank * 3);
 

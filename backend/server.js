@@ -29,13 +29,27 @@ connectDB();
 const app = express();
 
 // Middleware Configuration
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, or extension service workers)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS: Not allowed by CORS policy"));
+      }
+    },
     credentials: true,
   })
 );
-app.use(express.json());
+app.use(express.json({ limit: "2mb" }));
+app.use(express.urlencoded({ extended: true, limit: "2mb" }));
 
 // 2. Base Endpoint Route Registrations [cite: 28, 43, 47]
 app.use("/api/auth", authRoutes);

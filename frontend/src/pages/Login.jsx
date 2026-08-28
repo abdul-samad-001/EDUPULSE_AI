@@ -8,6 +8,7 @@ import team1 from "../assets/team1.png";
 import team2 from "../assets/team2.png";
 import team3 from "../assets/team3.png";
 import team4 from "../assets/team4.png";
+import logoImg from "../assets/logo.png";
 import { LogIn, Eye, EyeOff, AlertCircle, Mail, Lock } from "lucide-react";
 
 function Login() {
@@ -60,25 +61,20 @@ function Login() {
         password: formData.password,
       });
 
-      login(data.user, data.token);
+      if (data.token) {
+        login(data.user, data.token);
+      }
 
-      // Send token to Chrome Extension via window.postMessage
-      window.postMessage(
-        {
-          type: "EDUPULSE_AUTH_TOKEN",
-          token: data.token,
-        },
-        "*"
-      );
-
-      toast.success("Welcome back!", {
-        description: `Logged in as ${data.user?.name || formData.email}. Redirecting...`,
+      toast.success("Welcome Back", {
+        description: `Logged in as ${data.user?.name || formData.email}`,
       });
+
       navigate("/dashboard");
     } catch (error) {
+      console.error("Login failed:", error);
       const msg =
         error.response?.data?.message ||
-        "Invalid email or password. Please check your credentials and try again.";
+        "Invalid email or password. Please try again.";
       setErrorMessage(msg);
       toast.error("Login Failed", { description: msg });
     } finally {
@@ -88,7 +84,7 @@ function Login() {
 
   return (
     <div className="min-h-screen bg-dark-bg flex items-center justify-center p-6 text-dark-text">
-      <div className="w-full max-w-6xl h-175 rounded-card overflow-hidden bg-dark-card border border-dark-border shadow-2xl grid lg:grid-cols-2">
+      <div className="w-full max-w-5xl h-160 rounded-card overflow-hidden bg-dark-card border border-dark-border shadow-2xl grid lg:grid-cols-2">
 
         {/* LEFT SIDE */}
         <div className="hidden lg:block">
@@ -98,6 +94,18 @@ function Login() {
         {/* RIGHT SIDE */}
         <div className="flex items-center justify-center p-8 sm:p-12">
           <div className="w-full max-w-md">
+
+            {/* Brand Logo Link */}
+            <Link to="/" className="inline-flex items-center gap-2.5 mb-5 group">
+              <img
+                src={logoImg}
+                alt="EduPulse AI Logo"
+                className="w-8 h-8 rounded-full object-cover shadow-md border border-primary/30 group-hover:scale-105 transition-transform"
+              />
+              <span className="text-lg font-bold text-dark-text tracking-tight">
+                EduPulse<span className="text-primary">.AI</span>
+              </span>
+            </Link>
 
             <h1 className="text-3xl sm:text-4xl font-extrabold text-dark-text tracking-tight">
               Welcome Back

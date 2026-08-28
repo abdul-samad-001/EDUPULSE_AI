@@ -63,7 +63,7 @@ export function StatCard({
         <div className="min-w-0 flex-1">
           <span
             title={typeof title === "string" ? title : undefined}
-            className="text-[9.5px] sm:text-[10.5px] font-extrabold uppercase text-dark-muted leading-tight tracking-tight line-clamp-1 break-words block"
+            className="text-[9.5px] sm:text-[10.5px] font-extrabold uppercase text-dark-muted leading-tight tracking-tight line-clamp-1 wrap-break-word block"
           >
             {title}
           </span>

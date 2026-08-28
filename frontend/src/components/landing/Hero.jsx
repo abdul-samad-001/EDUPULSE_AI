@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Check, Sparkles } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import HeroDashboardPreview from "./HeroDashboardPreview";
+import logoImg from "../../assets/logo.png";
 
 export default function Hero() {
   const scrollToFeatures = (e) => {
@@ -23,8 +24,8 @@ export default function Hero() {
             className="lg:col-span-6 space-y-4 text-center lg:text-left"
           >
             {/* Pill Tag */}
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-dark-card border border-dark-border text-xs font-medium text-dark-muted shadow-xs">
-              <Sparkles className="w-3.5 h-3.5 text-teal-400" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-dark-card/90 border border-dark-border text-xs font-medium text-dark-muted shadow-xs backdrop-blur-sm">
+              <img src={logoImg} alt="EduPulse AI Logo" className="w-4 h-4 rounded-full object-cover shrink-0" />
               <span>AI-Powered Student Productivity</span>
             </div>
 
@@ -47,7 +48,7 @@ export default function Hero() {
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-2.5 pt-1">
               <Link
                 to="/signup"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4.5 py-2.5 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-purple-600 to-teal-500 hover:opacity-90 transition-all shadow-xs group"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4.5 py-2.5 rounded-xl text-xs font-semibold text-white bg-linear-to-r from-purple-600 to-teal-500 hover:opacity-90 transition-all shadow-xs group"
               >
                 <span>Get Started Free</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />

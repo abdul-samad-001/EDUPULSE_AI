@@ -29,22 +29,26 @@ const uploadSessions = async (req, res) => {
       });
     }
 
+    // Protect against array flooding DoS (max 500 sessions per batch)
+    const sanitizedSessions = sessions.slice(0, 500);
+
     if (mongoose.connection.readyState !== 1) {
       return res.status(200).json({
         success: true,
         message: "Telemetry processed successfully (mocked mode)",
-        count: sessions.length,
+        count: sanitizedSessions.length,
       });
     }
 
     const documents = [];
-    for (const session of sessions) {
+    for (const session of sanitizedSessions) {
       if (!session.domain || !session.durationSeconds || session.durationSeconds <= 0) continue;
 
+      const domainStr = String(session.domain).slice(0, 255).trim();
       const startedDate = new Date(session.startedAt);
       const existing = await TabSession.findOne({
         user: req.user._id,
-        domain: session.domain,
+        domain: domainStr,
         startedAt: startedDate,
       });
 

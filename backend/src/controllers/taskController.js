@@ -20,6 +20,12 @@ const getTasksBySkill = async (req, res) => {
       });
     }
 
+    if (skill.user && req.user && req.user._id && skill.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        message: "Forbidden: You do not have permission to view tasks for this skill",
+      });
+    }
+
     // Evaluate per-skill streak deadline
     await checkStreakDeadline(skill);
 
@@ -48,6 +54,13 @@ const createTask = async (req, res) => {
         message: "Skill not found",
       });
     }
+
+    if (skill.user && req.user && req.user._id && skill.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        message: "Forbidden: You do not have permission to add tasks to this skill",
+      });
+    }
+
     const task = await Task.create({
       skill: req.params.skillId,
       taskName,
@@ -78,6 +91,13 @@ const updateTask = async (req, res) => {
     if (!task) {
       return res.status(404).json({
         message: "Task not found",
+      });
+    }
+
+    const parentSkill = await Skill.findById(task.skill);
+    if (parentSkill && parentSkill.user && req.user && req.user._id && parentSkill.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        message: "Forbidden: You do not have permission to modify this task",
       });
     }
 

@@ -43,6 +43,20 @@ const extractYouTubeMetadata = () => {
   };
 };
 
+const safeSendMessage = (message) => {
+  try {
+    if (!chrome?.runtime?.id) return;
+    chrome.runtime.sendMessage(message, (_response) => {
+      // Accessing chrome.runtime.lastError suppresses the Unchecked runtime.lastError console warning
+      if (chrome.runtime.lastError) {
+        return;
+      }
+    });
+  } catch (err) {
+    // context invalidated
+  }
+};
+
 const notifyBackground = () => {
   const meta = extractYouTubeMetadata();
 
@@ -57,34 +71,33 @@ const notifyBackground = () => {
   lastUrl = meta.url;
   lastTitle = meta.title;
 
-  try {
-    if (chrome?.runtime?.id) {
-      chrome.runtime.sendMessage({
-        type: "YOUTUBE_VIDEO_METADATA",
-        url: meta.url,
-        title: meta.title,
-        channel: meta.channel,
-      });
-    }
-  } catch (err) {
-    // Port closed or extension updated
-  }
+  safeSendMessage({
+    type: "YOUTUBE_VIDEO_METADATA",
+    url: meta.url,
+    title: meta.title,
+    channel: meta.channel,
+  });
+};
+
+let debounceTimer = null;
+const debouncedNotifyBackground = () => {
+  if (debounceTimer) clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(notifyBackground, 600);
 };
 
 // Listen to YouTube SPA navigation events
 window.addEventListener("yt-navigate-finish", () => {
   setTimeout(notifyBackground, 600);
-  setTimeout(notifyBackground, 1800);
 });
 
 window.addEventListener("yt-page-data-updated", () => {
-  setTimeout(notifyBackground, 500);
+  debouncedNotifyBackground();
 });
 
 // Periodic observer for initial load or title change
 const observer = new MutationObserver(() => {
   if (window.location.href !== lastUrl || document.title !== lastTitle) {
-    notifyBackground();
+    debouncedNotifyBackground();
   }
 });
 

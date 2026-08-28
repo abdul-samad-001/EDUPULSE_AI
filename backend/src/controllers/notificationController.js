@@ -22,8 +22,10 @@ const getNotifications = async (req, res) => {
 
 const markAsRead = async (req, res) => {
   try {
-    const notification =
-      await Notification.findById(req.params.id);
+    const notification = await Notification.findOne({
+      _id: req.params.id,
+      user: req.user._id,
+    });
 
     if (!notification) {
       return res.status(404).json({

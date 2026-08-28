@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Sparkles } from "lucide-react";
+import logoImg from "../../assets/logo.png";
 
 export default function Footer() {
   return (
@@ -8,10 +8,12 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
           
           {/* Brand */}
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-gradient-to-tr from-purple-500/20 to-teal-500/20 border border-dark-border flex items-center justify-center">
-              <Sparkles className="w-3 h-3 text-teal-400" />
-            </div>
+          <div className="flex items-center gap-2.5">
+            <img
+              src={logoImg}
+              alt="EduPulse AI Logo"
+              className="w-6 h-6 rounded-full object-cover shadow-xs border border-white/10 shrink-0"
+            />
             <span className="text-xs font-bold tracking-tight text-dark-text flex items-center gap-1">
               EduPulse <span className="text-teal-500 text-[10px] font-mono font-medium px-1 py-0.2 rounded bg-dark-border">AI</span>
             </span>

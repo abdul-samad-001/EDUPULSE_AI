@@ -285,6 +285,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         activeSession.url = message.url || activeSession.url;
       }
     }
+    try { sendResponse({ success: true }); } catch { /* ignore */ }
     return false;
   }
 
@@ -294,29 +295,42 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         console.log("Token saved to extension storage.");
       });
     }
+    try { sendResponse({ success: true }); } catch { /* ignore */ }
     return false; // Fire-and-forget, no response port kept open
   }
 
   if (message.type === "SET_FOCUS_MODE") {
     isFocusing = !!message.isFocusing;
     chrome.storage.local.set({ isFocusing });
+    try { sendResponse({ success: true }); } catch { /* ignore */ }
     return false; // Fire-and-forget, no response port kept open
   }
 
   if (message.type === "SYNC_NOW") {
-    endActiveSession().then(() => {
-      uploadTelemetry().then(() => {
-        startActiveTabSession();
-        try { sendResponse({ success: true }); } catch { /* ignore */ }
-      });
-    });
+    (async () => {
+      try {
+        await endActiveSession();
+        await uploadTelemetry();
+        await startActiveTabSession();
+        sendResponse({ success: true });
+      } catch (err) {
+        sendResponse({ success: false, error: err.message });
+      }
+    })();
     return true;
   }
 
   if (message.type === "GET_STATUS") {
-    chrome.storage.local.get(
-      ["edupulseToken", "edupulseSettings", "lastSyncTimestamp", TELEMETRY_STORAGE_KEY],
-      async (res) => {
+    (async () => {
+      try {
+        const res = await chrome.storage.local.get([
+          "edupulseToken",
+          "edupulseUser",
+          "edupulseSettings",
+          "lastSyncTimestamp",
+          TELEMETRY_STORAGE_KEY,
+        ]);
+
         let backendAlive = false;
         try {
           const ping = await fetch("http://localhost:5000/api/telemetry/test", { method: "GET" });
@@ -397,32 +411,49 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         const productiveMins = apiProdMins + Math.floor(localProdSecs / 60);
         const distractionMins = apiDistMins + Math.floor(localDistSecs / 60);
 
+        sendResponse({
+          connected: isConnected,
+          statusLabel,
+          backendAlive,
+          hasToken: tokenValid,
+          user: isConnected
+            ? (res.edupulseUser?.name || "Active Student")
+            : tokenValid
+            ? (res.edupulseUser?.name || "Student Account")
+            : "Please Log In",
+          lastSync: res.lastSyncTimestamp || "Never",
+          currentWebsite: displayDomain,
+          currentCategory: category,
+          currentDuration: duration,
+          isFocusing: !!isFocusing,
+          queuedCount: localSessions.length,
+          productiveMins,
+          distractionMins,
+          settings: res.edupulseSettings || DEFAULT_SETTINGS,
+        });
+      } catch (err) {
+        console.error("GET_STATUS error:", err);
         try {
           sendResponse({
-            connected: isConnected,
-            statusLabel,
-            backendAlive,
-            hasToken: tokenValid,
-            user: isConnected
-              ? "Active Student"
-              : tokenValid
-              ? "Student Account"
-              : "Please Log In",
-            lastSync: res.lastSyncTimestamp || "Never",
-            currentWebsite: displayDomain,
-            currentCategory: category,
-            currentDuration: duration,
-            isFocusing: !!isFocusing,
-            queuedCount: localSessions.length,
-            productiveMins,
-            distractionMins,
-            settings: res.edupulseSettings || DEFAULT_SETTINGS,
+            connected: false,
+            statusLabel: "Error",
+            backendAlive: false,
+            hasToken: false,
+            user: "Error",
+            currentWebsite: "N/A",
+            currentCategory: "neutral",
+            currentDuration: 0,
+            isFocusing: false,
+            queuedCount: 0,
+            productiveMins: 0,
+            distractionMins: 0,
+            settings: DEFAULT_SETTINGS,
           });
-        } catch (err) {
-          console.error("GET_STATUS sendResponse error:", err);
+        } catch {
+          // Port closed
         }
       }
-    );
+    })();
     return true;
   }
 

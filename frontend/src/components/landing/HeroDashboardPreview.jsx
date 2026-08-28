@@ -10,6 +10,7 @@ import {
   ArrowUpRight,
   Flame
 } from "lucide-react";
+import logoImg from "../../assets/logo.png";
 
 export default function HeroDashboardPreview() {
   const [activeMode, setActiveMode] = useState("focus");
@@ -22,18 +23,23 @@ export default function HeroDashboardPreview() {
       className="relative w-full max-w-lg lg:max-w-md xl:max-w-lg mx-auto"
     >
       {/* Subtle Glow */}
-      <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/10 via-teal-500/10 to-indigo-500/10 rounded-2xl blur-xl opacity-60 pointer-events-none -z-10" />
+      <div className="absolute -inset-1 bg-linear-to-r from-purple-500/10 via-teal-500/10 to-indigo-500/10 rounded-2xl blur-xl opacity-60 pointer-events-none -z-10" />
 
       {/* Main Container */}
       <div className="theme-card rounded-2xl p-4 sm:p-4.5 overflow-hidden">
         
         {/* Top Window Bar */}
         <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-dark-border">
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-red-400/80" />
-            <div className="w-2 h-2 rounded-full bg-amber-400/80" />
-            <div className="w-2 h-2 rounded-full bg-emerald-400/80" />
-            <span className="text-[10px] font-mono text-dark-muted pl-1.5">edupulse.ai/telemetry</span>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-red-400/80" />
+              <div className="w-2 h-2 rounded-full bg-amber-400/80" />
+              <div className="w-2 h-2 rounded-full bg-emerald-400/80" />
+            </div>
+            <div className="flex items-center gap-1.5 pl-1.5">
+              <img src={logoImg} alt="EduPulse AI" className="w-3.5 h-3.5 rounded-full object-cover shrink-0" />
+              <span className="text-[10px] font-mono text-dark-muted">edupulse.ai/telemetry</span>
+            </div>
           </div>
 
           {/* Interactive Mode Pills */}
