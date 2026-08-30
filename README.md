@@ -1,7 +1,7 @@
 <div align="center">
 
 # 🎓 EduPulse AI
-
+     
 **An AI-powered student productivity platform that closes the loop between prediction and action.**
 
 Most productivity apps track tasks and time. EduPulse AI goes further: it watches behavior, predicts what a student needs next, and — critically — measures whether that recommendation actually got acted on.
