@@ -1,5 +1,5 @@
 <div align="center">
-
+  
 # 🎓 EduPulse AI
       
 **An AI-powered student productivity platform that closes the loop between prediction and action.**
